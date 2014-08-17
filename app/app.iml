@@ -81,6 +81,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="signalr-client-sdk-android" level="project" />
     <orderEntry type="library" exported="" name="signalr-client-sdk" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.3" level="project" />
   </component>
 </module>
 
