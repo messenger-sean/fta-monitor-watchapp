@@ -79,8 +79,9 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="signalr-client-sdk-1.0" level="project" />
     <orderEntry type="library" exported="" name="signalr-client-sdk-android" level="project" />
-    <orderEntry type="library" exported="" name="signalr-client-sdk" level="project" />
+    <orderEntry type="library" exported="" name="joda-time-2.4" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3" level="project" />
   </component>
 </module>
