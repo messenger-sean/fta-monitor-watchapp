@@ -2,6 +2,10 @@ package com.fsilberberg.ftamonitor.fieldmonitor;
 
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 
+import org.joda.time.Period;
+
+import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
+
 /**
  * Created by Fredric on 8/17/14.
  */
@@ -14,19 +18,19 @@ public class FieldStatus {
     }
 
     // Teams
-    private TeamStatus red1;
-    private TeamStatus red2;
-    private TeamStatus red3;
-    private TeamStatus blue1;
-    private TeamStatus blue2;
-    private TeamStatus blue3;
+    private TeamStatus red1 = new TeamStatus();
+    private TeamStatus red2 = new TeamStatus();
+    private TeamStatus red3 = new TeamStatus();
+    private TeamStatus blue1 = new TeamStatus();
+    private TeamStatus blue2 = new TeamStatus();
+    private TeamStatus blue3 = new TeamStatus();
 
     // Match stats
-    private int matchNumber;
-    private MatchStatus matchStatus;
+    private int matchNumber = 1;
+    private MatchStatus matchStatus = NOT_READY;
+    private Period matchTime = Period.millis(0);
 
     private FieldStatus() {
-
     }
 
     public synchronized TeamStatus getRed1() {
@@ -91,5 +95,13 @@ public class FieldStatus {
 
     public synchronized void setMatchStatus(MatchStatus matchStatus) {
         this.matchStatus = matchStatus;
+    }
+
+    public synchronized Period getMatchTime() {
+        return matchTime;
+    }
+
+    public synchronized void setMatchTime(Period matchTime) {
+        this.matchTime = matchTime;
     }
 }
