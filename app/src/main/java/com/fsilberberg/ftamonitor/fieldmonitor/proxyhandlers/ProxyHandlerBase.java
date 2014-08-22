@@ -2,9 +2,11 @@ package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
+import com.fsilberberg.ftamonitor.fieldmonitor.fmsdatatypes.MatchInfo;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * Created by Fredric on 8/22/14.
@@ -23,6 +25,11 @@ public abstract class ProxyHandlerBase {
 
     public String getProxyMethod() {
         return m_proxyMethod;
+    }
+
+    protected void updateMatchInfo(JsonObject jsonObject) {
+        MatchInfo info = m_gson.fromJson(jsonObject, MatchInfo.class);
+        m_fieldStatus.updateMatchInfo(info);
     }
 
 }

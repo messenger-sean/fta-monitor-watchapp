@@ -19,8 +19,7 @@ public class UpdateMatchReadyToPrestartHandler extends ProxyHandlerBase implemen
 
     @Override
     public void run(JsonObject jsonObject) {
-        MatchInfo info = m_gson.fromJson(jsonObject, MatchInfo.class);
-        m_fieldStatus.updateMatchInfo(info);
+        updateMatchInfo(jsonObject);
         m_fieldStatus.setMatchStatus(READY_TO_PRESTART);
     }
 }

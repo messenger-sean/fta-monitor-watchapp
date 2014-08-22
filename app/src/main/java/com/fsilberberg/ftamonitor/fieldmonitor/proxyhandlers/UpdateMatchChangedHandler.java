@@ -16,7 +16,6 @@ public class UpdateMatchChangedHandler extends ProxyHandlerBase implements Subsc
 
     @Override
     public void run(JsonObject event, JsonObject match) {
-        MatchInfo matchInfo = m_gson.fromJson(match, MatchInfo.class);
-        m_fieldStatus.updateMatchInfo(matchInfo);
+        updateMatchInfo(match);
     }
 }
