@@ -1,101 +1,112 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import com.fsilberberg.ftamonitor.common.Card;
 import com.fsilberberg.ftamonitor.common.RobotStatus;
 
+import static com.fsilberberg.ftamonitor.common.Card.*;
 import static com.fsilberberg.ftamonitor.common.RobotStatus.*;
 
 /**
  * Created by Fredric on 8/17/14.
  */
 public class TeamStatus {
-    private int teamNumber = 1;
-    private boolean dsEth = false;
-    private boolean ds = false;
-    private boolean radio = false;
-    private boolean robot = false;
-    private boolean estop = false;
-    private float dataRate = 0.0f;
-    private float signalStrength = 0.0f;
-    private float signalQuality = 0.0f;
-    private RobotStatus robotStatus = DISABLED;
+    private int m_teamNumber = 1;
+    private boolean m_dsEth = false;
+    private boolean m_ds = false;
+    private boolean m_radio = false;
+    private boolean m_robot = false;
+    private boolean m_estop = false;
+    private float m_dataRate = 0.0f;
+    private float m_signalStrength = 0.0f;
+    private float m_signalQuality = 0.0f;
+    private RobotStatus m_robotStatus = DISABLED;
+    private Card m_card = NONE;
 
     public synchronized int getTeamNumber() {
-        return teamNumber;
+        return m_teamNumber;
     }
 
     public synchronized void setTeamNumber(int teamNumber) {
-        this.teamNumber = teamNumber;
+        this.m_teamNumber = teamNumber;
     }
 
     public synchronized boolean isDsEth() {
-        return dsEth;
+        return m_dsEth;
     }
 
     public synchronized void setDsEth(boolean dsEth) {
-        this.dsEth = dsEth;
+        this.m_dsEth = dsEth;
     }
 
     public synchronized boolean isDs() {
-        return ds;
+        return m_ds;
     }
 
     public synchronized void setDs(boolean ds) {
-        this.ds = ds;
+        this.m_ds = ds;
     }
 
     public synchronized boolean isRadio() {
-        return radio;
+        return m_radio;
     }
 
     public synchronized void setRadio(boolean radio) {
-        this.radio = radio;
+        this.m_radio = radio;
     }
 
     public synchronized boolean isRobot() {
-        return robot;
+        return m_robot;
     }
 
     public synchronized void setRobot(boolean robot) {
-        this.robot = robot;
+        this.m_robot = robot;
     }
 
     public synchronized boolean isEstop() {
-        return estop;
+        return m_estop;
     }
 
     public synchronized void setEstop(boolean estop) {
-        this.estop = estop;
+        this.m_estop = estop;
     }
 
     public synchronized float getDataRate() {
-        return dataRate;
+        return m_dataRate;
     }
 
     public synchronized void setDataRate(float dataRate) {
-        this.dataRate = dataRate;
+        this.m_dataRate = dataRate;
     }
 
     public synchronized float getSignalStrength() {
-        return signalStrength;
+        return m_signalStrength;
     }
 
     public synchronized void setSignalStrength(float signalStrength) {
-        this.signalStrength = signalStrength;
+        this.m_signalStrength = signalStrength;
     }
 
     public synchronized float getSignalQuality() {
-        return signalQuality;
+        return m_signalQuality;
     }
 
     public synchronized void setSignalQuality(float signalQuality) {
-        this.signalQuality = signalQuality;
+        this.m_signalQuality = signalQuality;
     }
 
     public synchronized RobotStatus getRobotStatus() {
-        return robotStatus;
+        return m_robotStatus;
     }
 
     public synchronized void setRobotStatus(RobotStatus robotStatus) {
-        this.robotStatus = robotStatus;
+        this.m_robotStatus = robotStatus;
+    }
+
+    public synchronized Card getCard() {
+        return m_card;
+    }
+
+    public synchronized void setCard(Card card) {
+        m_card = card;
     }
 }

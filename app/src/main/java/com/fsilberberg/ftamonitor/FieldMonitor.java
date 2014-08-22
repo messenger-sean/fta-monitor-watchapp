@@ -16,7 +16,7 @@ public class FieldMonitor extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_field_monitor);
         Intent i = new Intent(this, FieldConnectionService.class);
-        i.putExtra(FieldConnectionService.URL_INTENT_EXTRA, "http://130.215.13.218:8085/signalr");
+        i.putExtra(FieldConnectionService.URL_INTENT_EXTRA, "http://10.0.0.164:8085/signalr");
         startService(i);
     }
 

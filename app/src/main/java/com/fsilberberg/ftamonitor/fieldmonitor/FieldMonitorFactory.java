@@ -11,7 +11,8 @@ public class FieldMonitorFactory {
         return instance;
     }
 
-    private FieldStatus fieldStatus = new FieldStatus();
+    // TODO: Retrieve these values from settings
+    private FieldStatus fieldStatus = new FieldStatus(10, 140);
 
     public FieldStatus getFieldStatus() {
         return fieldStatus;
