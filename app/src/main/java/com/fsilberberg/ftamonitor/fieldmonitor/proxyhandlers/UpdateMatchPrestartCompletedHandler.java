@@ -9,9 +9,9 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.PRESTART_COMPLETED;
 /**
  * Created by Fredric on 8/22/14.
  */
-public class UpdateMatchPrestartCompleted extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
+public class UpdateMatchPrestartCompletedHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
 
-    protected UpdateMatchPrestartCompleted(String proxyMethod) {
+    protected UpdateMatchPrestartCompletedHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

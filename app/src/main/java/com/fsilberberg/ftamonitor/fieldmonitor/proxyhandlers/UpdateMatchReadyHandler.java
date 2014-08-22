@@ -9,8 +9,8 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.MATCH_READY;
 /**
  * Created by Fredric on 8/22/14.
  */
-public class UpdateMatchReady extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
-    protected UpdateMatchReady(String proxyMethod) {
+public class UpdateMatchReadyHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
+    protected UpdateMatchReadyHandler(String proxyMethod) {
         super(proxyMethod);
     }
 
