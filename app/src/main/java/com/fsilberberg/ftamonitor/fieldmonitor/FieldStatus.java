@@ -10,13 +10,6 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
  * Created by Fredric on 8/17/14.
  */
 public class FieldStatus {
-
-    private static final FieldStatus instance = new FieldStatus();
-
-    public static FieldStatus getInstance() {
-        return instance;
-    }
-
     // Teams
     private TeamStatus red1 = new TeamStatus();
     private TeamStatus red2 = new TeamStatus();
@@ -30,7 +23,9 @@ public class FieldStatus {
     private MatchStatus matchStatus = NOT_READY;
     private Period matchTime = Period.millis(0);
 
-    private FieldStatus() {
+    FieldStatus() {
+        // Intentionally package local so that only the factory
+        // can construct new statuses
     }
 
     public synchronized TeamStatus getRed1() {
