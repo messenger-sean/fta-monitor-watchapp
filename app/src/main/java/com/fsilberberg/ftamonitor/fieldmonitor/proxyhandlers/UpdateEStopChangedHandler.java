@@ -11,15 +11,7 @@ import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
  */
 public class UpdateEStopChangedHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
 
-    // FRC-Defined constants, located in FieldMonitor.js
-    private static int RED_ALLIANCE = 1;
-    private static int BLUE_ALLIANCE = 2;
-    private static int STATION_1 = 1;
-    private static int STATION_2 = 2;
-    private static int STATION_3 = 3;
-    private static String ALLIANCE_ELEMENT = "Alliance";
     private static String PRESSED_ELEMENT = "Pressed";
-    private static String STATION_ELEMENT = "Station";
 
     protected UpdateEStopChangedHandler(String proxyMethod) {
         super(proxyMethod);
