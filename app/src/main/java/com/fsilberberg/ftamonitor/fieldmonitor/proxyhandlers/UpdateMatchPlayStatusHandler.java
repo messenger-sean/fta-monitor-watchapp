@@ -10,7 +10,7 @@ import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
  */
 public class UpdateMatchPlayStatusHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
 
-    protected UpdateMatchPlayStatusHandler(String proxyMethod) {
+    public UpdateMatchPlayStatusHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

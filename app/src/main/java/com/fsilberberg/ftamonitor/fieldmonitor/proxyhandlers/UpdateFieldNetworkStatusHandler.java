@@ -18,7 +18,7 @@ public class UpdateFieldNetworkStatusHandler extends ProxyHandlerBase implements
     private static final String SIGNAL_STRENGTH_ELEMENT = "SignalStrength";
     private static final String SIGNAL_QUALITY_ELEMENT = "SignalQuality";
 
-    protected UpdateFieldNetworkStatusHandler(String proxyMethod) {
+    public UpdateFieldNetworkStatusHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

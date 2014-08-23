@@ -13,7 +13,7 @@ public class UpdateStationConnectionChangedHandler extends ProxyHandlerBase impl
 
     private static final String CONNECTED_ELEMENT = "Connected";
 
-    protected UpdateStationConnectionChangedHandler(String proxyMethod) {
+    public UpdateStationConnectionChangedHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

@@ -8,7 +8,7 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
  * Created by Fredric on 8/22/14.
  */
 public class UpdateMatchNotReadyHandler extends ProxyHandlerBase implements SubscriptionHandler {
-    protected UpdateMatchNotReadyHandler(String proxyMethod) {
+    public UpdateMatchNotReadyHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

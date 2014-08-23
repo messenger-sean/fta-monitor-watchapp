@@ -13,7 +13,7 @@ public class UpdateEStopChangedHandler extends ProxyHandlerBase implements Subsc
 
     private static final String PRESSED_ELEMENT = "Pressed";
 
-    protected UpdateEStopChangedHandler(String proxyMethod) {
+    public UpdateEStopChangedHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

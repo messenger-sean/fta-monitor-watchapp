@@ -22,7 +22,7 @@ public class UpdateDSToFMSStatusHandler extends ProxyHandlerBase implements Subs
     private static final String ENABLED_ELEMENT = "Enabled";
     private static final String LINK_ACTIVE_ELEMENT = "LinkActive";
 
-    protected UpdateDSToFMSStatusHandler(String proxyMethod) {
+    public UpdateDSToFMSStatusHandler(String proxyMethod) {
         super(proxyMethod);
     }
 

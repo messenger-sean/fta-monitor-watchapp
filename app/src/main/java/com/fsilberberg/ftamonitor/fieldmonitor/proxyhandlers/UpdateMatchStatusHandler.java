@@ -13,7 +13,7 @@ public class UpdateMatchStatusHandler extends ProxyHandlerBase implements Subscr
 
     private final MatchStatus m_toUpdateTo;
 
-    protected UpdateMatchStatusHandler(String proxyMethod, MatchStatus toUpdateTo) {
+    public UpdateMatchStatusHandler(String proxyMethod, MatchStatus toUpdateTo) {
         super(proxyMethod);
         m_toUpdateTo = toUpdateTo;
     }
