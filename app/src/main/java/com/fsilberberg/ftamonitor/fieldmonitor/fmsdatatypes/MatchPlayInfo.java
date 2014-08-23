@@ -14,4 +14,31 @@ public class MatchPlayInfo {
     private boolean useManualScoring;
     private MatchInfo matchInfo;
 
+    public int getEventId() {
+        return eventId;
+    }
+
+    public boolean isInMatchPlay() {
+        return inMatchPlay;
+    }
+
+    public boolean isMatchPreStartComplete() {
+        return matchPreStartComplete;
+    }
+
+    public boolean isMatchStarted() {
+        return matchStarted;
+    }
+
+    public boolean isMatchEnded() {
+        return matchEnded;
+    }
+
+    public boolean isUseManualScoring() {
+        return useManualScoring;
+    }
+
+    public MatchInfo getMatchInfo() {
+        return matchInfo;
+    }
 }
