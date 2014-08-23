@@ -11,7 +11,7 @@ import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
  */
 public class UpdateStationConnectionChangedHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
 
-    private static String CONNECTED_ELEMENT = "Connected";
+    private static final String CONNECTED_ELEMENT = "Connected";
 
     protected UpdateStationConnectionChangedHandler(String proxyMethod) {
         super(proxyMethod);

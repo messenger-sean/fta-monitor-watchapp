@@ -11,7 +11,7 @@ import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
  */
 public class UpdateEStopChangedHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
 
-    private static String PRESSED_ELEMENT = "Pressed";
+    private static final String PRESSED_ELEMENT = "Pressed";
 
     protected UpdateEStopChangedHandler(String proxyMethod) {
         super(proxyMethod);
