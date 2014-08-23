@@ -154,12 +154,12 @@ public class FieldStatus {
         m_blue3.setCard(parseCard(info.getBlue3Card()));
 
         // Bypassed Status
-        m_red1.setRobotStatus(parseStatus(info.isRed1IsBypassed(), m_red1.getRobotStatus()));
-        m_red2.setRobotStatus(parseStatus(info.isRed2IsBypassed(), m_red2.getRobotStatus()));
-        m_red3.setRobotStatus(parseStatus(info.isRed3IsBypassed(), m_red3.getRobotStatus()));
-        m_blue1.setRobotStatus(parseStatus(info.isBlue1IsBypassed(), m_blue1.getRobotStatus()));
-        m_blue2.setRobotStatus(parseStatus(info.isBlue2IsBypassed(), m_blue2.getRobotStatus()));
-        m_blue3.setRobotStatus(parseStatus(info.isBlue3IsBypassed(), m_blue3.getRobotStatus()));
+        m_red1.setBypassed(info.isRed1IsBypassed());
+        m_red2.setBypassed(info.isRed2IsBypassed());
+        m_red3.setBypassed(info.isRed3IsBypassed());
+        m_blue1.setBypassed(info.isBlue1IsBypassed());
+        m_blue2.setBypassed(info.isBlue2IsBypassed());
+        m_blue3.setBypassed(info.isBlue3IsBypassed());
     }
 
     private static Card parseCard(int cardNum) {
@@ -172,9 +172,5 @@ public class FieldStatus {
             default:
                 return NONE;
         }
-    }
-
-    private static RobotStatus parseStatus(boolean isBypassed, RobotStatus oldStatus) {
-        return isBypassed ? RobotStatus.BYPASSED : oldStatus;
     }
 }

@@ -11,15 +11,20 @@ import static com.fsilberberg.ftamonitor.common.RobotStatus.*;
  */
 public class TeamStatus {
     private int m_teamNumber = 1;
+    private int m_droppedPackets = 0;
+    private int m_roundTrip = 0;
     private boolean m_dsEth = false;
     private boolean m_ds = false;
     private boolean m_radio = false;
     private boolean m_robot = false;
     private boolean m_estop = false;
+    private boolean m_code = false;
+    private float m_battery = 0.0f;
     private float m_dataRate = 0.0f;
     private float m_signalStrength = 0.0f;
     private float m_signalQuality = 0.0f;
-    private RobotStatus m_robotStatus = DISABLED;
+    private boolean m_enabled = false;
+    private boolean m_bypassed = false;
     private Card m_card = NONE;
 
     public synchronized int getTeamNumber() {
@@ -28,6 +33,22 @@ public class TeamStatus {
 
     public synchronized void setTeamNumber(int teamNumber) {
         this.m_teamNumber = teamNumber;
+    }
+
+    public synchronized int getDroppedPackets() {
+        return m_droppedPackets;
+    }
+
+    public synchronized void setDroppedPackets(int droppedPackets) {
+        m_droppedPackets = droppedPackets;
+    }
+
+    public synchronized int getRoundTrip() {
+        return m_roundTrip;
+    }
+
+    public synchronized void setRoundTrip(int roundTrip) {
+        m_roundTrip = roundTrip;
     }
 
     public synchronized boolean isDsEth() {
@@ -70,6 +91,22 @@ public class TeamStatus {
         this.m_estop = estop;
     }
 
+    public synchronized boolean isCode() {
+        return m_code;
+    }
+
+    public synchronized void setCode(boolean code) {
+        m_code = code;
+    }
+
+    public synchronized float getBattery() {
+        return m_battery;
+    }
+
+    public synchronized void setBattery(float battery) {
+        m_battery = battery;
+    }
+
     public synchronized float getDataRate() {
         return m_dataRate;
     }
@@ -94,12 +131,20 @@ public class TeamStatus {
         this.m_signalQuality = signalQuality;
     }
 
-    public synchronized RobotStatus getRobotStatus() {
-        return m_robotStatus;
+    public synchronized boolean isEnabled() {
+        return m_enabled;
     }
 
-    public synchronized void setRobotStatus(RobotStatus robotStatus) {
-        this.m_robotStatus = robotStatus;
+    public synchronized void setEnabled(boolean enabled) {
+        m_enabled = enabled;
+    }
+
+    public synchronized boolean isBypassed() {
+        return m_bypassed;
+    }
+
+    public synchronized void setBypassed(boolean bypassed) {
+        m_bypassed = bypassed;
     }
 
     public synchronized Card getCard() {
