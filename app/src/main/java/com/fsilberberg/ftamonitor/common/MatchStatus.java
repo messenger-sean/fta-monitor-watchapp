@@ -10,7 +10,10 @@ public enum MatchStatus {
     PRESTART_COMPLETED("Prestart Completed"),
     MATCH_READY("Match Ready"),
     AUTO("Autonomous Running"),
+    AUTO_PAUSED("Autonomous Paused"),
+    AUTO_END("Autonomous Ended"),
     TELEOP("Teleop Running"),
+    TELEOP_PAUSED("Teleop Paused"),
     OVER("Match Over");
 
 
