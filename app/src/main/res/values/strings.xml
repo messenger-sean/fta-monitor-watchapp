@@ -4,5 +4,22 @@
     <string name="app_name">FTA Monitor</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="on_field_key">on_field</string>
+    <string name="on_field">On FRC Field</string>
+    <string name="on_field_sum">Use Field FMS Connection Settings</string>
+    <string name="fms_ip_addr_key">fms_ip_addr</string>
+    <string name="fms_ip_addr">FMS IP Address</string>
+    <string name="auto_time_key">auto_time</string>
+    <string name="auto_time">Autonomous Period Length (seconds)</string>
+    <string name="telelop_time_key">teleop_time</string>
+    <string name="teleop_time">Teleop Period Length (seconds)</string>
 
 </resources>
