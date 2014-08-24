@@ -21,5 +21,9 @@
     <string name="auto_time">Autonomous Period Length (seconds)</string>
     <string name="telelop_time_key">teleop_time</string>
     <string name="teleop_time">Teleop Period Length (seconds)</string>
+    <string-array name="drawer_tabs">
+        <item>Field Monitor</item>
+        <item>Settings</item>
+    </string-array>
 
 </resources>

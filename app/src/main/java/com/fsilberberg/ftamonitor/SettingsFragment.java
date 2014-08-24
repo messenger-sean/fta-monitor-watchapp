@@ -33,6 +33,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         ActionBar actionBar = getActivity().getActionBar();
         actionBar.removeAllTabs();
+        actionBar.setTitle("Settings");
     }
 
     @Override

@@ -4,4 +4,5 @@
     <color name="FRC_BLUE">#0065B3</color>
     <color name="FRC_BLACK">#231F20</color>
     <color name="FRC_GREY">#A7A9AC</color>
+    <color name="drawer">#BF000000</color>
 </resources>
