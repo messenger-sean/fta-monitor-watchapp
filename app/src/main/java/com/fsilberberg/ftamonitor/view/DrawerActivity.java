@@ -1,7 +1,8 @@
-package com.fsilberberg.ftamonitor;
+package com.fsilberberg.ftamonitor.view;
 
 import android.app.Activity;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -11,13 +12,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.fsilberberg.ftamonitor.R;
 
-public class DrawerActivity extends Activity implements ListView.OnItemClickListener {
+
+public class DrawerActivity extends Activity {
 
     private String[] m_drawerItems;
     private ListView m_drawerList;
     private DrawerLayout m_drawerLayout;
     private ActionBarDrawerToggle m_drawerToggle;
+    private CharSequence m_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +33,9 @@ public class DrawerActivity extends Activity implements ListView.OnItemClickList
         m_drawerList = (ListView) findViewById(R.id.left_drawer);
         m_drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.list_white_text, R.id.list_content, m_drawerItems));
 
-        // Set up the Drawer Toggle
+        // Set up the drawer toggle and listeners
         m_drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         m_drawerToggle = new ActionBarDrawerToggle(this, m_drawerLayout, R.drawable.ic_drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            private CharSequence m_title;
-
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -50,6 +52,10 @@ public class DrawerActivity extends Activity implements ListView.OnItemClickList
         m_drawerLayout.setDrawerListener(m_drawerToggle);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+        m_drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // Set up the main content
+        getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment()).commit();
     }
 
     @Override
@@ -68,8 +74,38 @@ public class DrawerActivity extends Activity implements ListView.OnItemClickList
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onItemClick(AdapterView parent, View view, int position, long id) {
+    public void selectScreen(int position) {
+        Fragment newFrag = null;
+        switch (position) {
+            case 0:
+                m_title = "Field Monitor";
+                newFrag = new FieldMonitorFragment();
+                break;
+            case 1:
+                m_title = "Settings";
+                newFrag = new SettingsFragment();
+                break;
+        }
 
+        // Replace the current fragment
+        if (newFrag != null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, newFrag)
+                    .addToBackStack(null)
+                    .commit();
+
+            // Highlight item, set title, close drawer
+            m_drawerList.setItemChecked(position, true);
+            getActionBar().setTitle(m_title);
+            m_drawerLayout.closeDrawer(m_drawerList);
+        }
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            selectScreen(i);
+        }
     }
 }

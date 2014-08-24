@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor;
+package com.fsilberberg.ftamonitor.view;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.fsilberberg.ftamonitor.R;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
