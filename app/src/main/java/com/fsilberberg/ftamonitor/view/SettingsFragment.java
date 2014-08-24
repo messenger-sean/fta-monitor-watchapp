@@ -32,10 +32,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         fmsKey = getString(R.string.fms_ip_addr_key);
         autoKey = getString(R.string.auto_time_key);
         teleopKey = getString(R.string.telelop_time_key);
-
-        ActionBar actionBar = getActivity().getActionBar();
-        actionBar.removeAllTabs();
-        actionBar.setTitle("Settings");
+        getActivity().getActionBar().setTitle(getString(R.string.action_settings));
     }
 
     @Override

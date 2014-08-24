@@ -16,7 +16,6 @@ import com.fsilberberg.ftamonitor.R;
  */
 public class FieldMonitorFragment extends Fragment {
 
-
     public FieldMonitorFragment() {
         // Required empty public constructor
     }
@@ -29,5 +28,9 @@ public class FieldMonitorFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_field_monitor, container, false);
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().getActionBar().setTitle(getString(R.string.action_field_monitor));
+    }
 }

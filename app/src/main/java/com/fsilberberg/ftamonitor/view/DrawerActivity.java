@@ -3,6 +3,7 @@ package com.fsilberberg.ftamonitor.view;
 import android.app.Activity;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -40,7 +41,7 @@ public class DrawerActivity extends Activity {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 m_title = getActionBar().getTitle();
-                getActionBar().setTitle("FTA Monitor");
+                getActionBar().setTitle(getString(R.string.app_name));
             }
 
             @Override
@@ -55,7 +56,7 @@ public class DrawerActivity extends Activity {
         m_drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // Set up the main content
-        getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
     }
 
     @Override
@@ -74,15 +75,20 @@ public class DrawerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void selectScreen(int position) {
+    private void selectScreen(int position) {
+        if (position == getCurrentTab()) {
+            m_drawerLayout.closeDrawer(m_drawerList);
+            return;
+        }
+
         Fragment newFrag = null;
         switch (position) {
             case 0:
-                m_title = "Field Monitor";
+                m_title = getString(R.string.action_field_monitor);
                 newFrag = new FieldMonitorFragment();
                 break;
             case 1:
-                m_title = "Settings";
+                m_title = getString(R.string.action_settings);
                 newFrag = new SettingsFragment();
                 break;
         }
@@ -90,7 +96,7 @@ public class DrawerActivity extends Activity {
         // Replace the current fragment
         if (newFrag != null) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, newFrag)
+                    .replace(R.id.container, newFrag, newFrag.getClass().getName())
                     .addToBackStack(null)
                     .commit();
 
@@ -98,6 +104,16 @@ public class DrawerActivity extends Activity {
             m_drawerList.setItemChecked(position, true);
             getActionBar().setTitle(m_title);
             m_drawerLayout.closeDrawer(m_drawerList);
+        }
+    }
+
+    private int getCurrentTab() {
+        if (getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName()).isVisible()) {
+            return 0;
+        } else if (getFragmentManager().findFragmentByTag(SettingsFragment.class.getName()).isVisible()) {
+            return 1;
+        } else {
+            throw new RuntimeException("Error: Unknown fragment active");
         }
     }
 
