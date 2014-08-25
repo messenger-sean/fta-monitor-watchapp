@@ -7,9 +7,13 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
+import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 
 import static com.fsilberberg.ftamonitor.common.Alliance.*;
 
@@ -19,6 +23,7 @@ import static com.fsilberberg.ftamonitor.common.Alliance.*;
  */
 public class FieldMonitorFragment extends Fragment {
 
+    // The width of the columns
     private int m_teamWidth;
     private int m_dsWidth;
     private int m_robotWidth;
@@ -28,14 +33,18 @@ public class FieldMonitorFragment extends Fragment {
     private int m_enableWidth;
     private View m_fragView;
 
+    // The team fragments
     private FieldMonitorTeamRow blue1;
     private FieldMonitorTeamRow blue2;
     private FieldMonitorTeamRow blue3;
     private FieldMonitorTeamRow red1;
     private FieldMonitorTeamRow red2;
     private FieldMonitorTeamRow red3;
-
     private boolean updateFragment = false;
+
+    // The UI elements that we update in app
+    private TextView m_matchNumber;
+    private TextView m_fieldStatus;
 
     public FieldMonitorFragment() {
         // Required empty public constructor
@@ -46,6 +55,8 @@ public class FieldMonitorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         m_fragView = inflater.inflate(R.layout.fragment_field_monitor, container, false);
         m_fragView.post(new SetupRunnable());
+        m_matchNumber = (TextView) m_fragView.findViewById(R.id.field_monitor_match_number);
+        m_fieldStatus = (TextView) m_fragView.findViewById(R.id.field_monitor_status);
         return m_fragView;
     }
 
@@ -100,14 +111,27 @@ public class FieldMonitorFragment extends Fragment {
                 .replace(R.id.field_monitor_red2, red2)
                 .replace(R.id.field_monitor_red3, red3)
                 .commit();
+
+        startMonitor();
     }
 
     private void startMonitor() {
+        if (blue1 == null || blue2 == null || blue3 == null || red1 == null || red2 == null || red3 == null) {
+            // The app is not setup yet, this will be called when the app is fully setup
+            return;
+        }
+
         // TODO: Actually setup the monitor to update the UI
     }
 
     private void stopMonitor() {
         // TODO: Actually stop  the monitor
+    }
+
+    private void updateValues() {
+        FieldStatus status = FieldMonitorFactory.getInstance().getFieldStatus();
+        m_matchNumber.setText(status.getMatchNumber());
+        m_fieldStatus.setText(status.getMatchStatus().toString());
     }
 
     private final class SetupRunnable implements Runnable {
