@@ -1,26 +1,24 @@
 package com.fsilberberg.ftamonitor.view;
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.preference.EditTextPreference;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldConnectionService;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private String fmsKey;
-    private String autoKey;
-    private String teleopKey;
+    private static final String DEFAULT_SIGNALR_URL = "10.0.100.5";
+    private static final String PREVIOUS_CUSTOM_URL_KEY = "PREVIOUS_CUSTOM_URL";
+
+    private String m_fmsKey;
+    private String m_autoKey;
+    private String m_teleopKey;
+    private String m_defaultKey;
 
     public SettingsFragment() {
     }
@@ -29,21 +27,19 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
-        fmsKey = getString(R.string.fms_ip_addr_key);
-        autoKey = getString(R.string.auto_time_key);
-        teleopKey = getString(R.string.telelop_time_key);
+        m_fmsKey = getString(R.string.fms_ip_addr_key);
+        m_autoKey = getString(R.string.auto_time_key);
+        m_teleopKey = getString(R.string.telelop_time_key);
+        m_defaultKey = getString(R.string.on_field_key);
         getActivity().getActionBar().setTitle(getString(R.string.action_settings));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        EditTextPreference fmsPref = (EditTextPreference) findPreference(fmsKey);
-        fmsPref.setSummary(fmsPref.getText());
-        EditTextPreference autoPref = (EditTextPreference) findPreference(autoKey);
-        autoPref.setSummary(autoPref.getText());
-        EditTextPreference teleopPref = (EditTextPreference) findPreference(teleopKey);
-        teleopPref.setSummary(teleopPref.getText());
+        updatePref(m_fmsKey);
+        updatePref(m_autoKey);
+        updatePref(m_teleopKey);
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -54,10 +50,54 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        if (s == fmsKey || s == autoKey || s == teleopKey) {
-            EditTextPreference pref = (EditTextPreference) findPreference(s);
-            pref.setSummary(pref.getText());
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(m_fmsKey)) {
+            // If the url was updated, send an update with the new url
+            String url = sharedPreferences.getString(key, DEFAULT_SIGNALR_URL);
+            sendServiceUpdate(url);
+            updatePref(key);
+        } else if (key.equals(m_defaultKey)) {
+            boolean defaultUrl = sharedPreferences.getBoolean(key, true);
+            String newUrl = "";
+            // If the default url is now true, update the url to the default signalr url
+            if (defaultUrl) {
+                String oldUrl = sharedPreferences.getString(m_fmsKey, DEFAULT_SIGNALR_URL);
+                // Save the old default url and store the new one
+                sharedPreferences.edit()
+                        .putString(PREVIOUS_CUSTOM_URL_KEY, oldUrl)
+                        .putString(m_fmsKey, DEFAULT_SIGNALR_URL)
+                        .commit();
+                sendServiceUpdate(DEFAULT_SIGNALR_URL);
+                newUrl = DEFAULT_SIGNALR_URL;
+            } else {
+                // Restore the old default url if it exists
+                newUrl = sharedPreferences.getString(PREVIOUS_CUSTOM_URL_KEY, DEFAULT_SIGNALR_URL);
+                sharedPreferences.edit()
+                        .putString(m_fmsKey, newUrl)
+                        .commit();
+
+                sendServiceUpdate(newUrl);
+            }
+            // The EditText widget's text field is not edited by modifying the shared preferences
+            // so we have to manually get the new url and update the widget
+            EditTextPreference pref = (EditTextPreference) findPreference(m_fmsKey);
+            pref.setSummary(newUrl);
+            Log.d(SettingsFragment.class.getName(), "Text is " + pref.getSummary());
+        } else if (key.equals(m_teleopKey) || key.equals(m_autoKey)) {
+            updatePref(key);
         }
+    }
+
+    private void sendServiceUpdate(String url) {
+        Log.d(SettingsFragment.class.getName(), "Sending url update with; " + url);
+        Intent intent = new Intent(getActivity(), FieldConnectionService.class);
+        intent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
+        intent.putExtra(FieldConnectionService.UPDATE_URL_INTENT_EXTRA, true);
+        getActivity().startService(intent);
+    }
+
+    private void updatePref(String key) {
+        EditTextPreference pref = (EditTextPreference) findPreference(key);
+        pref.setSummary(pref.getText());
     }
 }
