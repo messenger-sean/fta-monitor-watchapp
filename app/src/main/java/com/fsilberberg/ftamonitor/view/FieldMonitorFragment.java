@@ -4,7 +4,6 @@ package com.fsilberberg.ftamonitor.view;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,13 @@ public class FieldMonitorFragment extends Fragment {
     private int m_enableWidth;
     private View m_fragView;
 
+    private FieldMonitorTeamRow blue1;
+    private FieldMonitorTeamRow blue2;
+    private FieldMonitorTeamRow blue3;
+    private FieldMonitorTeamRow red1;
+    private FieldMonitorTeamRow red2;
+    private FieldMonitorTeamRow red3;
+
     private boolean updateFragment = false;
 
     public FieldMonitorFragment() {
@@ -52,6 +58,15 @@ public class FieldMonitorFragment extends Fragment {
             setupFragments();
             updateFragment = false;
         }
+
+        startMonitor();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        stopMonitor();
     }
 
     private FieldMonitorTeamRow getRow(Alliance alliance) {
@@ -69,12 +84,12 @@ public class FieldMonitorFragment extends Fragment {
         m_enableWidth = m_fragView.findViewById(R.id.field_monitor_enable_status_header).getWidth();
 
         // Get the individual team rows
-        FieldMonitorTeamRow blue1 = getRow(BLUE);
-        FieldMonitorTeamRow blue2 = getRow(BLUE);
-        FieldMonitorTeamRow blue3 = getRow(BLUE);
-        FieldMonitorTeamRow red1 = getRow(RED);
-        FieldMonitorTeamRow red2 = getRow(RED);
-        FieldMonitorTeamRow red3 = getRow(RED);
+        blue1 = getRow(BLUE);
+        blue2 = getRow(BLUE);
+        blue3 = getRow(BLUE);
+        red1 = getRow(RED);
+        red2 = getRow(RED);
+        red3 = getRow(RED);
 
         // Insert them into the fragment
         getFragmentManager().beginTransaction()
@@ -85,6 +100,14 @@ public class FieldMonitorFragment extends Fragment {
                 .replace(R.id.field_monitor_red2, red2)
                 .replace(R.id.field_monitor_red3, red3)
                 .commit();
+    }
+
+    private void startMonitor() {
+        // TODO: Actually setup the monitor to update the UI
+    }
+
+    private void stopMonitor() {
+        // TODO: Actually stop  the monitor
     }
 
     private final class SetupRunnable implements Runnable {
