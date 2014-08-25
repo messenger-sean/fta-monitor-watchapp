@@ -4,5 +4,8 @@
     <color name="FRC_BLUE">#0065B3</color>
     <color name="FRC_BLACK">#231F20</color>
     <color name="FRC_GREY">#A7A9AC</color>
+    <color name="FMS_RED">#C0504D</color>
+    <color name="FMS_GREEN">#9BBB59</color>
+    <color name="FMS_YELLOW">#FFFF00</color>
     <color name="drawer">#BF000000</color>
 </resources>

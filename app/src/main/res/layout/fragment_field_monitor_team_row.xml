@@ -1,0 +1,156 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.fsilberberg.ftamonitor.view.FieldMonitorTeamRow">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/field_monitor_team_number"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/white_with_border"
+            android:gravity="center"
+            android:text="9999"
+            android:textSize="@dimen/medium_text_size"
+            android:textColor="@android:color/white"/>
+
+        <!-- Driver Station Information -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/field_monitor_ds_bounding_box">
+
+            <TextView
+                android:id="@+id/field_monitor_ds_eth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/red_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/field_monitor_ds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/red_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <!-- Robot Information -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/field_monitor_robot_bounding_box">
+
+            <TextView
+                android:id="@+id/field_monitor_radio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/red_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/field_monitor_rio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/red_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/field_monitor_battery_voltage"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/yellow_with_border"
+            android:gravity="center"
+            android:padding="@dimen/table_margin"
+            android:text="33.33"
+            android:textSize="@dimen/medium_text_size"/>
+
+        <!-- Bandwidth Information -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/field_monitor_bandwidth_bounding_box">
+
+            <TextView
+                android:id="@+id/field_monitor_bandwidth_usage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/yellow_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"
+                android:text="0.00"/>
+
+            <TextView
+                android:id="@+id/field_monitor_missed_packets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/yellow_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"
+                android:text="0"/>
+        </LinearLayout>
+
+        <!-- Signal Information -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/field_monitor_signal_bounding_box">
+
+            <TextView
+                android:id="@+id/field_monitor_signal_quality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/yellow_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"
+                android:text="0%"/>
+
+            <TextView
+                android:id="@+id/field_monitor_signal_strength"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/yellow_with_border"
+                android:padding="@dimen/table_margin"
+                android:textSize="@dimen/medium_text_size"
+                android:gravity="center"
+                android:text="0%"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/field_monitor_enable_status"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/red_with_border"
+            android:gravity="center"
+            android:padding="@dimen/table_margin"
+            android:text="B"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/medium_text_size"/>
+    </LinearLayout>
+
+</FrameLayout>

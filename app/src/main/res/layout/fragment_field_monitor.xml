@@ -1,13 +1,289 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.fsilberberg.ftamonitor.view.FieldMonitorFragment">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.fsilberberg.ftamonitor.view.FieldMonitorFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="2dip"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Match:"
+                android:textSize="@dimen/medium_text_size"/>
+
+            <TextView
+                android:id="@+id/field_monitor_match_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:text="999"
+                android:textSize="@dimen/medium_text_size"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="2dip"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Field Status:"
+                android:textSize="@dimen/medium_text_size"/>
+
+            <TextView
+                android:id="@+id/field_monitor_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:text="Teleop Running"
+                android:textSize="@dimen/medium_text_size"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginTop="2dip"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time:"
+                android:textSize="@dimen/medium_text_size"/>
+
+            <TextView
+                android:id="@+id/field_monitor_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:text="15 sec"
+                android:textSize="@dimen/medium_text_size"/>
+        </LinearLayout>
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="3,4,5">
+
+            <!-- Table header -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Team Number -->
+                <TextView
+                    android:id="@+id/field_monitor_team_number_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/black_with_border"
+                    android:gravity="center"
+                    android:padding="@dimen/table_margin"
+                    android:text="Team"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textColor="@android:color/white"/>
+
+                <!-- DS Information -->
+                <LinearLayout
+                    android:id="@+id/field_monitor_ds_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Driver station ethernet status"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="Eth"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Driver Station Status"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="DS"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+                <!--Robot Information -->
+                <LinearLayout
+                    android:id="@+id/field_monitor_robot_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Robot radio status"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="Rd"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="RoboRIO status"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="RIO"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+                <!-- Voltage Number -->
+                <TextView
+                    android:id="@+id/field_monitor_battery_voltage_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/black_with_border"
+                    android:contentDescription="Robot battery voltage"
+                    android:gravity="center"
+                    android:padding="@dimen/table_margin"
+                    android:text="Vol"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textColor="@android:color/white"/>
+
+                <!-- Network Information -->
+                <LinearLayout
+                    android:id="@+id/field_monitor_bandwidth_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Bandwidth Usage"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="BW"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Missed Packets"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="MP"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+                <!-- Network Information -->
+                <LinearLayout
+                    android:id="@+id/field_monitor_signal_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Bandwidth Usage"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="SQ"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/black_with_border"
+                        android:contentDescription="Missed Packets"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/table_margin"
+                        android:text="SS"
+                        android:textSize="@dimen/medium_text_size"
+                        android:textColor="@android:color/white"/>
+                </LinearLayout>
+
+                <!-- Enabled -->
+                <TextView
+                    android:id="@+id/field_monitor_enable_status_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/black_with_border"
+                    android:contentDescription="Robot Enabled Status"
+                    android:gravity="center"
+                    android:padding="@dimen/table_margin"
+                    android:text="Ena"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textColor="@android:color/white"/>
+
+            </TableRow>
+        </TableLayout>
+
+        <!-- Blue 1 -->
+        <FrameLayout
+            android:id="@+id/field_monitor_blue1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Blue 2 -->
+        <FrameLayout
+            android:id="@+id/field_monitor_blue2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Blue 3 -->
+        <FrameLayout
+            android:id="@+id/field_monitor_blue3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Red 1 -->
+        <FrameLayout
+            android:id="@+id/field_monitor_red1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Red 2 -->
+        <FrameLayout
+            android:id="@+id/field_monitor_red2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Red 3 -->
+        <FrameLayout
+            android:id="@+id/field_monitor_red3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </FrameLayout>
