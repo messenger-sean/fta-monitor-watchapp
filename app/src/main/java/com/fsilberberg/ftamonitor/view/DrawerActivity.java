@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,6 +19,9 @@ import com.fsilberberg.ftamonitor.R;
 
 public class DrawerActivity extends Activity {
 
+    // If defined with a value of DisplayView, the specified view will be shown
+    public static final String VIEW_INTENT_EXTRA = "VIEW";
+
     private String[] m_drawerItems;
     private ListView m_drawerList;
     private DrawerLayout m_drawerLayout;
@@ -27,6 +31,9 @@ public class DrawerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(DrawerActivity.class.getName(), "Called Drawer Activity");
+
         setContentView(R.layout.activity_drawer);
 
         // Set up the drawer content
@@ -123,5 +130,9 @@ public class DrawerActivity extends Activity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             selectScreen(i);
         }
+    }
+
+    public enum DisplayView {
+        FIELD_MONITOR, SETTINGS
     }
 }
