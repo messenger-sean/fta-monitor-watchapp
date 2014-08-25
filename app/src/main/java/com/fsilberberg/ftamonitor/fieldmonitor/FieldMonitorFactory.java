@@ -1,7 +1,5 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
-import com.fsilberberg.ftamonitor.common.IObserver;
-
 /**
  * Created by 333fr_000 on 8/22/14.
  */
@@ -20,7 +18,7 @@ public class FieldMonitorFactory {
         return fieldStatus;
     }
 
-    public void registerForUpdates(IObserver observer) {
+    public void registerForUpdates(IFieldMonitorObserver observer) {
         fieldStatus.registerObserver(observer);
     }
 }

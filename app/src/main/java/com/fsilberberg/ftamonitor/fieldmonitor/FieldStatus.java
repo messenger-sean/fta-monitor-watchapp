@@ -1,33 +1,30 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
-import com.fsilberberg.ftamonitor.common.IObservable;
-import com.fsilberberg.ftamonitor.common.IObserver;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
-import com.fsilberberg.ftamonitor.common.RobotStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.fmsdatatypes.MatchInfo;
 
-import org.apache.http.impl.conn.IdleConnectionHandler;
 import org.joda.time.Period;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
+import static com.fsilberberg.ftamonitor.common.Alliance.*;
 import static com.fsilberberg.ftamonitor.common.Card.*;
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
 
 /**
  * Created by Fredric on 8/17/14.
  */
-public class FieldStatus implements IObservable {
+public class FieldStatus {
     // Teams
-    private TeamStatus m_red1 = new TeamStatus();
-    private TeamStatus m_red2 = new TeamStatus();
-    private TeamStatus m_red3 = new TeamStatus();
-    private TeamStatus m_blue1 = new TeamStatus();
-    private TeamStatus m_blue2 = new TeamStatus();
-    private TeamStatus m_blue3 = new TeamStatus();
+    private final TeamStatus m_red1 = new TeamStatus(1, Alliance.RED);
+    private final TeamStatus m_red2 = new TeamStatus(2, Alliance.RED);
+    private final TeamStatus m_red3 = new TeamStatus(3, Alliance.RED);
+    private final TeamStatus m_blue1 = new TeamStatus(1, BLUE);
+    private final TeamStatus m_blue2 = new TeamStatus(2, BLUE);
+    private final TeamStatus m_blue3 = new TeamStatus(3, BLUE);
 
     // Match stats
     private String m_matchNumber = "999";
@@ -37,7 +34,7 @@ public class FieldStatus implements IObservable {
     private Period m_teleopTime;
 
     // Observers
-    private final Collection<IObserver> m_observers = new ArrayList<>();
+    private final Collection<IFieldMonitorObserver> m_observers = new ArrayList<>();
 
     FieldStatus(int defaultAutoSeconds, int defaultTeleopSeconds) {
         m_autoTime = Period.seconds(defaultAutoSeconds);
@@ -48,66 +45,24 @@ public class FieldStatus implements IObservable {
         return m_red1;
     }
 
-    public void setRed1(TeamStatus red1) {
-        synchronized (this) {
-            this.m_red1 = red1;
-        }
-        updateObservers();
-    }
-
     public synchronized TeamStatus getRed2() {
         return m_red2;
-    }
-
-    public void setRed2(TeamStatus red2) {
-        synchronized (this) {
-            this.m_red2 = red2;
-        }
-        updateObservers();
     }
 
     public synchronized TeamStatus getRed3() {
         return m_red3;
     }
 
-    public void setRed3(TeamStatus red3) {
-        synchronized (this) {
-            this.m_red3 = red3;
-        }
-        updateObservers();
-    }
-
     public synchronized TeamStatus getBlue1() {
         return m_blue1;
-    }
-
-    public void setBlue1(TeamStatus blue1) {
-        synchronized (this) {
-            this.m_blue1 = blue1;
-        }
-        updateObservers();
     }
 
     public synchronized TeamStatus getBlue2() {
         return m_blue2;
     }
 
-    public void setBlue2(TeamStatus blue2) {
-        synchronized (this) {
-            this.m_blue2 = blue2;
-        }
-        updateObservers();
-    }
-
     public synchronized TeamStatus getBlue3() {
         return m_blue3;
-    }
-
-    public void setBlue3(TeamStatus blue3) {
-        synchronized (this) {
-            this.m_blue3 = blue3;
-        }
-        updateObservers();
     }
 
     public synchronized String getMatchNumber() {
@@ -115,10 +70,7 @@ public class FieldStatus implements IObservable {
     }
 
     public void setMatchNumber(String matchNumber) {
-        synchronized (this) {
-            this.m_matchNumber = matchNumber;
-        }
-        updateObservers();
+        syncUpdateIfChanged(m_matchNumber, matchNumber, FieldUpdateType.MATCH_NUMBER);
     }
 
     public synchronized MatchStatus getMatchStatus() {
@@ -126,10 +78,7 @@ public class FieldStatus implements IObservable {
     }
 
     public void setMatchStatus(MatchStatus matchStatus) {
-        synchronized (this) {
-            this.m_matchStatus = matchStatus;
-        }
-        updateObservers();
+        syncUpdateIfChanged(m_matchStatus, matchStatus, FieldUpdateType.MATCH_STATUS);
     }
 
     public synchronized Period getMatchTime() {
@@ -137,10 +86,7 @@ public class FieldStatus implements IObservable {
     }
 
     public void setMatchTime(Period matchTime) {
-        synchronized (this) {
-            this.m_matchTime = matchTime;
-        }
-        updateObservers();
+        syncUpdateIfChanged(m_matchTime, matchTime, FieldUpdateType.MATCH_TIME);
     }
 
     public synchronized Period getAutoTime() {
@@ -148,10 +94,7 @@ public class FieldStatus implements IObservable {
     }
 
     public void setAutoTime(Period autoTime) {
-        synchronized (this) {
-            m_autoTime = autoTime;
-        }
-        updateObservers();
+        syncUpdateIfChanged(m_autoTime, autoTime, FieldUpdateType.AUTO_TIME);
     }
 
     public synchronized Period getTeleopTime() {
@@ -159,10 +102,7 @@ public class FieldStatus implements IObservable {
     }
 
     public void setTeleopTime(Period teleopTime) {
-        synchronized (this) {
-            m_teleopTime = teleopTime;
-        }
-        updateObservers();
+        syncUpdateIfChanged(m_teleopTime, teleopTime, FieldUpdateType.TELEOP_TIME);
     }
 
     /**
@@ -171,41 +111,34 @@ public class FieldStatus implements IObservable {
      * @param info The updated info
      */
     public void updateMatchInfo(MatchInfo info) {
-        synchronized (this) {
-            // TODO: There's a lot more info, such as team rank, scores, and such. Use it!
-            m_matchNumber = info.getMatchIdentifier();
-            if (m_autoTime.getSeconds() != info.getAutoStartTime()) {
-                m_autoTime = Period.seconds(info.getAutoStartTime());
-            }
-            if (m_teleopTime.getSeconds() != info.getManualStartTime()) {
-                m_teleopTime = Period.seconds(info.getManualStartTime());
-            }
+        // TODO: There's a lot more info, such as team rank, scores, and such. Use it!
+        setMatchNumber(info.getMatchIdentifier());
+        setAutoTime(Period.seconds(info.getAutoStartTime()));
+        setTeleopTime(Period.seconds(info.getManualStartTime()));
 
-            // Team Numbers
-            m_red1.setTeamNumber(info.getRed1TeamId());
-            m_red2.setTeamNumber(info.getRed2TeamId());
-            m_red3.setTeamNumber(info.getRed3TeamId());
-            m_blue1.setTeamNumber(info.getBlue1TeamId());
-            m_blue2.setTeamNumber(info.getBlue2TeamId());
-            m_blue3.setTeamNumber(info.getBlue3TeamId());
+        // Team Numbers
+        m_red1.setTeamNumber(info.getRed1TeamId());
+        m_red2.setTeamNumber(info.getRed2TeamId());
+        m_red3.setTeamNumber(info.getRed3TeamId());
+        m_blue1.setTeamNumber(info.getBlue1TeamId());
+        m_blue2.setTeamNumber(info.getBlue2TeamId());
+        m_blue3.setTeamNumber(info.getBlue3TeamId());
 
-            // Team Cards
-            m_red1.setCard(parseCard(info.getRed1Card()));
-            m_red2.setCard(parseCard(info.getRed2Card()));
-            m_red3.setCard(parseCard(info.getRed3Card()));
-            m_blue1.setCard(parseCard(info.getBlue1Card()));
-            m_blue2.setCard(parseCard(info.getBlue2Card()));
-            m_blue3.setCard(parseCard(info.getBlue3Card()));
+        // Team Cards
+        m_red1.setCard(parseCard(info.getRed1Card()));
+        m_red2.setCard(parseCard(info.getRed2Card()));
+        m_red3.setCard(parseCard(info.getRed3Card()));
+        m_blue1.setCard(parseCard(info.getBlue1Card()));
+        m_blue2.setCard(parseCard(info.getBlue2Card()));
+        m_blue3.setCard(parseCard(info.getBlue3Card()));
 
-            // Bypassed Status
-            m_red1.setBypassed(info.isRed1IsBypassed());
-            m_red2.setBypassed(info.isRed2IsBypassed());
-            m_red3.setBypassed(info.isRed3IsBypassed());
-            m_blue1.setBypassed(info.isBlue1IsBypassed());
-            m_blue2.setBypassed(info.isBlue2IsBypassed());
-            m_blue3.setBypassed(info.isBlue3IsBypassed());
-        }
-        updateObservers();
+        // Bypassed Status
+        m_red1.setBypassed(info.isRed1IsBypassed());
+        m_red2.setBypassed(info.isRed2IsBypassed());
+        m_red3.setBypassed(info.isRed3IsBypassed());
+        m_blue1.setBypassed(info.isBlue1IsBypassed());
+        m_blue2.setBypassed(info.isBlue2IsBypassed());
+        m_blue3.setBypassed(info.isBlue3IsBypassed());
     }
 
     private static Card parseCard(int cardNum) {
@@ -213,15 +146,14 @@ public class FieldStatus implements IObservable {
             case 1:
                 return YELLOW;
             case 2:
-                return RED;
+                return Card.RED;
             case 3:
             default:
                 return NONE;
         }
     }
 
-    @Override
-    public void registerObserver(IObserver observer) {
+    public void registerObserver(IFieldMonitorObserver observer) {
         m_observers.add(observer);
         m_red1.registerObserver(observer);
         m_red2.registerObserver(observer);
@@ -231,8 +163,7 @@ public class FieldStatus implements IObservable {
         m_blue3.registerObserver(observer);
     }
 
-    @Override
-    public void deregisterObserver(IObserver observer) {
+    public void deregisterObserver(IFieldMonitorObserver observer) {
         m_observers.remove(observer);
         m_red2.deregisterObserver(observer);
         m_red3.deregisterObserver(observer);
@@ -241,9 +172,26 @@ public class FieldStatus implements IObservable {
         m_blue3.deregisterObserver(observer);
     }
 
-    private void updateObservers() {
-        for (IObserver observer : m_observers) {
-            observer.update();
+    private void updateObservers(FieldUpdateType update) {
+        for (IFieldMonitorObserver observer : m_observers) {
+            observer.update(update);
+        }
+    }
+
+    private void syncUpdateIfChanged(Object oldVal, Object newVal, FieldUpdateType updateType) {
+        boolean set = false;
+
+        // Update the variable if necessary
+        synchronized (this) {
+            if (!oldVal.equals(newVal)) {
+                oldVal = newVal;
+                set = true;
+            }
+        }
+
+        // If we set it, update the observer. This ensures that this is not operating in a lock
+        if (set) {
+            updateObservers(updateType);
         }
     }
 }

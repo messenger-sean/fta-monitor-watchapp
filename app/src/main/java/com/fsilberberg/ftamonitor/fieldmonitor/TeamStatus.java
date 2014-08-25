@@ -1,48 +1,51 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
-import com.fsilberberg.ftamonitor.common.IObservable;
-import com.fsilberberg.ftamonitor.common.IObserver;
-import com.fsilberberg.ftamonitor.common.RobotStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.fsilberberg.ftamonitor.common.Card.*;
-import static com.fsilberberg.ftamonitor.common.RobotStatus.*;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.*;
 
 /**
  * Created by Fredric on 8/17/14.
  */
-public class TeamStatus implements IObservable {
-    private int m_teamNumber = 1;
-    private int m_droppedPackets = 0;
-    private int m_roundTrip = 0;
-    private boolean m_dsEth = false;
-    private boolean m_ds = false;
-    private boolean m_radio = false;
-    private boolean m_robot = false;
-    private boolean m_estop = false;
-    private boolean m_code = false;
-    private float m_battery = 0.0f;
-    private float m_dataRate = 0.0f;
-    private float m_signalStrength = 0.0f;
-    private float m_signalQuality = 0.0f;
-    private boolean m_enabled = false;
-    private boolean m_bypassed = false;
+public class TeamStatus {
+    private Integer m_teamNumber = 1;
+    private Integer m_droppedPackets = 0;
+    private Integer m_roundTrip = 0;
+    private Boolean m_dsEth = false;
+    private Boolean m_ds = false;
+    private Boolean m_radio = false;
+    private Boolean m_robot = false;
+    private Boolean m_estop = false;
+    private Boolean m_code = false;
+    private Float m_battery = 0.0f;
+    private Float m_dataRate = 0.0f;
+    private Float m_signalStrength = 0.0f;
+    private Float m_signalQuality = 0.0f;
+    private Boolean m_enabled = false;
+    private Boolean m_bypassed = false;
     private Card m_card = NONE;
 
-    private final Collection<IObserver> m_observers = new ArrayList<>();
+    private final int m_stationNum;
+    private final Alliance m_alliance;
+
+    public TeamStatus(int m_stationNum, Alliance m_alliance) {
+        this.m_stationNum = m_stationNum;
+        this.m_alliance = m_alliance;
+    }
+
+    private final Collection<IFieldMonitorObserver> m_observers = new ArrayList<>();
 
     public synchronized int getTeamNumber() {
         return m_teamNumber;
     }
 
     public void setTeamNumber(int teamNumber) {
-        synchronized (this) {
-            this.m_teamNumber = teamNumber;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_teamNumber, teamNumber, TEAM_NUMBER);
     }
 
     public synchronized int getDroppedPackets() {
@@ -50,10 +53,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setDroppedPackets(int droppedPackets) {
-        synchronized (this) {
-            m_droppedPackets = droppedPackets;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_droppedPackets, droppedPackets, DROPPED_PACKETS);
     }
 
     public synchronized int getRoundTrip() {
@@ -61,10 +61,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setRoundTrip(int roundTrip) {
-        synchronized (this) {
-            m_roundTrip = roundTrip;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_roundTrip, roundTrip, ROUND_TRIP);
     }
 
     public synchronized boolean isDsEth() {
@@ -72,10 +69,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setDsEth(boolean dsEth) {
-        synchronized (this) {
-            this.m_dsEth = dsEth;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_dsEth, dsEth, DS_ETH);
     }
 
     public synchronized boolean isDs() {
@@ -83,10 +77,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setDs(boolean ds) {
-        synchronized (this) {
-            this.m_ds = ds;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_ds, ds, DS);
     }
 
     public synchronized boolean isRadio() {
@@ -94,10 +85,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setRadio(boolean radio) {
-        synchronized (this) {
-            this.m_radio = radio;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_radio, radio, RADIO);
     }
 
     public synchronized boolean isRobot() {
@@ -105,10 +93,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setRobot(boolean robot) {
-        synchronized (this) {
-            this.m_robot = robot;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_robot, robot, ROBOT);
     }
 
     public synchronized boolean isEstop() {
@@ -116,10 +101,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setEstop(boolean estop) {
-        synchronized (this) {
-            this.m_estop = estop;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_estop, estop, ESTOP);
     }
 
     public synchronized boolean isCode() {
@@ -127,10 +109,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setCode(boolean code) {
-        synchronized (this) {
-            m_code = code;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_code, code, CODE);
     }
 
     public synchronized float getBattery() {
@@ -138,10 +117,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setBattery(float battery) {
-        synchronized (this) {
-            m_battery = battery;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_battery, battery, BATTERY);
     }
 
     public synchronized float getDataRate() {
@@ -149,10 +125,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setDataRate(float dataRate) {
-        synchronized (this) {
-            this.m_dataRate = dataRate;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_dataRate, dataRate, DATA_RATE);
     }
 
     public synchronized float getSignalStrength() {
@@ -160,10 +133,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setSignalStrength(float signalStrength) {
-        synchronized (this) {
-            this.m_signalStrength = signalStrength;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_signalStrength, signalStrength, SIGNAL_STRENGTH);
     }
 
     public synchronized float getSignalQuality() {
@@ -171,10 +141,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setSignalQuality(float signalQuality) {
-        synchronized (this) {
-            this.m_signalQuality = signalQuality;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_signalQuality, signalQuality, SIGNAL_QUALITY);
     }
 
     public synchronized boolean isEnabled() {
@@ -182,10 +149,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setEnabled(boolean enabled) {
-        synchronized (this) {
-            m_enabled = enabled;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_enabled, enabled, ENABLED);
     }
 
     public synchronized boolean isBypassed() {
@@ -193,10 +157,7 @@ public class TeamStatus implements IObservable {
     }
 
     public void setBypassed(boolean bypassed) {
-        synchronized (this) {
-            m_bypassed = bypassed;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_bypassed, bypassed, BYPASSED);
     }
 
     public synchronized Card getCard() {
@@ -204,25 +165,35 @@ public class TeamStatus implements IObservable {
     }
 
     public void setCard(Card card) {
-        synchronized (this) {
-            m_card = card;
-        }
-        updateObservers();
+        syncAndUpdateObservers(m_card, card, CARD);
     }
 
-    @Override
-    public void registerObserver(IObserver observer) {
+    public void registerObserver(IFieldMonitorObserver observer) {
         m_observers.add(observer);
     }
 
-    @Override
-    public void deregisterObserver(IObserver observer) {
+    public void deregisterObserver(IFieldMonitorObserver observer) {
         m_observers.remove(observer);
     }
 
-    private void updateObservers() {
-        for (IObserver observer : m_observers) {
-            observer.update();
+    public void updateObservers(TeamUpdateType updateType) {
+        for (IFieldMonitorObserver observer : m_observers) {
+            observer.update(updateType, m_teamNumber, m_alliance);
+        }
+    }
+
+    private void syncAndUpdateObservers(Object oldVal, Object newVal, TeamUpdateType updateType) {
+        boolean set = false;
+
+        synchronized (this) {
+            if (!oldVal.equals(newVal)) {
+                oldVal = newVal;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(updateType);
         }
     }
 }
