@@ -1,7 +1,6 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -23,7 +22,6 @@ import com.fsilberberg.ftamonitor.view.DrawerActivity;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.ConnectionState;
@@ -91,71 +89,72 @@ public class FieldConnectionService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
         // First, check to see if we are cancelling this service
         if (intent.getBooleanExtra(CLOSE_CONNECTION_INTENT_EXTRA, false)) {
             stopForeground(true);
+            return START_REDELIVER_INTENT;
         }
 
-        // Close the connection if we're restarting
-        if (intent.getBooleanExtra(UPDATE_URL_INTENT_EXTRA, false) && m_connectionStarted) {
-            m_fieldConnection.disconnect();
-            m_connectionStarted = false;
-            m_connectionInProgress = false;
-        }
-
-
-        synchronized (m_lock) {
-            // Start the connection if it's not currently started
-            if (!m_connectionStarted && !m_connectionInProgress) {
-                // We're starting a connection attempt, only let one occur at a time
-                m_connectionInProgress = true;
-            } else {
-                // If we're not starting, just return
-                return START_REDELIVER_INTENT;
-            }
-        }
-
-        // Set up the connection and proxy objects
-        m_url = intent.getStringExtra(URL_INTENT_EXTRA);
-        m_fieldConnection = new HubConnection(m_url);
-        m_fieldProxy = m_fieldConnection.createHubProxy(HUB_NAME);
-        registerProxyFunctions();
-
-        // On error, reset the variables and log an error
-        m_fieldConnection.error(new ErrorCallback() {
-            @Override
-            public void onError(Throwable throwable) {
-                synchronized (m_lock) {
-                    m_connectionInProgress = false;
-                }
-                Log.w(FieldConnectionService.class.getName(), "Received error", throwable);
-            }
-        });
-
-        // On connection, reset the variables
-        m_fieldConnection.connected(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (m_lock) {
-                    m_connectionStarted = true;
-                    m_connectionInProgress = false;
-                }
-                Log.d(FieldConnectionService.class.getName(), "Connected to FMS at " + m_url);
-            }
-        });
-
-        // On state changed, we update the notification with the new state
-        m_fieldConnection.stateChanged(new StateChangedCallback() {
-            @Override
-            public void stateChanged(ConnectionState oldState, ConnectionState newState) {
-                startForeground(ID, createNotification(newState));
-            }
-        });
-
-        // Start the connection in a new thread so we don't block the ui
+        // Run on a background thread to avoid blocking the UI
         new Thread(new Runnable() {
             public void run() {
+                // Close the connection if we're restarting
+                if (intent.getBooleanExtra(UPDATE_URL_INTENT_EXTRA, false) && m_connectionStarted) {
+                    m_fieldConnection.disconnect();
+                    m_connectionStarted = false;
+                    m_connectionInProgress = false;
+                }
+
+
+                synchronized (m_lock) {
+                    // Start the connection if it's not currently started
+                    if (!m_connectionStarted && !m_connectionInProgress) {
+                        // We're starting a connection attempt, only let one occur at a time
+                        m_connectionInProgress = true;
+                    } else {
+                        // If we're not starting, just return
+                        return;
+                    }
+                }
+
+                // Set up the connection and proxy objects
+                m_url = intent.getStringExtra(URL_INTENT_EXTRA);
+                m_fieldConnection = new HubConnection(m_url);
+                m_fieldProxy = m_fieldConnection.createHubProxy(HUB_NAME);
+                registerProxyFunctions();
+
+                // On error, reset the variables and log an error
+                m_fieldConnection.error(new ErrorCallback() {
+                    @Override
+                    public void onError(Throwable throwable) {
+                        synchronized (m_lock) {
+                            m_connectionInProgress = false;
+                        }
+                        Log.w(FieldConnectionService.class.getName(), "Received error", throwable);
+                    }
+                });
+
+                // On connection, reset the variables
+                m_fieldConnection.connected(new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (m_lock) {
+                            m_connectionStarted = true;
+                            m_connectionInProgress = false;
+                        }
+                        Log.d(FieldConnectionService.class.getName(), "Connected to FMS at " + m_url);
+                    }
+                });
+
+                // On state changed, we update the notification with the new state
+                m_fieldConnection.stateChanged(new StateChangedCallback() {
+                    @Override
+                    public void stateChanged(ConnectionState oldState, ConnectionState newState) {
+                        startForeground(ID, createNotification(newState));
+                    }
+                });
+
                 // Attempt to start the connection
                 try {
                     m_fieldConnection.start().get();
