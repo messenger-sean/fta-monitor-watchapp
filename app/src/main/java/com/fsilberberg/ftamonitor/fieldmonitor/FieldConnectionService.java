@@ -93,6 +93,7 @@ public class FieldConnectionService extends Service {
         // First, check to see if we are cancelling this service
         if (intent.getBooleanExtra(CLOSE_CONNECTION_INTENT_EXTRA, false)) {
             stopForeground(true);
+            stopSelf();
             return START_REDELIVER_INTENT;
         }
 
