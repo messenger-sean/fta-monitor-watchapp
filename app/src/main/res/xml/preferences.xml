@@ -17,7 +17,7 @@
         android:defaultValue="10"
         android:numeric="integer" />
     <EditTextPreference
-        android:key="@string/telelop_time_key"
+        android:key="@string/teleop_time_key"
         android:title="@string/teleop_time"
         android:defaultValue="140"
         android:numeric="integer" />

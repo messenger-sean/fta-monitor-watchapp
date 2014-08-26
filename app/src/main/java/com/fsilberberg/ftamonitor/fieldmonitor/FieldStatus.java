@@ -1,5 +1,7 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import android.util.Log;
+
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -13,6 +15,8 @@ import java.util.Collection;
 import static com.fsilberberg.ftamonitor.common.Alliance.*;
 import static com.fsilberberg.ftamonitor.common.Card.*;
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
+import static com.fsilberberg.ftamonitor.common.MatchStatus.PRESTART_INITIATED;
+import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.*;
 
 /**
  * Created by Fredric on 8/17/14.
@@ -29,7 +33,6 @@ public class FieldStatus {
     // Match stats
     private String m_matchNumber = "999";
     private MatchStatus m_matchStatus = NOT_READY;
-    private Period m_matchTime = Period.millis(0);
     private Period m_autoTime;
     private Period m_teleopTime;
 
@@ -70,7 +73,20 @@ public class FieldStatus {
     }
 
     public void setMatchNumber(String matchNumber) {
-        syncUpdateIfChanged(m_matchNumber, matchNumber, FieldUpdateType.MATCH_NUMBER);
+        boolean set = false;
+
+        // Update the variable if necessary
+        synchronized (this) {
+            if (!m_matchNumber.equals(matchNumber)) {
+                m_matchNumber = matchNumber;
+                set = true;
+            }
+        }
+
+        // If we set it, update the observer. This ensures that this is not operating in a lock
+        if (set) {
+            updateObservers(MATCH_NUMBER);
+        }
     }
 
     public synchronized MatchStatus getMatchStatus() {
@@ -78,15 +94,20 @@ public class FieldStatus {
     }
 
     public void setMatchStatus(MatchStatus matchStatus) {
-        syncUpdateIfChanged(m_matchStatus, matchStatus, FieldUpdateType.MATCH_STATUS);
-    }
+        boolean set = false;
 
-    public synchronized Period getMatchTime() {
-        return m_matchTime;
-    }
+        // Update the variable if necessary
+        synchronized (this) {
+            if (!m_matchStatus.equals(matchStatus)) {
+                m_matchStatus = matchStatus;
+                set = true;
+            }
+        }
 
-    public void setMatchTime(Period matchTime) {
-        syncUpdateIfChanged(m_matchTime, matchTime, FieldUpdateType.MATCH_TIME);
+        // If we set it, update the observer. This ensures that this is not operating in a lock
+        if (set) {
+            updateObservers(MATCH_STATUS);
+        }
     }
 
     public synchronized Period getAutoTime() {
@@ -94,7 +115,20 @@ public class FieldStatus {
     }
 
     public void setAutoTime(Period autoTime) {
-        syncUpdateIfChanged(m_autoTime, autoTime, FieldUpdateType.AUTO_TIME);
+        boolean set = false;
+
+        // Update the variable if necessary
+        synchronized (this) {
+            if (!m_autoTime.equals(autoTime)) {
+                m_autoTime = autoTime;
+                set = true;
+            }
+        }
+
+        // If we set it, update the observer. This ensures that this is not operating in a lock
+        if (set) {
+            updateObservers(AUTO_TIME);
+        }
     }
 
     public synchronized Period getTeleopTime() {
@@ -102,7 +136,20 @@ public class FieldStatus {
     }
 
     public void setTeleopTime(Period teleopTime) {
-        syncUpdateIfChanged(m_teleopTime, teleopTime, FieldUpdateType.TELEOP_TIME);
+        boolean set = false;
+
+        // Update the variable if necessary
+        synchronized (this) {
+            if (!m_teleopTime.equals(teleopTime)) {
+                m_teleopTime = teleopTime;
+                set = true;
+            }
+        }
+
+        // If we set it, update the observer. This ensures that this is not operating in a lock
+        if (set) {
+            updateObservers(TELEOP_TIME);
+        }
     }
 
     /**
@@ -175,23 +222,6 @@ public class FieldStatus {
     private void updateObservers(FieldUpdateType update) {
         for (IFieldMonitorObserver observer : m_observers) {
             observer.update(update);
-        }
-    }
-
-    private void syncUpdateIfChanged(Object oldVal, Object newVal, FieldUpdateType updateType) {
-        boolean set = false;
-
-        // Update the variable if necessary
-        synchronized (this) {
-            if (!oldVal.equals(newVal)) {
-                oldVal = newVal;
-                set = true;
-            }
-        }
-
-        // If we set it, update the observer. This ensures that this is not operating in a lock
-        if (set) {
-            updateObservers(updateType);
         }
     }
 }

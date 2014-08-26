@@ -29,7 +29,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
         m_fmsKey = getString(R.string.fms_ip_addr_key);
         m_autoKey = getString(R.string.auto_time_key);
-        m_teleopKey = getString(R.string.telelop_time_key);
+        m_teleopKey = getString(R.string.teleop_time_key);
         m_defaultKey = getString(R.string.on_field_key);
         getActivity().getActionBar().setTitle(getString(R.string.action_settings));
     }

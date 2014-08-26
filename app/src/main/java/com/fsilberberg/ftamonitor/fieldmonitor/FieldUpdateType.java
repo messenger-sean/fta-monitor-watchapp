@@ -6,7 +6,6 @@ package com.fsilberberg.ftamonitor.fieldmonitor;
 public enum FieldUpdateType {
     MATCH_NUMBER,
     MATCH_STATUS,
-    MATCH_TIME,
     AUTO_TIME,
     TELEOP_TIME
 }

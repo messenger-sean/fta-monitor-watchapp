@@ -18,7 +18,7 @@
     <string name="fms_ip_addr">FMS IP Address</string>
     <string name="auto_time_key">auto_time</string>
     <string name="auto_time">Autonomous Period Length (seconds)</string>
-    <string name="telelop_time_key">teleop_time</string>
+    <string name="teleop_time_key">teleop_time</string>
     <string name="teleop_time">Teleop Period Length (seconds)</string>
 
     <string-array name="drawer_tabs">
