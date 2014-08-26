@@ -188,23 +188,23 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
 
     private void updateMatchStatus(final MatchStatus newStatus) {
         switch (newStatus) {
-            case AUTO_PAUSED:
-            case TELEOP_PAUSED:
-                m_matchTimer.cancel();
-                break;
             case AUTO:
-                m_remainingSeconds = m_sharedPreferences.getInt(getString(R.string.auto_time_key), 0);
+                m_remainingSeconds = Integer.valueOf(m_sharedPreferences.getString(getString(R.string.auto_time_key), "0"));
                 startTimer(m_remainingSeconds);
                 break;
             case TELEOP:
-                m_remainingSeconds = m_sharedPreferences.getInt(getString(R.string.teleop_time_key), 0);
+                m_remainingSeconds = Integer.valueOf(m_sharedPreferences.getString(getString(R.string.teleop_time_key), "0"));
                 startTimer(m_remainingSeconds);
                 break;
+            // In all of these cases, we just want to stop the timer
+            case AUTO_PAUSED:
+            case TELEOP_PAUSED:
             case AUTO_END:
-                m_matchTimer.cancel();
-                break;
             case OVER:
-                m_matchTimer.cancel();
+                if (m_matchTimer != null) {
+                    m_matchTimer.cancel();
+                }
+                break;
             case READY_TO_PRESTART:
             case NOT_READY:
             case MATCH_READY:
@@ -223,13 +223,15 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
         });
     }
 
-    private void startTimer(int remainingSeconds) {
-        m_matchTimer.cancel();
-        m_remainingSeconds = remainingSeconds;
-        m_matchTimer = new MatchTimer(m_remainingSeconds);
+    private void startTimer(final int remainingSeconds) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (m_matchTimer != null) {
+                    m_matchTimer.cancel();
+                }
+                m_remainingSeconds = remainingSeconds;
+                m_matchTimer = new MatchTimer(m_remainingSeconds * 1000);
                 m_matchTimer.start();
             }
         });
@@ -252,12 +254,15 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
         public MatchTimer(long millisInFuture) {
             // One thousand millisecond callbacks
             super(millisInFuture, 1000);
+
+            Log.d(MatchTimer.class.getName(), "Setting timer for " + millisInFuture + " millis");
         }
 
         @Override
         public void onTick(long l) {
             m_remainingSeconds -= 1;
-            ((TextView) getActivity().findViewById(R.id.field_monitor_time)).setText(m_remainingSeconds + " seconds");
+            String postfix = m_remainingSeconds == 1 ? " second" : " seconds";
+            ((TextView) getActivity().findViewById(R.id.field_monitor_time)).setText(m_remainingSeconds + postfix);
         }
 
         @Override
