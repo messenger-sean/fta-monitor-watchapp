@@ -8,11 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
+import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
+import com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType;
 
 import java.sql.SQLClientInfoException;
+import java.text.DecimalFormat;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +33,7 @@ public class FieldMonitorTeamRow extends Fragment {
     private static final String ENABLE_WIDTH = "ENABLE_WIDTH";
     private static final String ALLIANCE = "ALLIANCE";
 
+    // Width settings
     private int m_teamWidth;
     private int m_dsWidth;
     private int m_robotWidth;
@@ -37,8 +42,14 @@ public class FieldMonitorTeamRow extends Fragment {
     private int m_signalWidth;
     private int m_enableWidth;
     private Alliance m_alliance;
-
     private boolean m_widthSet = false;
+
+    // Important IDs
+    private int redBox = R.drawable.red_with_border;
+    private int greenBox = R.drawable.green_with_border;
+    private int blackBox = R.drawable.black_with_border;
+    private int yellowBox = R.drawable.yellow_with_border;
+    private int whiteBox = R.drawable.white_with_border;
 
     public static final FieldMonitorTeamRow newInstance(int teamWidth, int dsWidth, int robotWidth, int voltageWidth, int bandwidthWidth, int signalWidth, int enableWidth, Alliance alliance) {
         FieldMonitorTeamRow row = new FieldMonitorTeamRow();
@@ -106,5 +117,104 @@ public class FieldMonitorTeamRow extends Fragment {
     private LinearLayout.LayoutParams getParams(int width) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT, 1f);
         return params;
+    }
+
+    public void updateTeam(TeamUpdateType update, TeamStatus team) {
+        switch (update) {
+            case TEAM_NUMBER:
+                setText(R.id.field_monitor_team_number, getIntegerString(team.getTeamNumber()));
+                break;
+            case BATTERY:
+                setText(R.id.field_monitor_battery_voltage, getFloatString(team.getBattery()));
+                break;
+            case DATA_RATE:
+                setText(R.id.field_monitor_bandwidth_usage, getFloatString(team.getDataRate()));
+                break;
+            case DROPPED_PACKETS:
+                setText(R.id.field_monitor_missed_packets, getIntegerString(team.getDroppedPackets()));
+                break;
+            case SIGNAL_QUALITY:
+                String sqText = getFloatString(team.getSignalQuality()) + "%";
+                setText(R.id.field_monitor_signal_quality, sqText);
+                break;
+            case SIGNAL_STRENGTH:
+                String ssText = getFloatString(team.getSignalStrength()) + "%";
+                setText(R.id.field_monitor_signal_strength, ssText);
+                break;
+            case DS_ETH:
+                setBackground(R.id.field_monitor_ds_eth, team.isDsEth() ? greenBox : redBox);
+                break;
+            case DS:
+                setBackground(R.id.field_monitor_ds, team.isDs() ? greenBox : redBox);
+                break;
+            case RADIO:
+                setBackground(R.id.field_monitor_radio, team.isRadio() ? greenBox : redBox);
+                break;
+            case ROBOT:
+                setBackground(R.id.field_monitor_rio, team.isRobot() ? greenBox : redBox);
+                break;
+            case CODE:
+                int codeBackground = team.isCode() ? whiteBox : yellowBox;
+                setBackground(R.id.field_monitor_battery_voltage, codeBackground);
+                setBackground(R.id.field_monitor_bandwidth_usage, codeBackground);
+                setBackground(R.id.field_monitor_missed_packets, codeBackground);
+                setBackground(R.id.field_monitor_signal_quality, codeBackground);
+                setBackground(R.id.field_monitor_signal_strength, codeBackground);
+                break;
+            case ESTOP:
+            case ENABLED:
+            case BYPASSED:
+                // If either of these changes, do the whole calculation
+                if (team.isEstop()) {
+                    // Team is estopped, overrides all other statuses
+                    setBackground(R.id.field_monitor_enable_status, blackBox);
+                    setText(R.id.field_monitor_enable_status, "E");
+                } else if (team.isEnabled() && !team.isBypassed()) {
+                    // If the team is enabled and not bypassed, they are playing
+                    setBackground(R.id.field_monitor_enable_status, greenBox);
+                    setText(R.id.field_monitor_enable_status, "");
+                } else if (team.isEnabled() && team.isBypassed()) {
+                    // The team is bypassed, the robot would be running if they weren't bypassed
+                    setBackground(R.id.field_monitor_enable_status, greenBox);
+                    setText(R.id.field_monitor_enable_status, "B");
+                } else if (!team.isEnabled() && !team.isBypassed()) {
+                    // Match is not running, team is disabled and not bypassed
+                    setBackground(R.id.field_monitor_enable_status, redBox);
+                    setText(R.id.field_monitor_enable_status, "");
+                } else {
+                    // Final option is disabled and bypassed
+                    setBackground(R.id.field_monitor_enable_status, redBox);
+                    setText(R.id.field_monitor_enable_status, "B");
+                }
+                break;
+            // TODO Update the team layout to show cards
+            // TODO Add round trip
+        }
+    }
+
+    private void setBackground(final int targetId, final int resId) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().findViewById(targetId).setBackground(getResources().getDrawable(resId));
+            }
+        });
+    }
+
+    private void setText(final int targetId, final String newText) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) getActivity().findViewById(targetId)).setText(newText);
+            }
+        });
+    }
+
+    private String getIntegerString(int i) {
+        return Integer.valueOf(i).toString();
+    }
+
+    private String getFloatString(float f) {
+        return new DecimalFormat("#.##").format(f).toString();
     }
 }

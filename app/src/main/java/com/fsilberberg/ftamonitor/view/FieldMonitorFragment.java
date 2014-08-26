@@ -22,6 +22,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType;
 import com.fsilberberg.ftamonitor.fieldmonitor.IFieldMonitorObserver;
+import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType;
 
 import org.w3c.dom.Text;
@@ -55,10 +56,6 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
     private FieldMonitorTeamRow red3;
     private boolean updateFragment = false;
 
-    // The UI elements that we update in app
-    private TextView m_matchNumber;
-    private TextView m_fieldStatus;
-
     // The countdown timer for the match time
     // TODO: Implement class
     private CountDownTimer m_matchTimer;
@@ -81,8 +78,6 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         m_fragView = inflater.inflate(R.layout.fragment_field_monitor, container, false);
         m_fragView.post(new SetupRunnable());
-        m_matchNumber = (TextView) m_fragView.findViewById(R.id.field_monitor_match_number);
-        m_fieldStatus = (TextView) m_fragView.findViewById(R.id.field_monitor_status);
         return m_fragView;
     }
 
@@ -182,7 +177,24 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
 
     @Override
     public void update(TeamUpdateType update, int teamNum, Alliance alliance) {
-
+        FieldStatus fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
+        if (alliance.equals(RED)) {
+            if (teamNum == 1) {
+                red1.updateTeam(update, fieldStatus.getRed1());
+            } else if (teamNum == 2) {
+                red2.updateTeam(update, fieldStatus.getRed2());
+            } else if (teamNum == 3) {
+                red3.updateTeam(update, fieldStatus.getRed3());
+            }
+        } else if (alliance.equals(BLUE)) {
+            if (teamNum == 1) {
+                blue1.updateTeam(update, fieldStatus.getBlue1());
+            } else if (teamNum == 2) {
+                blue2.updateTeam(update, fieldStatus.getBlue2());
+            } else if (teamNum == 3) {
+                blue3.updateTeam(update, fieldStatus.getBlue3());
+            }
+        }
     }
 
     private void updateMatchStatus(final MatchStatus newStatus) {

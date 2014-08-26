@@ -1,5 +1,7 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import android.util.Log;
+
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
 
@@ -45,7 +47,18 @@ public class TeamStatus {
     }
 
     public void setTeamNumber(int teamNumber) {
-        syncAndUpdateObservers(m_teamNumber, teamNumber, TEAM_NUMBER);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_teamNumber.equals(teamNumber)) {
+                m_teamNumber = teamNumber;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(TEAM_NUMBER);
+        }
     }
 
     public synchronized int getDroppedPackets() {
@@ -53,7 +66,18 @@ public class TeamStatus {
     }
 
     public void setDroppedPackets(int droppedPackets) {
-        syncAndUpdateObservers(m_droppedPackets, droppedPackets, DROPPED_PACKETS);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_droppedPackets.equals(droppedPackets)) {
+                m_droppedPackets = droppedPackets;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(DROPPED_PACKETS);
+        }
     }
 
     public synchronized int getRoundTrip() {
@@ -61,7 +85,18 @@ public class TeamStatus {
     }
 
     public void setRoundTrip(int roundTrip) {
-        syncAndUpdateObservers(m_roundTrip, roundTrip, ROUND_TRIP);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_roundTrip.equals(roundTrip)) {
+                m_roundTrip = roundTrip;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(ROUND_TRIP);
+        }
     }
 
     public synchronized boolean isDsEth() {
@@ -69,7 +104,18 @@ public class TeamStatus {
     }
 
     public void setDsEth(boolean dsEth) {
-        syncAndUpdateObservers(m_dsEth, dsEth, DS_ETH);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_dsEth.equals(dsEth)) {
+                m_dsEth = dsEth;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(DS_ETH);
+        }
     }
 
     public synchronized boolean isDs() {
@@ -77,7 +123,18 @@ public class TeamStatus {
     }
 
     public void setDs(boolean ds) {
-        syncAndUpdateObservers(m_ds, ds, DS);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_ds.equals(ds)) {
+                m_ds = ds;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(DS);
+        }
     }
 
     public synchronized boolean isRadio() {
@@ -85,7 +142,18 @@ public class TeamStatus {
     }
 
     public void setRadio(boolean radio) {
-        syncAndUpdateObservers(m_radio, radio, RADIO);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_radio.equals(radio)) {
+                m_radio = radio;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(RADIO);
+        }
     }
 
     public synchronized boolean isRobot() {
@@ -93,7 +161,18 @@ public class TeamStatus {
     }
 
     public void setRobot(boolean robot) {
-        syncAndUpdateObservers(m_robot, robot, ROBOT);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_robot.equals(robot)) {
+                m_robot = robot;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(ROBOT);
+        }
     }
 
     public synchronized boolean isEstop() {
@@ -101,7 +180,18 @@ public class TeamStatus {
     }
 
     public void setEstop(boolean estop) {
-        syncAndUpdateObservers(m_estop, estop, ESTOP);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_estop.equals(estop)) {
+                m_enabled = estop;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(ESTOP);
+        }
     }
 
     public synchronized boolean isCode() {
@@ -109,7 +199,18 @@ public class TeamStatus {
     }
 
     public void setCode(boolean code) {
-        syncAndUpdateObservers(m_code, code, CODE);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_code.equals(code)) {
+                m_code = code;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(CODE);
+        }
     }
 
     public synchronized float getBattery() {
@@ -117,7 +218,18 @@ public class TeamStatus {
     }
 
     public void setBattery(float battery) {
-        syncAndUpdateObservers(m_battery, battery, BATTERY);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_battery.equals(battery)) {
+                m_battery = battery;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(BATTERY);
+        }
     }
 
     public synchronized float getDataRate() {
@@ -125,7 +237,18 @@ public class TeamStatus {
     }
 
     public void setDataRate(float dataRate) {
-        syncAndUpdateObservers(m_dataRate, dataRate, DATA_RATE);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_dataRate.equals(dataRate)) {
+                m_dataRate = dataRate;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(DATA_RATE);
+        }
     }
 
     public synchronized float getSignalStrength() {
@@ -133,7 +256,18 @@ public class TeamStatus {
     }
 
     public void setSignalStrength(float signalStrength) {
-        syncAndUpdateObservers(m_signalStrength, signalStrength, SIGNAL_STRENGTH);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_signalStrength.equals(signalStrength)) {
+                m_signalStrength = signalStrength;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(SIGNAL_STRENGTH);
+        }
     }
 
     public synchronized float getSignalQuality() {
@@ -141,7 +275,18 @@ public class TeamStatus {
     }
 
     public void setSignalQuality(float signalQuality) {
-        syncAndUpdateObservers(m_signalQuality, signalQuality, SIGNAL_QUALITY);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_signalQuality.equals(signalQuality)) {
+                m_signalQuality = signalQuality;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(SIGNAL_QUALITY);
+        }
     }
 
     public synchronized boolean isEnabled() {
@@ -149,7 +294,18 @@ public class TeamStatus {
     }
 
     public void setEnabled(boolean enabled) {
-        syncAndUpdateObservers(m_enabled, enabled, ENABLED);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_enabled.equals(enabled)) {
+                m_enabled = enabled;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(ENABLED);
+        }
     }
 
     public synchronized boolean isBypassed() {
@@ -157,7 +313,18 @@ public class TeamStatus {
     }
 
     public void setBypassed(boolean bypassed) {
-        syncAndUpdateObservers(m_bypassed, bypassed, BYPASSED);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_bypassed.equals(bypassed)) {
+                m_bypassed = bypassed;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(BYPASSED);
+        }
     }
 
     public synchronized Card getCard() {
@@ -165,7 +332,18 @@ public class TeamStatus {
     }
 
     public void setCard(Card card) {
-        syncAndUpdateObservers(m_card, card, CARD);
+        boolean set = false;
+
+        synchronized (this) {
+            if (!m_card.equals(card)) {
+                m_card = card;
+                set = true;
+            }
+        }
+
+        if (set) {
+            updateObservers(CARD);
+        }
     }
 
     public void registerObserver(IFieldMonitorObserver observer) {
@@ -178,22 +356,8 @@ public class TeamStatus {
 
     public void updateObservers(TeamUpdateType updateType) {
         for (IFieldMonitorObserver observer : m_observers) {
-            observer.update(updateType, m_teamNumber, m_alliance);
-        }
-    }
-
-    private void syncAndUpdateObservers(Object oldVal, Object newVal, TeamUpdateType updateType) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!oldVal.equals(newVal)) {
-                oldVal = newVal;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(updateType);
+            Log.d(TeamStatus.class.getName(), "Sending notification of type " + updateType + " to team " + m_stationNum + " on alliance " + m_alliance);
+            observer.update(updateType, m_stationNum, m_alliance);
         }
     }
 }
