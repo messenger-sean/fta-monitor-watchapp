@@ -156,7 +156,6 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
 
     @Override
     public void update(FieldUpdateType update) {
-        Log.d(FieldMonitorFragment.class.getName(), "Update type of " + update);
 
         switch (update) {
             // We don't do anything with the time updates, they are fetched from shared preferences when
@@ -217,7 +216,6 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(FieldMonitorFragment.class.getName(), "Setting the status to be " + newStatus.toString());
                 ((TextView) getActivity().findViewById(R.id.field_monitor_status)).setText(newStatus.toString());
             }
         });
@@ -254,8 +252,6 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
         public MatchTimer(long millisInFuture) {
             // One thousand millisecond callbacks
             super(millisInFuture, 1000);
-
-            Log.d(MatchTimer.class.getName(), "Setting timer for " + millisInFuture + " millis");
         }
 
         @Override
