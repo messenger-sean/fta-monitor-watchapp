@@ -3,17 +3,15 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.IObserver;
-import com.fsilberberg.ftamonitor.fieldmonitor.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 
 import microsoft.aspnet.signalr.client.ConnectionState;
 

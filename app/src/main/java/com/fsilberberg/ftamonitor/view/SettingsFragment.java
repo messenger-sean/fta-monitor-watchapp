@@ -8,7 +8,7 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.fieldmonitor.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 

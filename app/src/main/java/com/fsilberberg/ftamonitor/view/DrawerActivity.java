@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -64,6 +65,9 @@ public class DrawerActivity extends Activity {
 
         // Set up the main content
         getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
+
+        // Display the activity when the screen is locked!
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 
     @Override

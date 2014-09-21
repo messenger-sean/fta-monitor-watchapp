@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fsilberberg.ftamonitor" >
+<manifest
+    package="com.fsilberberg.ftamonitor"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
+        android:name=".FTAMonitorApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name=".FTAMonitorApplication">
+        android:theme="@style/AppTheme">
         <service
-            android:name=".fieldmonitor.FieldConnectionService"
+            android:name=".services.FieldConnectionService"
             android:enabled="true"
-            android:exported="false" >
-        </service>
+            android:exported="false"/>
+        <service
+            android:name=".services.FieldTimeService"
+            android:enabled="true"
+            android:exported="false"/>
 
         <activity
             android:name=".view.DrawerActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>

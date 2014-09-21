@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.fieldmonitor;
+package com.fsilberberg.ftamonitor.services;
 
 import android.app.Notification;
 import android.app.PendingIntent;

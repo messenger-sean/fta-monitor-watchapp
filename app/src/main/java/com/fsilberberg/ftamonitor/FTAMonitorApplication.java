@@ -6,8 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.fsilberberg.ftamonitor.fieldmonitor.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.services.FieldTimeService;
 
 /**
  * Created by Fredric on 8/23/14.
@@ -35,5 +36,9 @@ public class FTAMonitorApplication extends Application {
         Intent serviceIntent = new Intent(getBaseContext(), FieldConnectionService.class);
         serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
         startService(serviceIntent);
+
+        // Start the timing service
+        Intent timingIntent = new Intent(getBaseContext(), FieldTimeService.class);
+        startService(timingIntent);
     }
 }
