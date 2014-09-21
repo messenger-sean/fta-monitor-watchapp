@@ -28,6 +28,8 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
 
     private TextView m_connectionView;
     private LinearLayout m_fieldView;
+    // If we need to set up the fragments or if it's been done
+    private boolean m_updateFragments = false;
 
     public FieldMonitorFragment() {
         // Required empty public constructor
@@ -52,6 +54,11 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         m_fieldView = (LinearLayout) getActivity().findViewById(R.id.field_monitor_fragment);
         update(FieldConnectionService.getState());
         FieldConnectionService.registerConnectionObserver(this);
+
+        // Set up the fragments
+        getFragmentManager().beginTransaction()
+                .replace(R.id.field_status_fragment, new FieldStatusFragment())
+                .commit();
     }
 
     @Override
