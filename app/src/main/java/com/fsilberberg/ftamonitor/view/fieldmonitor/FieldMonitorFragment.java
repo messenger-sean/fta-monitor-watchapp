@@ -60,7 +60,13 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         FieldConnectionService.deregisterConnectionObserver(this);
     }
 
-    public void updateView(final ConnectionState updateType) {
+    /**
+     * Updates the view based on the new status. This must be called from the UI thread, otherwise
+     * an exception will be thrown
+     *
+     * @param updateType
+     */
+    private void updateView(final ConnectionState updateType) {
         switch (updateType) {
             case Disconnected:
             case Connecting:
@@ -71,6 +77,8 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                 break;
             case Connected:
                 m_connectionView.setText(CONNECTION_STRING + updateType.toString());
+                // Waits for half a second for a nice transition
+                // TODO: When L features can be used, make this an animation
                 getView().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -80,16 +88,13 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                 }, 500);
                 break;
         }
-        Log.d(FieldMonitorFragment.class.getName(), "View updated");
     }
 
     @Override
     public void update(final ConnectionState updateType) {
-        Log.d(FieldMonitorFragment.class.getName(), "Scheduling update");
         getView().post(new Runnable() {
             @Override
             public void run() {
-                Log.d(FieldMonitorFragment.class.getName(), "Updating the view");
                 updateView(updateType);
             }
         });

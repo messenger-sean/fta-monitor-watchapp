@@ -150,7 +150,7 @@ public class FieldConnectionService extends Service {
                         synchronized (m_lock) {
                             m_connectionInProgress = false;
                         }
-                        Log.w(FieldConnectionService.class.getName(), "Received error", throwable);
+                        Log.w(FieldConnectionService.class.getName(), "Received signalr error", throwable);
                     }
                 });
 
