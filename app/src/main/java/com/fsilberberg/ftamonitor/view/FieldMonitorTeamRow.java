@@ -205,6 +205,7 @@ public class FieldMonitorTeamRow extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                 ((TextView) getActivity().findViewById(targetId)).setText(newText);
             }
         });

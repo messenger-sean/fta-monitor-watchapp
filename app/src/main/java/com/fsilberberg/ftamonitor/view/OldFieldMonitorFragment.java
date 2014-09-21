@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,12 +20,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType;
 import com.fsilberberg.ftamonitor.fieldmonitor.IFieldMonitorObserver;
-import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType;
-
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Field;
 
 import static com.fsilberberg.ftamonitor.common.Alliance.*;
 
@@ -35,7 +28,7 @@ import static com.fsilberberg.ftamonitor.common.Alliance.*;
  * A simple {@link Fragment} subclass.
  * TODO: Support Landscape
  */
-public class FieldMonitorFragment extends Fragment implements IFieldMonitorObserver {
+public class OldFieldMonitorFragment extends Fragment implements IFieldMonitorObserver {
 
     // The width of the columns
     private int m_teamWidth;
@@ -62,7 +55,7 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
     private int m_remainingSeconds;
     private SharedPreferences m_sharedPreferences;
 
-    public FieldMonitorFragment() {
+    public OldFieldMonitorFragment() {
         // Required empty public constructor
     }
 
@@ -171,7 +164,7 @@ public class FieldMonitorFragment extends Fragment implements IFieldMonitorObser
                 updateMatchStatus(FieldMonitorFactory.getInstance().getFieldStatus().getMatchStatus());
                 break;
             default:
-                Log.w(FieldMonitorFragment.class.getName(), "Unknown field update type " + update);
+                Log.w(OldFieldMonitorFragment.class.getName(), "Unknown field update type " + update);
         }
     }
 
