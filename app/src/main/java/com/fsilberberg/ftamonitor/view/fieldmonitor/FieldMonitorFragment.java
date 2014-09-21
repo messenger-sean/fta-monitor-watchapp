@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -54,11 +55,6 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         m_fieldView = (LinearLayout) getActivity().findViewById(R.id.field_monitor_fragment);
         update(FieldConnectionService.getState());
         FieldConnectionService.registerConnectionObserver(this);
-
-        // Set up the fragments
-        getFragmentManager().beginTransaction()
-                .replace(R.id.field_status_fragment, new FieldStatusFragment())
-                .commit();
     }
 
     @Override
@@ -78,6 +74,7 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
             case Disconnected:
             case Connecting:
             case Reconnecting:
+                removeFragments();
                 m_connectionView.setText(CONNECTION_STRING + updateType.toString());
                 m_connectionView.setVisibility(View.INVISIBLE);
                 m_connectionView.setVisibility(View.VISIBLE);
@@ -91,10 +88,25 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                     public void run() {
                         m_connectionView.setVisibility(View.INVISIBLE);
                         m_fieldView.setVisibility(View.VISIBLE);
+                        addFragments();
                     }
                 }, 500);
                 break;
         }
+    }
+
+    private void addFragments() {
+        // Set up the fragments
+        getFragmentManager().beginTransaction()
+                .replace(R.id.field_status_fragment, new FieldStatusFragment())
+                .commit();
+    }
+
+    private void removeFragments() {
+        // Set up the fragments
+        getFragmentManager().beginTransaction()
+                .replace(R.id.field_status_fragment, new BlankFragment())
+                .commit();
     }
 
     @Override
