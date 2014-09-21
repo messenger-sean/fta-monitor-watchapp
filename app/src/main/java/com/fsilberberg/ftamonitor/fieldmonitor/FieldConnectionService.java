@@ -9,6 +9,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.common.IObservable;
+import com.fsilberberg.ftamonitor.common.IObserver;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.NoopHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateDSToFMSStatusHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateEStopChangedHandler;
@@ -22,6 +24,8 @@ import com.fsilberberg.ftamonitor.view.DrawerActivity;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.ConnectionState;
@@ -75,6 +79,20 @@ public class FieldConnectionService extends Service {
     private static final int ID = 3;
     private static final int MAIN_ACTIVITY_INTENT_ID = 1;
     private static final int CLOSE_SERVICE_INTENT_ID = 2;
+
+    private static final ConnectionStateObservable obserable = new ConnectionStateObservable();
+
+    public static void registerConnectionObserver(IObserver<ConnectionState> observer) {
+        obserable.registerObserver(observer);
+    }
+
+    public static void deregisterConnectionObserver(IObserver<ConnectionState> observer) {
+        obserable.deregisterObserver(observer);
+    }
+
+    public static ConnectionState getState() {
+        return obserable.getState();
+    }
 
     private HubConnection m_fieldConnection;
     private boolean m_connectionInProgress = false;
@@ -153,6 +171,7 @@ public class FieldConnectionService extends Service {
                     @Override
                     public void stateChanged(ConnectionState oldState, ConnectionState newState) {
                         startForeground(ID, createNotification(newState));
+                        obserable.setConnectionState(newState);
                     }
                 });
 
@@ -226,5 +245,36 @@ public class FieldConnectionService extends Service {
                         PendingIntent.getService(this, CLOSE_SERVICE_INTENT_ID, actionIntent, PendingIntent.FLAG_CANCEL_CURRENT));
 
         return builder.build();
+    }
+
+    private static class ConnectionStateObservable implements IObservable<ConnectionState> {
+
+        private final Collection<IObserver<ConnectionState>> m_observers = new ArrayList<>();
+        private ConnectionState m_connectionState = ConnectionState.Disconnected;
+
+        public void setConnectionState(ConnectionState newState) {
+            if (!m_connectionState.equals(newState)) {
+                m_connectionState = newState;
+                for (IObserver<ConnectionState> observer : m_observers) {
+                    observer.update(newState);
+                }
+            }
+        }
+
+        public ConnectionState getState() {
+            return m_connectionState;
+        }
+
+        @Override
+        public void registerObserver(IObserver<ConnectionState> observer) {
+            if (!m_observers.contains(observer)) {
+                m_observers.add(observer);
+            }
+        }
+
+        @Override
+        public void deregisterObserver(IObserver<ConnectionState> observer) {
+            m_observers.remove(observer);
+        }
     }
 }

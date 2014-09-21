@@ -31,8 +31,8 @@ public class FieldMonitorFactory {
 
     private FieldMonitorFactory(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int autoTime = prefs.getInt(context.getString(R.string.auto_time_key), 10);
-        int teleopTime = prefs.getInt(context.getString(R.string.teleop_time_key), 10);
+        int autoTime = Integer.valueOf(prefs.getString(context.getString(R.string.auto_time_key), "10"));
+        int teleopTime = Integer.valueOf(prefs.getString(context.getString(R.string.teleop_time_key), "140"));
         fieldStatus = new FieldStatus(autoTime, teleopTime);
     }
 

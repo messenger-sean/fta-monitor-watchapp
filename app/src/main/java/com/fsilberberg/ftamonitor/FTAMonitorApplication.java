@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldConnectionService;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 
 /**
  * Created by Fredric on 8/23/14.
@@ -15,6 +16,9 @@ public class FTAMonitorApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Initialize the field monitor factory
+        FieldMonitorFactory.initialize(this);
 
         // Start the FMS Service
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
+import com.fsilberberg.ftamonitor.common.IObserver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +41,7 @@ public class TeamStatus {
         this.m_alliance = m_alliance;
     }
 
-    private final Collection<IFieldMonitorObserver> m_observers = new ArrayList<>();
+    private final Collection<IObserver<TeamUpdateType>> m_observers = new ArrayList<>();
 
     public synchronized int getTeamNumber() {
         return m_teamNumber;
@@ -346,18 +347,18 @@ public class TeamStatus {
         }
     }
 
-    public void registerObserver(IFieldMonitorObserver observer) {
+    public void registerObserver(IObserver<TeamUpdateType> observer) {
         m_observers.add(observer);
     }
 
-    public void deregisterObserver(IFieldMonitorObserver observer) {
+    public void deregisterObserver(IObserver<TeamUpdateType> observer) {
         m_observers.remove(observer);
     }
 
     public void updateObservers(TeamUpdateType updateType) {
-        for (IFieldMonitorObserver observer : m_observers) {
+        for (IObserver<TeamUpdateType> observer : m_observers) {
             Log.d(TeamStatus.class.getName(), "Sending notification of type " + updateType + " to team " + m_stationNum + " on alliance " + m_alliance);
-            observer.update(updateType, m_stationNum, m_alliance);
+            observer.update(updateType);
         }
     }
 }

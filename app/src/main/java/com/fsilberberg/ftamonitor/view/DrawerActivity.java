@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
 
 
 public class DrawerActivity extends Activity {
@@ -62,7 +63,7 @@ public class DrawerActivity extends Activity {
         m_drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // Set up the main content
-        getFragmentManager().beginTransaction().replace(R.id.container, new OldFieldMonitorFragment(), OldFieldMonitorFragment.class.getName()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
     }
 
     @Override
@@ -91,7 +92,7 @@ public class DrawerActivity extends Activity {
         switch (position) {
             case 0:
                 m_title = getString(R.string.action_field_monitor);
-                newFrag = new OldFieldMonitorFragment();
+                newFrag = new FieldMonitorFragment();
                 break;
             case 1:
                 m_title = getString(R.string.action_settings);
@@ -114,7 +115,7 @@ public class DrawerActivity extends Activity {
     }
 
     private int getCurrentTab() {
-        if (getFragmentManager().findFragmentByTag(OldFieldMonitorFragment.class.getName()).isVisible()) {
+        if (getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName()).isVisible()) {
             return 0;
         } else if (getFragmentManager().findFragmentByTag(SettingsFragment.class.getName()).isVisible()) {
             return 1;
