@@ -1,6 +1,7 @@
 package com.fsilberberg.ftamonitor;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -13,9 +14,17 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
  */
 public class FTAMonitorApplication extends Application {
 
+    private static Context _context;
+
+    public static Context getContext() {
+        return _context;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        _context = getApplicationContext();
 
         // Initialize the field monitor factory
         FieldMonitorFactory.initialize(this);

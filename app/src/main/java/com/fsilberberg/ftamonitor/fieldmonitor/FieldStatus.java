@@ -1,7 +1,14 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.fsilberberg.ftamonitor.FTAMonitorApplication;
+import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
 import com.fsilberberg.ftamonitor.common.IObservable;
@@ -22,11 +29,11 @@ import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.*;
 
 /**
  * The field status maintains the current status of the field via updates from signalr, so that there
- *  is one centralized location for all classes to get information on the current state of the field.
- *  It implements the observer pattern for classes that need to get periodic updates on what the field
- *  is doing
+ * is one centralized location for all classes to get information on the current state of the field.
+ * It implements the observer pattern for classes that need to get periodic updates on what the field
+ * is doing
  *
- *  @author Fredric
+ * @author Fredric
  */
 public class FieldStatus implements IObservable<FieldUpdateType> {
     // Teams
@@ -134,6 +141,12 @@ public class FieldStatus implements IObservable<FieldUpdateType> {
 
         // If we set it, update the observer. This ensures that this is not operating in a lock
         if (set) {
+            // The auto time has been updated by the field, so we should change the defaults
+            Context context = FTAMonitorApplication.getContext();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            prefs.edit()
+                    .putString(context.getString(R.string.auto_time_key), String.valueOf(autoTime.getSeconds()))
+                    .commit();
             updateObservers(AUTO_TIME);
         }
     }
@@ -155,6 +168,12 @@ public class FieldStatus implements IObservable<FieldUpdateType> {
 
         // If we set it, update the observer. This ensures that this is not operating in a lock
         if (set) {
+            // The teleop time has been updated by the field, so we should change the defaults
+            Context context = FTAMonitorApplication.getContext();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            prefs.edit()
+                    .putString(context.getString(R.string.teleop_time_key), String.valueOf(teleopTime.getSeconds()))
+                    .commit();
             updateObservers(TELEOP_TIME);
         }
     }
