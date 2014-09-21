@@ -44,15 +44,16 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View fragView = inflater.inflate(R.layout.fragment_field_monitor, container, false);
+        m_connectionView = (TextView) fragView.findViewById(R.id.con_status_text);
+        m_fieldView = (LinearLayout) fragView.findViewById(R.id.field_monitor_fragment);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_field_monitor, container, false);
+        return fragView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        m_connectionView = (TextView) getActivity().findViewById(R.id.con_status_text);
-        m_fieldView = (LinearLayout) getActivity().findViewById(R.id.field_monitor_fragment);
         update(FieldConnectionService.getState());
         FieldConnectionService.registerConnectionObserver(this);
     }
@@ -99,6 +100,8 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         // Set up the fragments
         getFragmentManager().beginTransaction()
                 .replace(R.id.field_status_fragment, new FieldStatusFragment())
+                        // TODO: Replace with appropriate fragment once implemented
+                .replace(R.id.team_status_fragment, new BlankFragment())
                 .commit();
     }
 
@@ -106,6 +109,7 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         // Set up the fragments
         getFragmentManager().beginTransaction()
                 .replace(R.id.field_status_fragment, new BlankFragment())
+                .replace(R.id.team_status_fragment, new BlankFragment())
                 .commit();
     }
 
