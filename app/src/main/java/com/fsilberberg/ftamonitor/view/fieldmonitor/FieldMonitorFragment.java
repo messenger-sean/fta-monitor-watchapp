@@ -2,10 +2,14 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,10 +25,12 @@ import microsoft.aspnet.signalr.client.ConnectionState;
  *
  * @author Fredric
  */
-public class FieldMonitorFragment extends Fragment implements IObserver<ConnectionState> {
+public class FieldMonitorFragment extends Fragment implements IObserver<ConnectionState>, Button.OnClickListener {
 
     private static final String CONNECTION_STRING = "FMS Connection Status:\n";
 
+    private LinearLayout m_conLayout;
+    private Button m_conButton;
     private TextView m_connectionView;
     private LinearLayout m_fieldView;
     // If we need to set up the fragments or if it's been done
@@ -45,6 +51,9 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         View fragView = inflater.inflate(R.layout.fragment_field_monitor, container, false);
         m_connectionView = (TextView) fragView.findViewById(R.id.con_status_text);
         m_fieldView = (LinearLayout) fragView.findViewById(R.id.field_monitor_fragment);
+        m_conLayout = (LinearLayout) fragView.findViewById(R.id.con_status_layout);
+        m_conButton = (Button) fragView.findViewById(R.id.con_status_button);
+        m_conButton.setOnClickListener(this);
         // Inflate the layout for this fragment
         return fragView;
     }
@@ -75,8 +84,10 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
             case Reconnecting:
                 removeFragments();
                 m_connectionView.setText(CONNECTION_STRING + updateType.toString());
-                m_connectionView.setVisibility(View.INVISIBLE);
+                m_fieldView.setVisibility(View.INVISIBLE);
                 m_connectionView.setVisibility(View.VISIBLE);
+                m_conButton.setVisibility(View.VISIBLE);
+                m_conLayout.setVisibility(View.VISIBLE);
                 break;
             case Connected:
                 m_connectionView.setText(CONNECTION_STRING + updateType.toString());
@@ -86,6 +97,8 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                     @Override
                     public void run() {
                         m_connectionView.setVisibility(View.INVISIBLE);
+                        m_conButton.setVisibility(View.INVISIBLE);
+                        m_conLayout.setVisibility(View.INVISIBLE);
                         m_fieldView.setVisibility(View.VISIBLE);
                         addFragments();
                     }
@@ -119,5 +132,14 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                 updateView(updateType);
             }
         });
+    }
+
+    @Override
+    public void onClick(View view) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String url = preferences.getString(getString(R.string.fms_ip_addr_key), "10.0.100.5");
+        Intent serviceIntent = new Intent(getActivity(), FieldConnectionService.class);
+        serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
+        getActivity().startService(serviceIntent);
     }
 }
