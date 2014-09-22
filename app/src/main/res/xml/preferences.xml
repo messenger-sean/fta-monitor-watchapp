@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="on_field"
-        android:title="@string/on_field"
-        android:summary="@string/on_field_sum"
-        android:defaultValue="true"
-        android:disableDependentsState="true"/>
-    <EditTextPreference
-        android:key="@string/fms_ip_addr_key"
-        android:title="@string/fms_ip_addr"
-        android:defaultValue="10.0.100.5"
-        android:dependency="on_field" />
-    <EditTextPreference
-        android:key="@string/auto_time_key"
-        android:title="@string/auto_time"
-        android:defaultValue="10"
-        android:numeric="integer" />
-    <EditTextPreference
-        android:key="@string/teleop_time_key"
-        android:title="@string/teleop_time"
-        android:defaultValue="140"
-        android:numeric="integer" />
+    <PreferenceCategory android:title="@string/fms_settings_title">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="on_field"
+            android:summary="@string/on_field_sum"
+            android:title="@string/on_field" />
+        <EditTextPreference
+            android:defaultValue="10.0.100.5"
+            android:dependency="on_field"
+            android:key="@string/fms_ip_addr_key"
+            android:title="@string/fms_ip_addr" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/notification_key"
+            android:summary="@string/notification_desc"
+            android:title="@string/notification" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/notification_key"
+            android:key="@string/notify_always_key"
+            android:summary="@string/notify_always_desc"
+            android:title="@string/notify_always" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/field_settings_title">
+        <EditTextPreference
+            android:defaultValue="10"
+            android:key="@string/auto_time_key"
+            android:numeric="integer"
+            android:title="@string/auto_time" />
+        <EditTextPreference
+            android:defaultValue="140"
+            android:key="@string/teleop_time_key"
+            android:numeric="integer"
+            android:title="@string/teleop_time" />
+    </PreferenceCategory>
 </PreferenceScreen>

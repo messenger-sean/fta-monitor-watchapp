@@ -20,6 +20,14 @@
     <string name="auto_time">Autonomous Period Length (seconds)</string>
     <string name="teleop_time_key">teleop_time</string>
     <string name="teleop_time">Teleop Period Length (seconds)</string>
+    <string name="notification_key">notification</string>
+    <string name="notification">Enable Notifications</string>
+    <string name="notification_desc">Notify when a team issue is detected during the match</string>
+    <string name="notify_always_key">notify_always</string>
+    <string name="notify_always">Enable Out-of-Match Notify</string>
+    <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
+    <string name="field_settings_title">Field Settings</string>
+    <string name="fms_settings_title">FMS Settings</string>
     <string name="ds_ethernet">DS-ETH</string>
     <string name="ds">DS</string>
     <string name="radio">Radio</string>

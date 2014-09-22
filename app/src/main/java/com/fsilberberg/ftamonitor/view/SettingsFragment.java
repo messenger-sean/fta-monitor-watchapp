@@ -20,6 +20,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private String m_autoKey;
     private String m_teleopKey;
     private String m_defaultKey;
+    private String m_notificationKey;
+    private String m_notifyAlwaysKey;
 
     public SettingsFragment() {
     }
@@ -32,6 +34,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         m_autoKey = getString(R.string.auto_time_key);
         m_teleopKey = getString(R.string.teleop_time_key);
         m_defaultKey = getString(R.string.on_field_key);
+        m_notificationKey = getString(R.string.notification_key);
+        m_notifyAlwaysKey = getString(R.string.notify_always_key);
         getActivity().getActionBar().setTitle(getString(R.string.action_settings));
     }
 
@@ -59,7 +63,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             updatePref(key);
         } else if (key.equals(m_defaultKey)) {
             boolean defaultUrl = sharedPreferences.getBoolean(key, true);
-            String newUrl = "";
+            String newUrl;
             // If the default url is now true, update the url to the default signalr url
             if (defaultUrl) {
                 String oldUrl = sharedPreferences.getString(m_fmsKey, DEFAULT_SIGNALR_URL);
@@ -67,7 +71,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 sharedPreferences.edit()
                         .putString(PREVIOUS_CUSTOM_URL_KEY, oldUrl)
                         .putString(m_fmsKey, DEFAULT_SIGNALR_URL)
-                        .commit();
+                        .apply();
                 sendServiceUpdate(DEFAULT_SIGNALR_URL);
                 newUrl = DEFAULT_SIGNALR_URL;
             } else {
@@ -75,7 +79,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 newUrl = sharedPreferences.getString(PREVIOUS_CUSTOM_URL_KEY, DEFAULT_SIGNALR_URL);
                 sharedPreferences.edit()
                         .putString(m_fmsKey, newUrl)
-                        .commit();
+                        .apply();
 
                 sendServiceUpdate(newUrl);
             }
