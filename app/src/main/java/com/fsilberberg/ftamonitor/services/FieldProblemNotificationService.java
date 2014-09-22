@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
@@ -29,6 +30,9 @@ public class FieldProblemNotificationService implements IForegroundService {
     // Intent extra for the settings to tell the service to update the notification settings
     public static final String UPDATE_NOTIFICATION_SETTINGS_INTENT_EXTRA = "UPDATE_NOTIFICATION_SETTINGS";
 
+    // Notification ID. Again no significance, other than 3 is my favorite number, so 3x3 is 9
+    private static final int ID = 9;
+
     // References to the teams
     private final FieldStatus m_field = FieldMonitorFactory.getInstance().getFieldStatus();
     private final TeamStatus m_blue1 = m_field.getBlue1();
@@ -42,21 +46,6 @@ public class FieldProblemNotificationService implements IForegroundService {
     private boolean m_isSetup = false;
     private boolean m_alwaysNotify = false;
     private final Collection<ProblemObserver> m_observers = new ArrayList<>();
-
-    public void update(TeamUpdateType updateType, int stationNum, Alliance alliance) {
-        // We only care about the states in which there could be an error
-        switch (updateType) {
-            case DS_ETH:
-            case DS:
-            case RADIO:
-            case ROBOT:
-            case CODE:
-                // If we should always notify or if a match is playing, then process an update
-                if (m_alwaysNotify || isMatchPlaying()) {
-
-                }
-        }
-    }
 
     @Override
     public void startService(Context context, Intent intent) {
@@ -110,16 +99,16 @@ public class FieldProblemNotificationService implements IForegroundService {
         }
     }
 
-    /**
-     * Convenience method for getting all teams
-     *
-     * @return All teams
-     */
-    private Collection<TeamStatus> getAllTeams() {
-        FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
-        return Arrays.asList(
-                m_blue1, m_blue2, m_blue3, m_red1, m_red2, m_red3
-        );
+    private void updateNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(m_context);
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        int notifications = 0;
+        StringBuilder sb = new StringBuilder();
+        for (ProblemObserver observer : m_observers) {
+            if (observer.shouldDisplay()) {
+                notifications++;
+            }
+        }
     }
 
     private class ProblemObserver implements IObserver<TeamUpdateType> {
@@ -127,6 +116,8 @@ public class FieldProblemNotificationService implements IForegroundService {
         private int m_stationNumber;
         private Alliance m_alliance;
         private TeamStatus m_team;
+        private boolean m_display = false;
+        private String m_errorString;
 
         private ProblemObserver(int stationNumber, Alliance alliance, TeamStatus team) {
             m_stationNumber = stationNumber;
@@ -137,11 +128,84 @@ public class FieldProblemNotificationService implements IForegroundService {
 
         @Override
         public void update(TeamUpdateType updateType) {
-            FieldProblemNotificationService.this.update(updateType, m_stationNumber, m_alliance);
+            // We only care about the states in which there could be an error
+            switch (updateType) {
+                case DS_ETH:
+                case DS:
+                case RADIO:
+                case ROBOT:
+                case CODE:
+                case BYPASSED:
+                case ESTOP:
+                    // If we should always notify or if a match is playing, then process an update
+                    if (m_alwaysNotify || isMatchPlaying()) {
+                        updateErrorText();
+                    }
+            }
         }
 
         public void deregister() {
             m_team.deregisterObserver(this);
+        }
+
+        public boolean shouldDisplay() {
+            return m_display;
+        }
+
+        public String getText() {
+            return m_errorString;
+        }
+
+        public Alliance getAlliance() {
+            return m_alliance;
+        }
+
+        public int getStationNumber() {
+            return m_stationNumber;
+        }
+
+        /**
+         * Checks all of the error conditions and sets any necessary changes to the error text and
+         * display variable
+         */
+        private void updateErrorText() {
+            if (m_team.isEstop()) {
+                setError(R.string.estop_error);
+            } else if (m_team.isBypassed()) {
+                // If the team is bypassed, we're done here
+                m_display = false;
+            } else if (m_team.isDsEth()) {
+                setError(R.string.ds_ethernet_error);
+            } else if (m_team.isDs()) {
+                setError(R.string.ds_error);
+            } else if (m_team.isRadio()) {
+                setError(R.string.radio_error);
+            } else if (m_team.isRobot()) {
+                setError(R.string.robot_error);
+            } else if (m_team.isCode()) {
+                setError(R.string.code_error);
+            } else {
+                m_display = false;
+            }
+
+            updateNotification();
+        }
+
+        /**
+         * Sets the display to true and set the error to the given string id
+         *
+         * @param errorTextId The id of the error text to format and display
+         */
+        private void setError(int errorTextId) {
+            m_display = true;
+            String textFormat = m_context.getString(R.string.main_error_string);
+            String errorText = m_context.getString(errorTextId);
+            m_errorString = String.format(
+                    textFormat,
+                    m_alliance.toString(),
+                    m_stationNumber,
+                    m_team.getTeamNumber(),
+                    errorText);
         }
     }
 }

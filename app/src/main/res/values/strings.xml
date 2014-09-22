@@ -35,12 +35,13 @@
     <string name="code">Code</string>
 
     <!-- Notification Strings -->
-    <string name="main_error_string">%d has no %s</string>
-    <string name="ds_ethernet_error">driver station ethernet</string>
-    <string name="ds_error">driver station</string>
-    <string name="radio_error">radio</string>
-    <string name="robot_error">roboRio</string>
-    <string name="code_error">code</string>
+    <string name="main_error_string">%s %d - %d has %s</string>
+    <string name="ds_ethernet_error">no driver station ethernet</string>
+    <string name="ds_error">no driver station</string>
+    <string name="radio_error">no radio</string>
+    <string name="robot_error">no roboRio</string>
+    <string name="code_error">no code</string>
+    <string name="estop_error">estopped</string>
 
     <string-array name="drawer_tabs">
         <item>Field Monitor</item>
