@@ -84,6 +84,19 @@
                     android:textSize="@dimen/medium_text_size"/>
 
                 <TextView
+                    android:id="@+id/team_status_table_round_trip"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/black_with_border"
+                    android:contentDescription="Round Trip"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/table_margin"
+                    android:text="RT"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/medium_text_size"/>
+
+
+                <TextView
                     android:id="@+id/team_status_table_signal_quality"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

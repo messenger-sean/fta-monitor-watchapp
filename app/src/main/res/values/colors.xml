@@ -8,4 +8,6 @@
     <color name="FMS_GREEN">#9BBB59</color>
     <color name="FMS_YELLOW">#FFFF00</color>
     <color name="drawer">#BF000000</color>
+    <color name="white_text">#FFFFFF</color>
+    <color name="black_text">#000000</color>
 </resources>

@@ -20,6 +20,11 @@
     <string name="auto_time">Autonomous Period Length (seconds)</string>
     <string name="teleop_time_key">teleop_time</string>
     <string name="teleop_time">Teleop Period Length (seconds)</string>
+    <string name="ds_ethernet">DS-ETH</string>
+    <string name="ds">DS</string>
+    <string name="radio">Radio</string>
+    <string name="rio">RIO</string>
+    <string name="code">Code</string>
 
     <string-array name="drawer_tabs">
         <item>Field Monitor</item>

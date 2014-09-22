@@ -79,6 +79,19 @@
                 android:visibility="invisible"/>
 
             <TextView
+                android:id="@+id/team_status_round_trip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Round Trip"
+                android:gravity="center_horizontal"
+                android:padding="@dimen/table_margin"
+                android:text="RT"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"
+                android:visibility="invisible"/>
+
+            <TextView
                 android:id="@+id/team_status_signal_quality"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -111,12 +124,11 @@
         android:id="@+id/team_status_error_text"
         android:layout_width="98dip"
         android:layout_height="wrap_content"
+        android:layout_gravity="right"
         android:background="@drawable/yellow_with_border"
         android:gravity="center"
-        android:paddingTop="@dimen/table_margin"
         android:paddingBottom="@dimen/table_margin"
-        android:text="hello world"
+        android:paddingTop="@dimen/table_margin"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/medium_text_size"
-        android:layout_gravity="right"/>
+        android:textSize="@dimen/medium_text_size"/>
 </FrameLayout>

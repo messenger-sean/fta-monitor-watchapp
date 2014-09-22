@@ -122,15 +122,15 @@ public class FieldStatusFragment extends Fragment implements IObserver<FieldUpda
                 startTimer(teleopTime);
                 break;
             // In all of these cases, we just want to stop the timer
-            case AUTO_PAUSED:
-            case TELEOP_PAUSED:
             case AUTO_END:
             case OVER:
+                setTimeText(0);
+            case AUTO_PAUSED:
+            case TELEOP_PAUSED:
                 if (m_matchTimer != null) {
                     m_matchTimer.cancel();
                 }
                 m_matchTimer = null;
-                setTimeText(0);
                 break;
         }
     }

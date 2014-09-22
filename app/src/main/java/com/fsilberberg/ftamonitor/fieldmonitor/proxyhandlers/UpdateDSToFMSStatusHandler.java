@@ -44,6 +44,7 @@ public class UpdateDSToFMSStatusHandler extends ProxyHandlerBase implements Subs
         } else if (alliance == BLUE_ALLIANCE) {
             if (station == STATION_1) {
                 updateStatus(m_fieldStatus.getBlue1(), object);
+                Log.d(UpdateDSToFMSStatusHandler.class.getName(), "Updating blue1");
             } else if (station == STATION_2) {
                 updateStatus(m_fieldStatus.getBlue2(), object);
             } else if (station == STATION_3) {

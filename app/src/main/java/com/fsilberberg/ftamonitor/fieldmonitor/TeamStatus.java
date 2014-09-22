@@ -349,6 +349,7 @@ public class TeamStatus {
 
     public void registerObserver(IObserver<TeamUpdateType> observer) {
         m_observers.add(observer);
+        Log.d(TeamStatus.class.getName(), "Registered observer on " + m_stationNum + " on alliance " + m_alliance);
     }
 
     public void deregisterObserver(IObserver<TeamUpdateType> observer) {
