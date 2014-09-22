@@ -22,7 +22,7 @@
                 android:gravity="center"
                 android:padding="@dimen/table_margin"
                 android:text="#"
-                android:textColor="@android:color/black"
+                android:textColor="@color/white_text"
                 android:textSize="@dimen/medium_text_size"
                 />
 
@@ -36,7 +36,7 @@
                 android:gravity="center"
                 android:padding="@dimen/table_margin"
                 android:text="1"
-                android:textColor="@android:color/black"
+                android:textColor="@color/white_text"
                 android:textSize="@dimen/medium_text_size"/>
 
             <LinearLayout
@@ -55,7 +55,7 @@
                     android:gravity="center"
                     android:padding="@dimen/table_margin"
                     android:text="Volt"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/black_text"
                     android:textSize="@dimen/medium_text_size"/>
 
                 <!-- Enabled -->
@@ -69,7 +69,7 @@
                     android:gravity="center"
                     android:padding="@dimen/table_margin"
                     android:text="En"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/white_text"
                     android:textSize="@dimen/medium_text_size"/>
 
             </LinearLayout>
@@ -85,7 +85,7 @@
                 android:gravity="center_horizontal"
                 android:padding="@dimen/table_margin"
                 android:text="BW"
-                android:textColor="@android:color/black"
+                android:textColor="@color/black_text"
                 android:textSize="@dimen/medium_text_size"
                 android:visibility="invisible"/>
 
@@ -99,7 +99,7 @@
                 android:gravity="center_horizontal"
                 android:padding="@dimen/table_margin"
                 android:text="MP"
-                android:textColor="@android:color/black"
+                android:textColor="@color/black_text"
                 android:textSize="@dimen/medium_text_size"
                 android:visibility="invisible"/>
 
@@ -113,7 +113,7 @@
                 android:gravity="center_horizontal"
                 android:padding="@dimen/table_margin"
                 android:text="RT"
-                android:textColor="@android:color/black"
+                android:textColor="@color/black_text"
                 android:textSize="@dimen/medium_text_size"
                 android:visibility="invisible"/>
 
@@ -133,7 +133,7 @@
                     android:gravity="center_horizontal"
                     android:padding="@dimen/table_margin"
                     android:text="SQ"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/black_text"
                     android:textSize="@dimen/medium_text_size"
                     android:visibility="invisible"/>
 
@@ -147,7 +147,7 @@
                     android:gravity="center_horizontal"
                     android:padding="@dimen/table_margin"
                     android:text="SS"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/black_text"
                     android:textSize="@dimen/medium_text_size"
                     android:visibility="invisible"/>
             </LinearLayout>
@@ -163,6 +163,6 @@
         android:gravity="center"
         android:paddingBottom="@dimen/table_margin"
         android:paddingTop="@dimen/table_margin"
-        android:textColor="@android:color/black"
+        android:textColor="@color/black_text"
         android:textSize="@dimen/medium_text_size"/>
 </FrameLayout>

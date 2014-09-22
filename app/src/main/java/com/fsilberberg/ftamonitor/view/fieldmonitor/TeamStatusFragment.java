@@ -1,9 +1,9 @@
 package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 
-import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -161,8 +161,8 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
         int textColor = R.color.white_text;
         setBackground(m_stationNumberView, backRes);
         setBackground(m_teamNumberView, backRes);
-        setText(m_stationNumberView, String.valueOf(m_stationNumber), whiteText);
-        setText(m_teamNumberView, String.valueOf(m_stationNumber), whiteText);
+        setText(m_stationNumberView, String.valueOf(m_stationNumber), textColor);
+        setText(m_teamNumberView, String.valueOf(m_stationNumber), textColor);
 
         fragView.post(new Runnable() {
             @Override
@@ -223,7 +223,7 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
             case RADIO:
             case ROBOT:
             case CODE:
-                updateTeamEnableStatus();
+                updateTeamStatus();
                 break;
         }
     }
@@ -237,7 +237,7 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
             setText(m_enabledView, "E", whiteText);
         } else if (m_teamStatus.isBypassed()) {
             setBackground(m_enabledView, redBox);
-            setText(m_enabledView, "B", blackText);
+            setText(m_enabledView, "B", whiteText);
         } else if (m_teamStatus.isEnabled()) {
             setBackground(m_enabledView, greenBox);
             setEnabledText();
@@ -311,19 +311,19 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
         switch (status) {
             case TELEOP_PAUSED:
             case TELEOP:
-                setText(m_enabledView, "T", blackText);
+                setText(m_enabledView, "T", whiteText);
                 break;
             case AUTO:
             case AUTO_END:
             case AUTO_PAUSED:
-                setText(m_enabledView, "A", blackText);
+                setText(m_enabledView, "A", whiteText);
                 break;
             case OVER:
             case READY_TO_PRESTART:
             case PRESTART_INITIATED:
             case PRESTART_COMPLETED:
             case MATCH_READY:
-                setText(m_enabledView, "", blackText);
+                setText(m_enabledView, "", whiteText);
         }
     }
 
@@ -369,7 +369,7 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
             @Override
             public void run() {
                 target.setText(newText);
-                target.setTextColor(colorId);
+                target.setTextColor(getResources().getColor(colorId));
             }
         });
     }
