@@ -88,7 +88,7 @@ public class FieldTimeService extends Service implements IObserver<FieldUpdateTy
                 break;
             case AUTO_END:
             case OVER:
-                // Prestart completed is the best way to tell if we need to reset the timer
+                // Prestart initiated is the best way to tell if we need to reset the timer
             case PRESTART_COMPLETED:
                 m_timerRunning = false;
                 m_timerPaused = false;
@@ -129,8 +129,10 @@ public class FieldTimeService extends Service implements IObserver<FieldUpdateTy
 
         @Override
         public void run() {
-            m_timeRemaining += 1;
+            m_timeRemaining++;
+            long startTime;
             while (!Thread.interrupted() && m_timerRunning) {
+                startTime = System.currentTimeMillis();
                 m_timeRemaining -= 1;
                 if (m_timeRemaining <= 0) {
                     m_timeRemaining = 0;
@@ -138,7 +140,7 @@ public class FieldTimeService extends Service implements IObserver<FieldUpdateTy
                     break;
                 }
                 try {
-                    Thread.sleep(1000, 0);
+                    Thread.sleep(1000 - (System.currentTimeMillis() - startTime), 0);
                 } catch (InterruptedException e) {
                     Log.d(FieldTimeService.class.getName(), "Error while sleeping during timer countdown", e);
                 }

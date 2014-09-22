@@ -54,7 +54,7 @@ public class FieldStatusFragment extends Fragment implements IObserver<FieldUpda
         updateFieldElement(FieldUpdateType.values());
         FieldMonitorFactory.getInstance().getFieldStatus().registerObserver(this);
         if (FieldTimeService.isTimerRunning()) {
-            startTimer();
+            startTimer(FieldTimeService.getTimeRemaining());
         }
     }
 
@@ -114,10 +114,12 @@ public class FieldStatusFragment extends Fragment implements IObserver<FieldUpda
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         switch (matchStatus) {
             case AUTO:
-                startTimer();
+                int autoTime = Integer.valueOf(prefs.getString(getString(R.string.auto_time_key), "0"));
+                startTimer(autoTime);
                 break;
             case TELEOP:
-                startTimer();
+                int teleopTime = Integer.valueOf(prefs.getString(getString(R.string.teleop_time_key), "0"));
+                startTimer(teleopTime);
                 break;
             // In all of these cases, we just want to stop the timer
             case AUTO_PAUSED:
@@ -135,9 +137,10 @@ public class FieldStatusFragment extends Fragment implements IObserver<FieldUpda
     /**
      * Starts a timer that either resumes the paused timer, if one exists, or starts a new timer.
      */
-    private void startTimer() {
+    private void startTimer(int startTime) {
         // Create a new timer for a sufficiently long time, which will be cancelled before it runs out.
         // The timer updates the text with the new values from the bound service one a second
+        setTimeText(startTime);
         m_matchTimer = new MatchTimer(1000);
         m_matchTimer.start();
     }
@@ -155,13 +158,17 @@ public class FieldStatusFragment extends Fragment implements IObserver<FieldUpda
         public void onTick(long l) {
             if (FieldTimeService.isTimerRunning()) {
                 int curTime = FieldTimeService.getTimeRemaining();
-                String postfix = curTime == 1 ? " second" : " seconds";
-                m_timeView.setText(curTime + postfix);
+                setTimeText(curTime);
             }
         }
 
         @Override
         public void onFinish() {
         }
+    }
+
+    private void setTimeText(int curTime) {
+        String postfix = curTime == 1 ? " second" : " seconds";
+        m_timeView.setText(curTime + postfix);
     }
 }
