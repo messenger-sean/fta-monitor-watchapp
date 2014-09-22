@@ -132,13 +132,19 @@ public class DrawerActivity extends Activity {
             m_drawerList.setItemChecked(position, true);
             getActionBar().setTitle(m_title);
             m_drawerLayout.closeDrawer(m_drawerList);
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, newFrag, newFrag.getClass().getName())
+                    .commit();
         }
     }
 
     private int getCurrentTab() {
-        if (getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName()).isVisible()) {
+        Fragment fieldFrag = getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName());
+        Fragment settingsFrag = getFragmentManager().findFragmentByTag(SettingsFragment.class.getName());
+        if (fieldFrag != null && fieldFrag.isVisible()) {
             return 0;
-        } else if (getFragmentManager().findFragmentByTag(SettingsFragment.class.getName()).isVisible()) {
+        } else if (settingsFrag != null && settingsFrag.isVisible()) {
             return 1;
         } else {
             throw new RuntimeException("Error: Unknown fragment active");
