@@ -1,0 +1,122 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1,2,3,4,5,6">
+        <!-- Table header -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Team Number -->
+            <TextView
+                android:id="@+id/team_status_number"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:gravity="center"
+                android:padding="@dimen/table_margin"
+                android:text="Team"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"/>
+
+            <!-- Voltage Number -->
+            <TextView
+                android:id="@+id/team_status_voltage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Robot battery voltage"
+                android:gravity="center"
+                android:padding="@dimen/table_margin"
+                android:text="Volt"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"/>
+
+            <!-- Enabled -->
+            <TextView
+                android:id="@+id/team_status_enable_status"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Robot Enabled Status"
+                android:gravity="center"
+                android:padding="@dimen/table_margin"
+                android:text="En"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"/>
+
+            <!-- Network Information -->
+            <TextView
+                android:id="@+id/team_status_bandwidth"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Bandwidth Usage"
+                android:gravity="center_horizontal"
+                android:padding="@dimen/table_margin"
+                android:text="BW"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/team_status_missed_packets"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Missed Packets"
+                android:gravity="center_horizontal"
+                android:padding="@dimen/table_margin"
+                android:text="MP"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/team_status_signal_quality"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Bandwidth Usage"
+                android:gravity="center_horizontal"
+                android:padding="@dimen/table_margin"
+                android:text="SQ"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/team_status_signal_strength"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/white_with_border"
+                android:contentDescription="Missed Packets"
+                android:gravity="center_horizontal"
+                android:padding="@dimen/table_margin"
+                android:text="SS"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/medium_text_size"
+                android:visibility="invisible"/>
+
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/team_status_error_text"
+        android:layout_width="98dip"
+        android:layout_height="wrap_content"
+        android:background="@drawable/yellow_with_border"
+        android:gravity="center"
+        android:paddingTop="@dimen/table_margin"
+        android:paddingBottom="@dimen/table_margin"
+        android:text="hello world"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/medium_text_size"
+        android:layout_gravity="right"/>
+</FrameLayout>

@@ -20,7 +20,7 @@
             android:textSize="@dimen/large_text_size"
             android:visibility="invisible"/>
 
-+        <Button
+        <Button
             android:id="@+id/con_status_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,7 +28,8 @@
             android:paddingRight="15dp"
             android:text="Retry"
             android:textSize="@dimen/large_text_size"
-            android:visibility="invisible"/>
+            android:visibility="invisible"
+            android:onClick="FieldMonitorFragment"/>
     </LinearLayout>
 
     <LinearLayout

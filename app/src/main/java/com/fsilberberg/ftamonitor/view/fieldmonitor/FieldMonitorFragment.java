@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,7 +33,9 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
     private LinearLayout m_conLayout;
     private Button m_conButton;
     private TextView m_connectionView;
-    private LinearLayout m_fieldView;
+    private LinearLayout m_mainFieldView;
+    private FrameLayout m_fieldView;
+    private FrameLayout m_teamView;
     // If we need to set up the fragments or if it's been done
     private boolean m_updateFragments = false;
 
@@ -50,7 +53,9 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                              Bundle savedInstanceState) {
         View fragView = inflater.inflate(R.layout.fragment_field_monitor, container, false);
         m_connectionView = (TextView) fragView.findViewById(R.id.con_status_text);
-        m_fieldView = (LinearLayout) fragView.findViewById(R.id.field_monitor_fragment);
+        m_mainFieldView = (LinearLayout) fragView.findViewById(R.id.field_monitor_fragment);
+        m_fieldView = (FrameLayout) fragView.findViewById(R.id.field_status_fragment);
+        m_teamView = (FrameLayout) fragView.findViewById(R.id.team_status_fragment);
         m_conLayout = (LinearLayout) fragView.findViewById(R.id.con_status_layout);
         m_conButton = (Button) fragView.findViewById(R.id.con_status_button);
         m_conButton.setOnClickListener(this);
@@ -84,10 +89,8 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
             case Reconnecting:
                 removeFragments();
                 m_connectionView.setText(CONNECTION_STRING + updateType.toString());
-                m_fieldView.setVisibility(View.INVISIBLE);
-                m_connectionView.setVisibility(View.VISIBLE);
-                m_conButton.setVisibility(View.VISIBLE);
-                m_conLayout.setVisibility(View.VISIBLE);
+                setMatchVisibility(false);
+                setConnectedVisibility(true);
                 break;
             case Connected:
                 m_connectionView.setText(CONNECTION_STRING + updateType.toString());
@@ -96,10 +99,8 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
                 getView().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        m_connectionView.setVisibility(View.INVISIBLE);
-                        m_conButton.setVisibility(View.INVISIBLE);
-                        m_conLayout.setVisibility(View.INVISIBLE);
-                        m_fieldView.setVisibility(View.VISIBLE);
+                        setConnectedVisibility(false);
+                        setMatchVisibility(true);
                         addFragments();
                     }
                 }, 500);
@@ -111,8 +112,7 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         // Set up the fragments
         getFragmentManager().beginTransaction()
                 .replace(R.id.field_status_fragment, new FieldStatusFragment())
-                        // TODO: Replace with appropriate fragment once implemented
-                .replace(R.id.team_status_fragment, new BlankFragment())
+                .replace(R.id.team_status_fragment, new TeamStatusTableFragment())
                 .commit();
     }
 
@@ -120,8 +120,22 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
         // Set up the fragments
         getFragmentManager().beginTransaction()
                 .replace(R.id.field_status_fragment, new BlankFragment())
-                .replace(R.id.team_status_fragment, new BlankFragment())
+                        //.replace(R.id.team_status_fragment, new BlankFragment())
                 .commit();
+    }
+
+    public void setConnectedVisibility(boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.INVISIBLE;
+        m_conLayout.setVisibility(visibility);
+        m_conButton.setVisibility(visibility);
+        m_connectionView.setVisibility(visibility);
+    }
+
+    public void setMatchVisibility(boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.INVISIBLE;
+        m_mainFieldView.setVisibility(visibility);
+        m_fieldView.setVisibility(visibility);
+        m_teamView.setVisibility(visibility);
     }
 
     @Override
@@ -130,6 +144,9 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
             @Override
             public void run() {
                 updateView(updateType);
+                if (updateType == ConnectionState.Connected) {
+                    m_conButton.setVisibility(View.INVISIBLE);
+                }
             }
         });
     }
