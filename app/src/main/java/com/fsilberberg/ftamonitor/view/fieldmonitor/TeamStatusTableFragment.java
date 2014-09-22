@@ -27,14 +27,14 @@ public class TeamStatusTableFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fragView = inflater.inflate(R.layout.fragment_team_status_table_fragment, container, false);
+        View fragView = inflater.inflate(R.layout.fragment_team_status_table, container, false);
         getFragmentManager().beginTransaction()
-                .replace(R.id.team_status_table_blue1, TeamStatusFragment.newInstance(1, BLUE))
-                .replace(R.id.team_status_table_blue2, TeamStatusFragment.newInstance(2, BLUE))
-                .replace(R.id.team_status_table_blue3, TeamStatusFragment.newInstance(3, BLUE))
-                .replace(R.id.team_status_table_red1, TeamStatusFragment.newInstance(1, RED))
-                .replace(R.id.team_status_table_red2, TeamStatusFragment.newInstance(2, RED))
-                .replace(R.id.team_status_table_red3, TeamStatusFragment.newInstance(3, RED))
+                .replace(R.id.team_status_row_blue1, TeamStatusFragment.newInstance(1, BLUE))
+                .replace(R.id.team_status_row_blue2, TeamStatusFragment.newInstance(2, BLUE))
+                .replace(R.id.team_status_row_blue3, TeamStatusFragment.newInstance(3, BLUE))
+                .replace(R.id.team_status_row_red1, TeamStatusFragment.newInstance(1, RED))
+                .replace(R.id.team_status_row_red2, TeamStatusFragment.newInstance(2, RED))
+                .replace(R.id.team_status_row_red3, TeamStatusFragment.newInstance(3, RED))
                 .commit();
         return fragView;
     }
