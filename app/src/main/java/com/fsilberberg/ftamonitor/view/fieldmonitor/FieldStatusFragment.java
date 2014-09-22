@@ -130,6 +130,7 @@ public class FieldStatusFragment extends Fragment implements IObserver<FieldUpda
                     m_matchTimer.cancel();
                 }
                 m_matchTimer = null;
+                setTimeText(0);
                 break;
         }
     }
