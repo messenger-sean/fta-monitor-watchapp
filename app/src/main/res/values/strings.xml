@@ -7,6 +7,7 @@
     <string name="action_settings">Settings</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
 
     <!-- Preferences strings -->
     <string name="on_field_key">on_field</string>
@@ -35,7 +36,7 @@
     <string name="code">Code</string>
 
     <!-- Notification Strings -->
-    <string name="main_error_string">%s %d - %d has %s</string>
+    <string formatted="false" name="main_error_string">%s %d - %d has %s</string>
     <string name="ds_ethernet_error">no driver station ethernet</string>
     <string name="ds_error">no driver station</string>
     <string name="radio_error">no radio</string>

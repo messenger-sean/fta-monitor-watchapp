@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
@@ -28,6 +30,8 @@ public class DrawerActivity extends Activity {
     private DrawerLayout m_drawerLayout;
     private ActionBarDrawerToggle m_drawerToggle;
     private CharSequence m_title;
+
+    private boolean backButtonPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +90,24 @@ public class DrawerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (backButtonPressed) {
+            super.onBackPressed();
+            return;
+        }
+
+        backButtonPressed = true;
+        Toast.makeText(this, "Pres Back Again to Exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                backButtonPressed = true;
+            }
+        }, 2000);
+    }
+
     private void selectScreen(int position) {
         if (position == getCurrentTab()) {
             m_drawerLayout.closeDrawer(m_drawerList);
@@ -106,11 +128,6 @@ public class DrawerActivity extends Activity {
 
         // Replace the current fragment
         if (newFrag != null) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, newFrag, newFrag.getClass().getName())
-                    .addToBackStack(null)
-                    .commit();
-
             // Highlight item, set title, close drawer
             m_drawerList.setItemChecked(position, true);
             getActionBar().setTitle(m_title);

@@ -101,6 +101,9 @@ public class FieldTimeService implements IForegroundService, IObserver<FieldUpda
         if (!m_timerPaused) {
             m_timeRemaining = Integer.valueOf(m_sharedPreferences.getString(key, "0"));
         }
+        if (m_timerThread != null) {
+            m_timerThread.interrupt();
+        }
         m_timerPaused = false;
         m_timerThread = new Thread(m_timer);
         m_timerThread.start();
@@ -115,7 +118,7 @@ public class FieldTimeService implements IForegroundService, IObserver<FieldUpda
             long startTime;
             while (!Thread.interrupted() && m_timerRunning) {
                 startTime = System.currentTimeMillis();
-                m_timeRemaining -= 1;
+                m_timeRemaining--;
                 if (m_timeRemaining <= 0) {
                     m_timeRemaining = 0;
                     m_timerRunning = false;
@@ -124,7 +127,6 @@ public class FieldTimeService implements IForegroundService, IObserver<FieldUpda
                 try {
                     Thread.sleep(1000 - (System.currentTimeMillis() - startTime), 0);
                 } catch (InterruptedException e) {
-                    Log.d(FieldTimeService.class.getName(), "Error while sleeping during timer countdown", e);
                 }
 
             }
