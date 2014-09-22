@@ -55,29 +55,6 @@
                 android:text="Teleop Running"
                 android:textSize="@dimen/medium_text_size"/>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dip"
-            android:layout_marginLeft="5dip"
-            android:layout_marginTop="2dip"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Time:"
-                android:textSize="@dimen/medium_text_size"/>
-
-            <TextView
-                android:id="@+id/field_status_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
-                android:text="0 seconds"
-                android:textSize="@dimen/medium_text_size"/>
-        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

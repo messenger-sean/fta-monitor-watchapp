@@ -125,7 +125,6 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
     public void onResume() {
         super.onResume();
         m_teamStatus.registerObserver(this);
-        Log.d(TeamStatusFragment.class.getName(), "Registered observer on " + m_allianceColor + " station " + m_stationNumber);
 
         // Update all fields
         for (TeamUpdateType type : TeamUpdateType.values()) {

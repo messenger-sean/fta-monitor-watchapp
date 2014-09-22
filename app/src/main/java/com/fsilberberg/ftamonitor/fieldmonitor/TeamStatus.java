@@ -349,7 +349,6 @@ public class TeamStatus {
 
     public void registerObserver(IObserver<TeamUpdateType> observer) {
         m_observers.add(observer);
-        Log.d(TeamStatus.class.getName(), "Registered observer on " + m_stationNum + " on alliance " + m_alliance);
     }
 
     public void deregisterObserver(IObserver<TeamUpdateType> observer) {
@@ -358,7 +357,6 @@ public class TeamStatus {
 
     public void updateObservers(TeamUpdateType updateType) {
         for (IObserver<TeamUpdateType> observer : m_observers) {
-            Log.d(TeamStatus.class.getName(), "Sending notification of type " + updateType + " to team " + m_stationNum + " on alliance " + m_alliance);
             observer.update(updateType);
         }
     }

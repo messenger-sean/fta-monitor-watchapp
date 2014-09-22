@@ -43,7 +43,6 @@ public class MainForegroundService extends Service implements IObserver<Connecti
         // Add all services to the list
         m_fieldService = new FieldConnectionService();
         m_services.add(m_fieldService);
-        m_services.add(new FieldTimeService());
         m_services.add(new FieldProblemNotificationService());
     }
 
