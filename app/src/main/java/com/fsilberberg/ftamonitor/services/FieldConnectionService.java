@@ -1,14 +1,9 @@
 package com.fsilberberg.ftamonitor.services;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.IObservable;
 import com.fsilberberg.ftamonitor.common.IObserver;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.NoopHandler;
@@ -20,7 +15,6 @@ import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchNotReady
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchPlayStatusHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchStatusHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateStationConnectionChangedHandler;
-import com.fsilberberg.ftamonitor.view.DrawerActivity;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -45,11 +39,14 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.READY_TO_PRESTART;
 import static com.fsilberberg.ftamonitor.common.MatchStatus.TELEOP;
 import static com.fsilberberg.ftamonitor.common.MatchStatus.TELEOP_PAUSED;
 
-public class FieldConnectionService extends Service {
+/**
+ * This "service" maintains the connection to field, and sets up the various proxy functions for
+ * listening to the field calls
+ */
+public class FieldConnectionService implements IForegroundService {
 
     // Public intent extras for communicating with this service
     public static final String URL_INTENT_EXTRA = "URL_INTENT_EXTRA";
-    public static final String CLOSE_CONNECTION_INTENT_EXTRA = "CLOSE_CONNECTION_INTENT_EXTRA";
     public static final String UPDATE_URL_INTENT_EXTRA = "UPDATE_URL_INTENT_EXTRA";
 
     // Signalr Constants
@@ -74,32 +71,27 @@ public class FieldConnectionService extends Service {
     private static final String UPDATE_MATCH_PLAY_STATUS = "updateMatchPlayStatus";
     private static final String UPDATE_FIELD_NETWORK_STATUS = "updateFieldNetworkStatus";
 
-    // Notification ID for updating the ongoing notification. 3 has no special significance other
-    // than being my favorite number
-    private static final int ID = 3;
-    private static final int MAIN_ACTIVITY_INTENT_ID = 1;
-    private static final int CLOSE_SERVICE_INTENT_ID = 2;
 
-    private static final ConnectionStateObservable obserable = new ConnectionStateObservable();
+    private static final ConnectionStateObservable m_observable = new ConnectionStateObservable();
 
     public static void registerConnectionObserver(IObserver<ConnectionState> observer) {
-        obserable.registerObserver(observer);
+        m_observable.registerObserver(observer);
     }
 
     public static void deregisterConnectionObserver(IObserver<ConnectionState> observer) {
-        obserable.deregisterObserver(observer);
+        m_observable.deregisterObserver(observer);
     }
 
     public static ConnectionState getState() {
-        return obserable.getState();
+        return m_observable.getState();
     }
 
     private HubConnection m_fieldConnection;
     private boolean m_connectionInProgress = false;
     private boolean m_connectionStarted = false;
     private HubProxy m_fieldProxy;
-    private String m_signalrPath = "/signalr";
     private String m_url;
+    private Context m_context;
 
     private final Object m_lock = new Object();
 
@@ -107,15 +99,36 @@ public class FieldConnectionService extends Service {
     }
 
     @Override
-    public int onStartCommand(final Intent intent, int flags, int startId) {
-        // First, check to see if we are cancelling this service
-        if (intent.getBooleanExtra(CLOSE_CONNECTION_INTENT_EXTRA, false)) {
-            stopForeground(true);
-            stopSelf();
-            return START_REDELIVER_INTENT;
-        }
+    public void stopService() {
+        m_fieldConnection.disconnect();
+    }
 
+    private void registerProxyFunctions() {
+        m_fieldProxy.on(UPDATE_MATCH_READY_TO_PRESTART, new UpdateMatchStatusHandler(UPDATE_MATCH_READY_TO_PRESTART, READY_TO_PRESTART), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_PRESTART_INITIATED, new UpdateMatchStatusHandler(UPDATE_MATCH_PRESTART_INITIATED, PRESTART_INITIATED), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_PRESTART_COMPLETE, new UpdateMatchStatusHandler(UPDATE_MATCH_PRESTART_COMPLETE, PRESTART_COMPLETED), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_READY, new UpdateMatchStatusHandler(UPDATE_MATCH_READY, MATCH_READY), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_NOT_READY, new UpdateMatchNotReadyHandler(UPDATE_MATCH_NOT_READY));
+        m_fieldProxy.on(UPDATE_MATCH_START_AUTO, new UpdateMatchStatusHandler(UPDATE_MATCH_START_AUTO, AUTO), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_PAUSE_AUT0, new UpdateMatchStatusHandler(UPDATE_MATCH_PAUSE_AUT0, AUTO_PAUSED), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_END_AUTO, new UpdateMatchStatusHandler(UPDATE_MATCH_END_AUTO, AUTO_END), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_START_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_START_TELEOP, TELEOP), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_PAUSE_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_PAUSE_TELEOP, TELEOP_PAUSED), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_END_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_END_TELEOP, OVER), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_POST_SCORE, new UpdateMatchStatusHandler(UPDATE_MATCH_POST_SCORE, OVER), JsonObject.class);
+        m_fieldProxy.on(UPDATE_DS_CONTROL, new NoopHandler(), JsonObject.class);
+        m_fieldProxy.on(UPDATE_ESTOP_CHANGED, new UpdateEStopChangedHandler(UPDATE_ESTOP_CHANGED), JsonObject.class);
+        m_fieldProxy.on(UPDATE_STATION_CONNECTION_CHANGED, new UpdateStationConnectionChangedHandler(UPDATE_STATION_CONNECTION_CHANGED), JsonObject.class);
+        m_fieldProxy.on(UPDATE_DS_TO_FMS_STATUS, new UpdateDSToFMSStatusHandler(UPDATE_DS_TO_FMS_STATUS), JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_CHANGED, new UpdateMatchChangedHandler(UPDATE_MATCH_CHANGED), JsonObject.class, JsonObject.class);
+        m_fieldProxy.on(UPDATE_MATCH_PLAY_STATUS, new UpdateMatchPlayStatusHandler(UPDATE_MATCH_PLAY_STATUS), JsonObject.class);
+        m_fieldProxy.on(UPDATE_FIELD_NETWORK_STATUS, new UpdateFieldNetworkStatusHandler(UPDATE_FIELD_NETWORK_STATUS), JsonArray.class);
+    }
+
+    @Override
+    public void startService(Context context, final Intent intent) {
         // Run on a background thread to avoid blocking the UI
+        Log.d(FieldConnectionService.class.getName(), "Called startservice");
         new Thread(new Runnable() {
             public void run() {
                 // Close the connection if we're restarting
@@ -124,7 +137,6 @@ public class FieldConnectionService extends Service {
                     m_connectionStarted = false;
                     m_connectionInProgress = false;
                 }
-
 
                 synchronized (m_lock) {
                     // Start the connection if it's not currently started
@@ -170,8 +182,7 @@ public class FieldConnectionService extends Service {
                 m_fieldConnection.stateChanged(new StateChangedCallback() {
                     @Override
                     public void stateChanged(ConnectionState oldState, ConnectionState newState) {
-                        startForeground(ID, createNotification(newState));
-                        obserable.setConnectionState(newState);
+                        m_observable.setConnectionState(newState);
                     }
                 });
 
@@ -186,65 +197,14 @@ public class FieldConnectionService extends Service {
                 }
             }
         }).start();
-
-        return Service.START_REDELIVER_INTENT;
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        // We don't support binding
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        m_fieldConnection.disconnect();
-        super.onDestroy();
-    }
-
-    private void registerProxyFunctions() {
-        m_fieldProxy.on(UPDATE_MATCH_READY_TO_PRESTART, new UpdateMatchStatusHandler(UPDATE_MATCH_READY_TO_PRESTART, READY_TO_PRESTART), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PRESTART_INITIATED, new UpdateMatchStatusHandler(UPDATE_MATCH_PRESTART_INITIATED, PRESTART_INITIATED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PRESTART_COMPLETE, new UpdateMatchStatusHandler(UPDATE_MATCH_PRESTART_COMPLETE, PRESTART_COMPLETED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_READY, new UpdateMatchStatusHandler(UPDATE_MATCH_READY, MATCH_READY), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_NOT_READY, new UpdateMatchNotReadyHandler(UPDATE_MATCH_NOT_READY));
-        m_fieldProxy.on(UPDATE_MATCH_START_AUTO, new UpdateMatchStatusHandler(UPDATE_MATCH_START_AUTO, AUTO), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PAUSE_AUT0, new UpdateMatchStatusHandler(UPDATE_MATCH_PAUSE_AUT0, AUTO_PAUSED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_END_AUTO, new UpdateMatchStatusHandler(UPDATE_MATCH_END_AUTO, AUTO_END), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_START_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_START_TELEOP, TELEOP), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PAUSE_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_PAUSE_TELEOP, TELEOP_PAUSED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_END_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_END_TELEOP, OVER), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_POST_SCORE, new UpdateMatchStatusHandler(UPDATE_MATCH_POST_SCORE, OVER), JsonObject.class);
-        m_fieldProxy.on(UPDATE_DS_CONTROL, new NoopHandler(), JsonObject.class);
-        m_fieldProxy.on(UPDATE_ESTOP_CHANGED, new UpdateEStopChangedHandler(UPDATE_ESTOP_CHANGED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_STATION_CONNECTION_CHANGED, new UpdateStationConnectionChangedHandler(UPDATE_STATION_CONNECTION_CHANGED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_DS_TO_FMS_STATUS, new UpdateDSToFMSStatusHandler(UPDATE_DS_TO_FMS_STATUS), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_CHANGED, new UpdateMatchChangedHandler(UPDATE_MATCH_CHANGED), JsonObject.class, JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PLAY_STATUS, new UpdateMatchPlayStatusHandler(UPDATE_MATCH_PLAY_STATUS), JsonObject.class);
-        m_fieldProxy.on(UPDATE_FIELD_NETWORK_STATUS, new UpdateFieldNetworkStatusHandler(UPDATE_FIELD_NETWORK_STATUS), JsonArray.class);
-    }
-
-    private Notification createNotification(ConnectionState state) {
-        String contentText = state.toString() + " - " + m_url;
-
-        // Create the intent for the main action
-        Intent mainIntent = new Intent(this, DrawerActivity.class);
-        mainIntent.putExtra(DrawerActivity.VIEW_INTENT_EXTRA, DrawerActivity.DisplayView.FIELD_MONITOR.ordinal());
-
-        // Create the intent for the action button
-        Intent actionIntent = new Intent(this, getClass());
-        actionIntent.putExtra(CLOSE_CONNECTION_INTENT_EXTRA, true);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setContentTitle("Field Monitor")
-                .setContentText(contentText)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentIntent(
-                        PendingIntent.getActivity(this, MAIN_ACTIVITY_INTENT_ID, mainIntent, PendingIntent.FLAG_CANCEL_CURRENT))
-                .addAction(R.drawable.ic_action_remove, "Close Monitor",
-                        PendingIntent.getService(this, CLOSE_SERVICE_INTENT_ID, actionIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-
-        return builder.build();
+    /**
+     * Gets the url being used by the connection
+     * @return The connection url
+     */
+    public String getUrl() {
+        return m_url;
     }
 
     private static class ConnectionStateObservable implements IObservable<ConnectionState> {

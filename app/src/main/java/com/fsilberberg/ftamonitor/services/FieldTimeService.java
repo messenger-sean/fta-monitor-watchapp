@@ -1,11 +1,8 @@
 package com.fsilberberg.ftamonitor.services;
 
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Binder;
-import android.os.IBinder;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -14,13 +11,10 @@ import com.fsilberberg.ftamonitor.common.IObserver;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType;
 
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-
 /**
- * Created by Fredric on 9/21/14.
+ * This service keeps track of the current field time and
  */
-public class FieldTimeService extends Service implements IObserver<FieldUpdateType> {
+public class FieldTimeService implements IForegroundService, IObserver<FieldUpdateType> {
 
     private static int m_timeRemaining;
     private static boolean m_timerRunning = false;
@@ -33,36 +27,35 @@ public class FieldTimeService extends Service implements IObserver<FieldUpdateTy
         return m_timerRunning;
     }
 
-    private final IBinder m_binder = new FieldTimeBinder();
     private boolean m_timerPaused = false;
     private SharedPreferences m_sharedPreferences;
-    private PowerManager.WakeLock m_wl;
     private final MatchTimer m_timer = new MatchTimer();
+    private Context m_context;
     private Thread m_timerThread;
 
+    public FieldTimeService() {
+    }
+
     @Override
-    public void onCreate() {
-        super.onCreate();
-        m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        m_wl = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, FieldTimeService.class.getName());
+    public void startService(Context context, Intent intent) {
+        m_context = context;
         FieldMonitorFactory.getInstance().getFieldStatus().registerObserver(this);
+        m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(m_context);
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (m_wl != null && m_wl.isHeld()) {
-            m_wl.release();
-        }
+    public void stopService() {
         FieldMonitorFactory.getInstance().getFieldStatus().deregisterObserver(this);
+        if (m_timerThread != null) {
+            m_timerThread.interrupt();
+            try {
+                m_timerThread.join();
+            } catch (InterruptedException e) {
+                Log.d(FieldTimeService.class.getName(), "Error while joining the timer thread", e);
+            }
+        }
+        m_timeRemaining = 0;
+        m_timerRunning = false;
     }
 
     @Override
@@ -76,10 +69,10 @@ public class FieldTimeService extends Service implements IObserver<FieldUpdateTy
     private void updateMatchStatus() {
         switch (FieldMonitorFactory.getInstance().getFieldStatus().getMatchStatus()) {
             case AUTO:
-                updateTimer(getString(R.string.auto_time_key));
+                updateTimer(m_context.getString(R.string.auto_time_key));
                 break;
             case TELEOP:
-                updateTimer(getString(R.string.teleop_time_key));
+                updateTimer(m_context.getString(R.string.teleop_time_key));
                 break;
             case TELEOP_PAUSED:
             case AUTO_PAUSED:
@@ -112,17 +105,6 @@ public class FieldTimeService extends Service implements IObserver<FieldUpdateTy
         m_timerThread = new Thread(m_timer);
         m_timerThread.start();
         m_timerRunning = true;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return m_binder;
-    }
-
-    public class FieldTimeBinder extends Binder {
-        public FieldTimeService getService() {
-            return FieldTimeService.this;
-        }
     }
 
     private class MatchTimer implements Runnable {

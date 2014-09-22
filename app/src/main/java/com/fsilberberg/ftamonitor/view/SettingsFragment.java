@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.MainForegroundService;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -90,7 +91,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     private void sendServiceUpdate(String url) {
         Log.d(SettingsFragment.class.getName(), "Sending url update with; " + url);
-        Intent intent = new Intent(getActivity(), FieldConnectionService.class);
+        Intent intent = new Intent(getActivity(), MainForegroundService.class);
         intent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
         intent.putExtra(FieldConnectionService.UPDATE_URL_INTENT_EXTRA, true);
         getActivity().startService(intent);

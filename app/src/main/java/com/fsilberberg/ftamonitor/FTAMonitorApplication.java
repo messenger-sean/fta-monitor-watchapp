@@ -6,12 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
-import com.fsilberberg.ftamonitor.services.FieldTimeService;
+import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.MainForegroundService;
 
 /**
- * Created by Fredric on 8/23/14.
+ * This is the main entry point of the application. On startup, it will create the main foreground
+ * service responsible for maintaining all app functions
  */
 public class FTAMonitorApplication extends Application {
 
@@ -33,12 +34,8 @@ public class FTAMonitorApplication extends Application {
         // Start the FMS Service
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String url = preferences.getString(getString(R.string.fms_ip_addr_key), "10.0.100.5");
-        Intent serviceIntent = new Intent(getBaseContext(), FieldConnectionService.class);
+        Intent serviceIntent = new Intent(getBaseContext(), MainForegroundService.class);
         serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
         startService(serviceIntent);
-
-        // Start the timing service
-        Intent timingIntent = new Intent(getBaseContext(), FieldTimeService.class);
-        startService(timingIntent);
     }
 }

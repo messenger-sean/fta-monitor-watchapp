@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.IObserver;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.MainForegroundService;
 
 import microsoft.aspnet.signalr.client.ConnectionState;
 
@@ -155,7 +156,7 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
     public void onClick(View view) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String url = preferences.getString(getString(R.string.fms_ip_addr_key), "10.0.100.5");
-        Intent serviceIntent = new Intent(getActivity(), FieldConnectionService.class);
+        Intent serviceIntent = new Intent(getActivity(), MainForegroundService.class);
         serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
         getActivity().startService(serviceIntent);
     }
