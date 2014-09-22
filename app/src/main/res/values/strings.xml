@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- General Strings -->
     <string name="app_name">FTA Monitor</string>
     <string name="action_field_monitor">Field Monitor</string>
     <string name="action_settings">Settings</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Preferences strings -->
     <string name="on_field_key">on_field</string>
     <string name="on_field">On FRC Field</string>
     <string name="on_field_sum">Use Field FMS Connection Settings</string>
@@ -28,11 +26,21 @@
     <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
     <string name="field_settings_title">Field Settings</string>
     <string name="fms_settings_title">FMS Settings</string>
+
+    <!-- Field Monitor Strings -->
     <string name="ds_ethernet">DS-ETH</string>
     <string name="ds">DS</string>
     <string name="radio">Radio</string>
     <string name="rio">RIO</string>
     <string name="code">Code</string>
+
+    <!-- Notification Strings -->
+    <string name="main_error_string">%d has no %s</string>
+    <string name="ds_ethernet_error">driver station ethernet</string>
+    <string name="ds_error">driver station</string>
+    <string name="radio_error">radio</string>
+    <string name="robot_error">roboRio</string>
+    <string name="code_error">code</string>
 
     <string-array name="drawer_tabs">
         <item>Field Monitor</item>
