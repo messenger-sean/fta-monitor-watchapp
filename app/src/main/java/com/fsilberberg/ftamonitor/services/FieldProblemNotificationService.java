@@ -1,5 +1,7 @@
 package com.fsilberberg.ftamonitor.services;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,12 +16,13 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType;
+import com.fsilberberg.ftamonitor.view.DrawerActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
-import static com.fsilberberg.ftamonitor.common.Alliance.*;
+import static com.fsilberberg.ftamonitor.common.Alliance.BLUE;
+import static com.fsilberberg.ftamonitor.common.Alliance.RED;
 
 /**
  * This class is responsible for watching the field for problems with robots and notifying the user
@@ -32,6 +35,7 @@ public class FieldProblemNotificationService implements IForegroundService {
 
     // Notification ID. Again no significance, other than 3 is my favorite number, so 3x3 is 9
     private static final int ID = 9;
+    private static final int MAIN_ACTIVITY_ID = 4;
 
     // References to the teams
     private final FieldStatus m_field = FieldMonitorFactory.getInstance().getFieldStatus();
@@ -103,11 +107,49 @@ public class FieldProblemNotificationService implements IForegroundService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(m_context);
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         int notifications = 0;
+        boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (ProblemObserver observer : m_observers) {
             if (observer.shouldDisplay()) {
                 notifications++;
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(getShortName(observer.getAlliance()));
+                sb.append(observer.getStationNumber());
+                inboxStyle.addLine(observer.getText());
             }
+        }
+
+        if (notifications == 0) {
+            return;
+        }
+
+        Intent mainIntent = new Intent(m_context, DrawerActivity.class);
+        mainIntent.putExtra(DrawerActivity.VIEW_INTENT_EXTRA, DrawerActivity.DisplayView.FIELD_MONITOR.ordinal());
+        PendingIntent pi = PendingIntent.getActivity(m_context, MAIN_ACTIVITY_ID, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(notifications + " team issues")
+                .setContentText(sb.toString())
+                .setContentIntent(pi)
+                .setStyle(inboxStyle)
+                .setPriority(NotificationCompat.PRIORITY_MAX);
+
+        NotificationManager manager = (NotificationManager) m_context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(ID, builder.build());
+    }
+
+    private String getShortName(Alliance alliance) {
+        switch (alliance) {
+            case BLUE:
+                return "B";
+            case RED:
+                return "R";
+            default:
+                return "";
         }
     }
 
