@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.fsilberberg.ftamonitor.database.DatabaseFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;
@@ -27,6 +28,9 @@ public class FTAMonitorApplication extends Application {
         super.onCreate();
 
         _context = getApplicationContext();
+
+        // Initialize the database
+        DatabaseFactory.initializeDatabase(this);
 
         // Initialize the field monitor factory
         FieldMonitorFactory.initialize(this);
