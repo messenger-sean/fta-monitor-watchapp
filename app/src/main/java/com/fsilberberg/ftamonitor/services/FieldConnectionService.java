@@ -188,11 +188,8 @@ public class FieldConnectionService implements IForegroundService {
                 // Attempt to start the connection
                 try {
                     m_fieldConnection.start().get();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     Log.e(FieldConnectionService.class.getName(), "Error when creating the field monitor connection", e);
-                } catch (ExecutionException e) {
-                    Log.e(FieldConnectionService.class.getName(), "Error when creating the field monitor connection", e);
-                    e.printStackTrace();
                 }
             }
         }).start();
