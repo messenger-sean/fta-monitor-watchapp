@@ -5,10 +5,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.IObserver;
 
 /**
- * Created by 333fr_000 on 8/22/14.
+ * Main factory for all Field Monitor related objects.
  */
 public class FieldMonitorFactory {
 

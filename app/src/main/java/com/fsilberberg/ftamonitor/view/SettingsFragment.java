@@ -20,8 +20,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private String m_autoKey;
     private String m_teleopKey;
     private String m_defaultKey;
-    private String m_notificationKey;
-    private String m_notifyAlwaysKey;
 
     public SettingsFragment() {
     }
@@ -34,8 +32,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         m_autoKey = getString(R.string.auto_time_key);
         m_teleopKey = getString(R.string.teleop_time_key);
         m_defaultKey = getString(R.string.on_field_key);
-        m_notificationKey = getString(R.string.notification_key);
-        m_notifyAlwaysKey = getString(R.string.notify_always_key);
         getActivity().getActionBar().setTitle(getString(R.string.action_settings));
     }
 

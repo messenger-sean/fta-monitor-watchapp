@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 /**
- * Created by Fredric on 8/22/14.
+ * Handles the DStoFMSStatus Signalr Event
  */
 public class UpdateDSToFMSStatusHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonObject> {
 

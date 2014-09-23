@@ -25,7 +25,6 @@ public class DrawerActivity extends Activity {
     // If defined with a value of DisplayView, the specified view will be shown
     public static final String VIEW_INTENT_EXTRA = "VIEW";
 
-    private String[] m_drawerItems;
     private ListView m_drawerList;
     private DrawerLayout m_drawerLayout;
     private ActionBarDrawerToggle m_drawerToggle;
@@ -42,9 +41,9 @@ public class DrawerActivity extends Activity {
         setContentView(R.layout.activity_drawer);
 
         // Set up the drawer content
-        m_drawerItems = getResources().getStringArray(R.array.drawer_tabs);
+        String[] drawerItems = getResources().getStringArray(R.array.drawer_tabs);
         m_drawerList = (ListView) findViewById(R.id.left_drawer);
-        m_drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.list_white_text, R.id.list_content, m_drawerItems));
+        m_drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.list_white_text, R.id.list_content, drawerItems));
 
         // Set up the drawer toggle and listeners
         m_drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -83,11 +82,8 @@ public class DrawerActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (m_drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+        return m_drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

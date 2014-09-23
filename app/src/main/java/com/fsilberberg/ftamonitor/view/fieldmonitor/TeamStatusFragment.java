@@ -2,7 +2,6 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 
 import android.app.Fragment;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -53,14 +52,7 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
     private TextView m_signalQualityView;
     private TextView m_signalStrengthView;
 
-    // Important IDs
-    private final int redBox = R.drawable.red_with_border;
-    private final int greenBox = R.drawable.green_with_border;
-    private final int blackBox = R.drawable.black_with_border;
-    private final int redRobotBox = R.drawable.red_robot_with_border;
-    private final int blueRobotBox = R.drawable.blue_robot_with_border;
     private final int whiteText = R.color.white_text;
-    private final int blackText = R.color.black_text;
 
     /**
      * Use this factory method to create a new instance of
@@ -157,6 +149,8 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
         // Set the station number
         setText(m_stationNumberView, m_stationNumber);
         // Set the backgrounds for the team and station numbers
+        int blueRobotBox = R.drawable.blue_robot_with_border;
+        int redRobotBox = R.drawable.red_robot_with_border;
         int backRes = m_allianceColor == Alliance.RED ? redRobotBox : blueRobotBox;
         int textColor = R.color.white_text;
         setBackground(m_stationNumberView, backRes);
@@ -232,13 +226,16 @@ public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdate
      * Reads the current team enable status and sets the enable box based on it
      */
     private void updateTeamEnableStatus() {
+        int redBox = R.drawable.red_with_border;
         if (m_teamStatus.isEstop()) {
+            int blackBox = R.drawable.black_with_border;
             setBackground(m_enabledView, blackBox);
             setText(m_enabledView, "E", whiteText);
         } else if (m_teamStatus.isBypassed()) {
             setBackground(m_enabledView, redBox);
             setText(m_enabledView, "B", whiteText);
         } else if (m_teamStatus.isEnabled()) {
+            int greenBox = R.drawable.green_with_border;
             setBackground(m_enabledView, greenBox);
             setEnabledText();
         } else {

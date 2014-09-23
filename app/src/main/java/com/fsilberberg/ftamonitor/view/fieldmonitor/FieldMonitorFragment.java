@@ -37,8 +37,6 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
     private LinearLayout m_mainFieldView;
     private FrameLayout m_fieldView;
     private FrameLayout m_teamView;
-    // If we need to set up the fragments or if it's been done
-    private boolean m_updateFragments = false;
 
     public FieldMonitorFragment() {
         // Required empty public constructor
@@ -81,7 +79,7 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
      * Updates the view based on the new status. This must be called from the UI thread, otherwise
      * an exception will be thrown
      *
-     * @param updateType
+     * @param updateType The new connection state to show
      */
     private void updateView(final ConnectionState updateType) {
         switch (updateType) {
@@ -142,6 +140,7 @@ public class FieldMonitorFragment extends Fragment implements IObserver<Connecti
     @Override
     public void update(final ConnectionState updateType) {
         getView().post(new Runnable() {
+            @SuppressWarnings("ConstantConditions")
             @Override
             public void run() {
                 updateView(updateType);

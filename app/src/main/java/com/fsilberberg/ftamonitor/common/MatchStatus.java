@@ -1,7 +1,7 @@
 package com.fsilberberg.ftamonitor.common;
 
 /**
- * Created by Fredric on 8/17/14.
+ * Represents the various match states that FMS supports
  */
 public enum MatchStatus {
     NOT_READY("Not Ready"),

@@ -1,6 +1,5 @@
 package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 
-import com.fsilberberg.ftamonitor.fieldmonitor.fmsdatatypes.MatchInfo;
 import com.google.gson.JsonObject;
 
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler2;

@@ -91,7 +91,6 @@ public class FieldConnectionService implements IForegroundService {
     private boolean m_connectionStarted = false;
     private HubProxy m_fieldProxy;
     private String m_url;
-    private Context m_context;
 
     private final Object m_lock = new Object();
 

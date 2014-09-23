@@ -9,7 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Created by Fredric on 8/22/14.
+ * Base class for all Proxy Handles that perform actions
  */
 public abstract class ProxyHandlerBase {
     // FRC-Defined constants, located in FieldMonitor.js

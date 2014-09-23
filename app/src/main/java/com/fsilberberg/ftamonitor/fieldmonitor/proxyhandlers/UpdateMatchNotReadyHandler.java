@@ -5,7 +5,7 @@ import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler;
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
 
 /**
- * Created by Fredric on 8/22/14.
+ * Handles the match not ready signalr event
  */
 public class UpdateMatchNotReadyHandler extends ProxyHandlerBase implements SubscriptionHandler {
     public UpdateMatchNotReadyHandler(String proxyMethod) {

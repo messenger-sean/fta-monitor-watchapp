@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 /**
- * Created by Fredric on 8/22/14.
+ * Handles the field network status event
  */
 public class UpdateFieldNetworkStatusHandler extends ProxyHandlerBase implements SubscriptionHandler1<JsonArray> {
 

@@ -1,7 +1,5 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
-import android.util.Log;
-
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
 import com.fsilberberg.ftamonitor.common.IObserver;
@@ -9,11 +7,28 @@ import com.fsilberberg.ftamonitor.common.IObserver;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.fsilberberg.ftamonitor.common.Card.*;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.*;
+import static com.fsilberberg.ftamonitor.common.Card.NONE;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.BATTERY;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.BYPASSED;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.CARD;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.CODE;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DATA_RATE;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DROPPED_PACKETS;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DS;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DS_ETH;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ENABLED;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ESTOP;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.RADIO;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ROBOT;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ROUND_TRIP;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.SIGNAL_QUALITY;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.SIGNAL_STRENGTH;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.TEAM_NUMBER;
 
 /**
- * Created by Fredric on 8/17/14.
+ * Encapsulates the current status of one of the alliance team members. There are however many of these
+ * per alliance accessible through the {@link com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory}.
+ * This class should never be instantiated directly outside this package
  */
 public class TeamStatus {
     private Integer m_teamNumber = 1;

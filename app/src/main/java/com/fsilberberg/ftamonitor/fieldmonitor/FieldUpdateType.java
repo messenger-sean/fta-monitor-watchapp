@@ -1,7 +1,8 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
 /**
- * Created by 333fr_000 on 8/25/14.
+ * If you want to subscribe to field update events, you need to implement the {@link com.fsilberberg.ftamonitor.common.IObserver}
+ * interface with this as the generic type
  */
 public enum FieldUpdateType {
     MATCH_NUMBER,

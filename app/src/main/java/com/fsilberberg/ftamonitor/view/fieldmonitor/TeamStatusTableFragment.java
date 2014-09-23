@@ -1,17 +1,16 @@
 package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 
-import static com.fsilberberg.ftamonitor.common.Alliance.*;
+import static com.fsilberberg.ftamonitor.common.Alliance.BLUE;
+import static com.fsilberberg.ftamonitor.common.Alliance.RED;
 
 /**
  * A simple {@link Fragment} subclass.
