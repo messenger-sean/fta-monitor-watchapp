@@ -14,6 +14,7 @@ abstract class FTAMonitorContract {
         public static final String TABLE_NAME = "teams";
         public static final String TEAM_NUMBER = "team_number";
         public static final String TEAM_NAME = "team_name";
+        public static final String TEAM_NICK = "team_nick";
     }
 
     public abstract class Event implements BaseColumns {

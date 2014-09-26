@@ -33,7 +33,8 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
             CREATE_TABLE + Team.TABLE_NAME + OPEN_PAREN + NL +
                     Team._ID + INT_TYPE + PRIMARY_KEY + AUTO_INC + COMMA + NL +
                     Team.TEAM_NUMBER + INT_TYPE + NOT_NULL + COMMA + NL +
-                    Team.TEAM_NAME + TEXT_TYPE + NOT_NULL + CLOSE_PAREN;
+                    Team.TEAM_NAME + TEXT_TYPE + NOT_NULL + COMMA + NL +
+                    Team.TEAM_NICK + TEXT_TYPE + NOT_NULL + CLOSE_PAREN;
 
     // Event Table
     private static final String CREATE_EVENT_TABLE =
