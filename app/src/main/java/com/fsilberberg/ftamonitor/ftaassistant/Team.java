@@ -8,6 +8,13 @@ import java.util.Collection;
 public interface Team {
 
     /**
+     * Unique Identifier for the team. This is suitable for use in a database as a primary key.
+     *
+     * @return The team's unique identifier
+     */
+    public long getId();
+
+    /**
      * Gets the number of this team
      *
      * @return The team number

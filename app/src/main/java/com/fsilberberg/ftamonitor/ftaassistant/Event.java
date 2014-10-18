@@ -10,6 +10,13 @@ import java.util.Collection;
 public interface Event {
 
     /**
+     * Unique Identifier for the event. This is suitable for use in a database as a primary key.
+     *
+     * @return The unique id of the event
+     */
+    public long getId();
+
+    /**
      * Gets the official FIRST-defined event code for this event.
      *
      * @return The event code

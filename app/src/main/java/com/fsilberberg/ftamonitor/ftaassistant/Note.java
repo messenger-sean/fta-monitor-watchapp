@@ -4,6 +4,14 @@ package com.fsilberberg.ftamonitor.ftaassistant;
  * This is an interface that represents a notes for the FTA Assistant side of the app.
  */
 public interface Note {
+
+    /**
+     * Unique Identifier for the note. This is suitable for use in a database as a primary key.
+     *
+     * @return The unique id of the note
+     */
+    public long getId();
+
     /**
      * Gets the content of this note
      *

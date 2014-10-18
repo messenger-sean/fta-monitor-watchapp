@@ -8,6 +8,13 @@ import java.util.Collection;
 public interface Match {
 
     /**
+     * Unique Identifier for the match. This is suitable for use in a database as a primary key.
+     *
+     * @return The unique id of the match
+     */
+    public long getId();
+
+    /**
      * Gets the match identifier
      *
      * @return The identifier of this match
