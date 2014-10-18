@@ -15,7 +15,7 @@ public class AssistantFactory {
     }
 
     /**
-     * Creates a new implementation of {@link com.fsilberberg.ftamonitor.ftaassistant.ITeam} with
+     * Creates a new implementation of {@link Team} with
      * the given number, name, and nickname
      *
      * @param teamNumber The team number
@@ -23,12 +23,12 @@ public class AssistantFactory {
      * @param teamNick   The short name of the team
      * @return The team implementation
      */
-    public ITeam makeTeam(int teamNumber, String teamName, String teamNick) {
+    public Team makeTeam(int teamNumber, String teamName, String teamNick) {
         return null;
     }
 
     /**
-     * Creates a new implementation of {@link com.fsilberberg.ftamonitor.ftaassistant.IEvent} with the given
+     * Creates a new implementation of {@link Event} with the given
      * event info.
      *
      * @param eventCode The FIRST code for the event
@@ -38,17 +38,17 @@ public class AssistantFactory {
      * @param endTime   The ending time of the event
      * @return The event implementation
      */
-    public IEvent makeEvent(String eventCode, String eventName, String eventLoc, DateTime startTime, DateTime endTime) {
+    public Event makeEvent(String eventCode, String eventName, String eventLoc, DateTime startTime, DateTime endTime) {
         return null;
     }
 
     // TODO: Practice, Qual, and Elims factory methods
 
-    public IMatchIdentifier makeMatchIdentifier() {
+    public MatchIdentifier makeMatchIdentifier() {
         return null;
     }
 
-    public INote makeNote() {
+    public Note makeNote() {
         return null;
     }
 }

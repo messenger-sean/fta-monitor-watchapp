@@ -1,7 +1,7 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
 /**
- * If you want to subscribe to team update events, you need to implement the {@link com.fsilberberg.ftamonitor.common.IObserver}
+ * If you want to subscribe to team update events, you need to implement the {@link com.fsilberberg.ftamonitor.common.Observer}
  * interface with this as the generic type
  */
 public enum TeamUpdateType {

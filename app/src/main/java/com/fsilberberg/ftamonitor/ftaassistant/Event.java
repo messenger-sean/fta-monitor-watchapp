@@ -1,7 +1,5 @@
 package com.fsilberberg.ftamonitor.ftaassistant;
 
-import android.support.annotation.Nullable;
-
 import org.joda.time.DateTime;
 
 import java.util.Collection;
@@ -9,7 +7,7 @@ import java.util.Collection;
 /**
  * Represents an FRC match
  */
-public interface IEvent {
+public interface Event {
 
     /**
      * Gets the official FIRST-defined event code for this event.
@@ -51,14 +49,14 @@ public interface IEvent {
      *
      * @return The teams at the event
      */
-    public Collection<ITeam> getTeams();
+    public Collection<Team> getTeams();
 
     /**
      * Gets the matches played at this event
      *
      * @return The match list
      */
-    public Collection<IMatch> getMatches();
+    public Collection<Match> getMatches();
 
     /**
      * Gets the notes associated with this match, if there are any. If there are no notes, this
@@ -66,5 +64,5 @@ public interface IEvent {
      *
      * @return The notes associated with this match
      */
-    public Collection<INote> getNotes();
+    public Collection<Note> getNotes();
 }

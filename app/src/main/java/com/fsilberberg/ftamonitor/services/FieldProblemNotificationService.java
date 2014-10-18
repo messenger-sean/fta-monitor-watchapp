@@ -10,7 +10,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
@@ -28,7 +28,7 @@ import static com.fsilberberg.ftamonitor.common.Alliance.RED;
  * This class is responsible for watching the field for problems with robots and notifying the user
  * when an error occurs during a match
  */
-public class FieldProblemNotificationService implements IForegroundService {
+public class FieldProblemNotificationService implements ForegroundService {
 
     // Intent extra for the settings to tell the service to update the notification settings
     public static final String UPDATE_NOTIFICATION_SETTINGS_INTENT_EXTRA = "UPDATE_NOTIFICATION_SETTINGS";
@@ -153,7 +153,7 @@ public class FieldProblemNotificationService implements IForegroundService {
         }
     }
 
-    private class ProblemObserver implements IObserver<TeamUpdateType> {
+    private class ProblemObserver implements Observer<TeamUpdateType> {
 
         private int m_stationNumber;
         private Alliance m_alliance;

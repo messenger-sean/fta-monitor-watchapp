@@ -1,11 +1,9 @@
 package com.fsilberberg.ftamonitor.ftaassistant;
 
-import android.support.annotation.Nullable;
-
 /**
  * This is an interface that represents a notes for the FTA Assistant side of the app.
  */
-public interface INote {
+public interface Note {
     /**
      * Gets the content of this note
      *
@@ -19,8 +17,7 @@ public interface INote {
      *
      * @return The note's team
      */
-    @Nullable
-    public ITeam getTeam();
+    public Team getTeam();
 
     /**
      * Gets the event associated with this note, if it exists. If the event does not exist, this
@@ -28,8 +25,7 @@ public interface INote {
      *
      * @return The note's event
      */
-    @Nullable
-    public IEvent getEvent();
+    public Event getEvent();
 
     /**
      * Gets the match associated with this note, if it exists. If the match does not exist, this
@@ -37,6 +33,5 @@ public interface INote {
      *
      * @return The note's match
      */
-    @Nullable
-    public IMatch getMatch();
+    public Match getMatch();
 }

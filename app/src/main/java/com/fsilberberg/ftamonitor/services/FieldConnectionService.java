@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.fsilberberg.ftamonitor.common.IObservable;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observable;
+import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.NoopHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateDSToFMSStatusHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateEStopChangedHandler;
@@ -43,7 +43,7 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.TELEOP_PAUSED;
  * This "service" maintains the connection to field, and sets up the various proxy functions for
  * listening to the field calls
  */
-public class FieldConnectionService implements IForegroundService {
+public class FieldConnectionService implements ForegroundService {
 
     // Public intent extras for communicating with this service
     public static final String URL_INTENT_EXTRA = "URL_INTENT_EXTRA";
@@ -74,11 +74,11 @@ public class FieldConnectionService implements IForegroundService {
 
     private static final ConnectionStateObservable m_observable = new ConnectionStateObservable();
 
-    public static void registerConnectionObserver(IObserver<ConnectionState> observer) {
+    public static void registerConnectionObserver(Observer<ConnectionState> observer) {
         m_observable.registerObserver(observer);
     }
 
-    public static void deregisterConnectionObserver(IObserver<ConnectionState> observer) {
+    public static void deregisterConnectionObserver(Observer<ConnectionState> observer) {
         m_observable.deregisterObserver(observer);
     }
 
@@ -203,15 +203,15 @@ public class FieldConnectionService implements IForegroundService {
         return m_url;
     }
 
-    private static class ConnectionStateObservable implements IObservable<ConnectionState> {
+    private static class ConnectionStateObservable implements Observable<ConnectionState> {
 
-        private final Collection<IObserver<ConnectionState>> m_observers = new ArrayList<>();
+        private final Collection<Observer<ConnectionState>> m_observers = new ArrayList<>();
         private ConnectionState m_connectionState = ConnectionState.Disconnected;
 
         public void setConnectionState(ConnectionState newState) {
             if (!m_connectionState.equals(newState)) {
                 m_connectionState = newState;
-                for (IObserver<ConnectionState> observer : m_observers) {
+                for (Observer<ConnectionState> observer : m_observers) {
                     observer.update(newState);
                 }
             }
@@ -222,14 +222,14 @@ public class FieldConnectionService implements IForegroundService {
         }
 
         @Override
-        public void registerObserver(IObserver<ConnectionState> observer) {
+        public void registerObserver(Observer<ConnectionState> observer) {
             if (!m_observers.contains(observer)) {
                 m_observers.add(observer);
             }
         }
 
         @Override
-        public void deregisterObserver(IObserver<ConnectionState> observer) {
+        public void deregisterObserver(Observer<ConnectionState> observer) {
             m_observers.remove(observer);
         }
     }

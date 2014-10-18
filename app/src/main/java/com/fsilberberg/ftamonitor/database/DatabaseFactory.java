@@ -22,7 +22,7 @@ public class DatabaseFactory {
     }
 
     private final Context m_context;
-    private final IDatabase m_database;
+    private final Database m_database;
 
     private DatabaseFactory(Context context) {
         m_context = context;
@@ -30,11 +30,11 @@ public class DatabaseFactory {
     }
 
     /**
-     * Gets the {@link com.fsilberberg.ftamonitor.database.IDatabase} implementation used by this program
+     * Gets the {@link Database} implementation used by this program
      *
      * @return The Database
      */
-    public IDatabase getDatabase() {
+    public Database getDatabase() {
         return m_database;
     }
 }

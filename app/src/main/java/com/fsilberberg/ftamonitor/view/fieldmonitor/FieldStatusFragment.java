@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
@@ -18,7 +18,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FieldStatusFragment extends Fragment implements IObserver<FieldUpdateType> {
+public class FieldStatusFragment extends Fragment implements Observer<FieldUpdateType> {
 
     private TextView m_matchNumberView;
     private TextView m_fieldStatusView;

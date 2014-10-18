@@ -6,7 +6,7 @@ import com.fsilberberg.ftamonitor.common.MatchPeriod;
  * Represent the identification of a match. This can be practice matches, qual matches, or elim
  * matches.
  */
-public interface IMatchIdentifier extends Comparable<IMatchIdentifier> {
+public interface MatchIdentifier extends Comparable<MatchIdentifier> {
 
     /**
      * Gets the period of the match

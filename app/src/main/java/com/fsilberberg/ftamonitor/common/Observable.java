@@ -7,7 +7,7 @@ package com.fsilberberg.ftamonitor.common;
  *
  * @author Fredric
  */
-public interface IObservable<E extends Enum<E>> {
-    void registerObserver(IObserver<E> observer);
-    void deregisterObserver(IObserver<E> observer);
+public interface Observable<E extends Enum<E>> {
+    void registerObserver(Observer<E> observer);
+    void deregisterObserver(Observer<E> observer);
 }

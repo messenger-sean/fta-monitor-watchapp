@@ -2,7 +2,7 @@ package com.fsilberberg.ftamonitor.fieldmonitor;
 
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public class TeamStatus {
         this.m_alliance = m_alliance;
     }
 
-    private final Collection<IObserver<TeamUpdateType>> m_observers = new ArrayList<>();
+    private final Collection<Observer<TeamUpdateType>> m_observers = new ArrayList<>();
 
     public synchronized int getTeamNumber() {
         return m_teamNumber;
@@ -362,16 +362,16 @@ public class TeamStatus {
         }
     }
 
-    public void registerObserver(IObserver<TeamUpdateType> observer) {
+    public void registerObserver(Observer<TeamUpdateType> observer) {
         m_observers.add(observer);
     }
 
-    public void deregisterObserver(IObserver<TeamUpdateType> observer) {
+    public void deregisterObserver(Observer<TeamUpdateType> observer) {
         m_observers.remove(observer);
     }
 
     public void updateObservers(TeamUpdateType updateType) {
-        for (IObserver<TeamUpdateType> observer : m_observers) {
+        for (Observer<TeamUpdateType> observer : m_observers) {
             observer.update(updateType);
         }
     }
