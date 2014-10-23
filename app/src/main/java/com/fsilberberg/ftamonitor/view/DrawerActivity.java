@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +21,7 @@ import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
 
 
-public class DrawerActivity extends Activity {
+public class DrawerActivity extends ActionBarActivity {
 
     // If defined with a value of DisplayView, the specified view will be shown
     public static final String VIEW_INTENT_EXTRA = "VIEW";
@@ -51,19 +52,19 @@ public class DrawerActivity extends Activity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                m_title = getActionBar().getTitle();
-                getActionBar().setTitle(getString(R.string.app_name));
+                m_title = getSupportActionBar().getTitle();
+                getSupportActionBar().setTitle(getString(R.string.app_name));
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                getActionBar().setTitle(m_title);
+                getSupportActionBar().setTitle(m_title);
             }
         };
         m_drawerLayout.setDrawerListener(m_drawerToggle);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         m_drawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // Set up the main content
@@ -126,7 +127,7 @@ public class DrawerActivity extends Activity {
         if (newFrag != null) {
             // Highlight item, set title, close drawer
             m_drawerList.setItemChecked(position, true);
-            getActionBar().setTitle(m_title);
+            getSupportActionBar().setTitle(m_title);
             m_drawerLayout.closeDrawer(m_drawerList);
 
             getFragmentManager().beginTransaction()

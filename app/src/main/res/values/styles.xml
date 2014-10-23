@@ -1,8 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <!-- Set AppCompat’s color theming attrs -->
+        <item name="colorPrimary">@color/FRC_GREY</item>
+        <item name="colorPrimaryDark">@color/FRC_BLACK</item>
     </style>
 
 </resources>

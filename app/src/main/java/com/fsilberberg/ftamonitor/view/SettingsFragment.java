@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import com.fsilberberg.ftamonitor.R;
@@ -32,7 +33,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         m_autoKey = getString(R.string.auto_time_key);
         m_teleopKey = getString(R.string.teleop_time_key);
         m_defaultKey = getString(R.string.on_field_key);
-        getActivity().getActionBar().setTitle(getString(R.string.action_settings));
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
     }
 
     @Override
