@@ -9,7 +9,7 @@ import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.view.DrawerActivity;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import microsoft.aspnet.signalr.client.ConnectionState;
  * holds a wakelock. It is responsible for managing the lifecycle of all of the other "services"
  * that communicate with the field, set notifications, and keep field time.
  */
-public class MainForegroundService extends Service implements IObserver<ConnectionState> {
+public class MainForegroundService extends Service implements Observer<ConnectionState> {
 
     // Public intent extras for communicating with this service
     public static final String CLOSE_CONNECTION_INTENT_EXTRA = "CLOSE_CONNECTION_INTENT_EXTRA";
@@ -34,7 +34,7 @@ public class MainForegroundService extends Service implements IObserver<Connecti
     private static final int CLOSE_SERVICE_INTENT_ID = 2;
 
     // Other "services" managed by this service
-    private final Collection<IForegroundService> m_services;
+    private final Collection<ForegroundService> m_services;
     private final FieldConnectionService m_fieldService;
     private PowerManager.WakeLock m_wl;
 
@@ -56,7 +56,7 @@ public class MainForegroundService extends Service implements IObserver<Connecti
         // First, check if we should stop the service.
         if (intent.getBooleanExtra(CLOSE_CONNECTION_INTENT_EXTRA, false)) {
             FieldConnectionService.deregisterConnectionObserver(this);
-            for (IForegroundService service : m_services) {
+            for (ForegroundService service : m_services) {
                 service.stopService();
             }
             stopForeground(false);
@@ -71,7 +71,7 @@ public class MainForegroundService extends Service implements IObserver<Connecti
             m_wl = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "FTA Monitor Service");
         }
 
-        for (IForegroundService service : m_services) {
+        for (ForegroundService service : m_services) {
             service.startService(this, intent);
         }
 

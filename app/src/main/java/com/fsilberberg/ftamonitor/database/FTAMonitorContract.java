@@ -10,6 +10,171 @@ abstract class FTAMonitorContract {
     public static final String DATABASE_NAME = "ftamonitor.db";
     public static final int VERSION = 1;
 
+    public static String getDatabaseName(Table table) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return Team.TABLE_NAME;
+            case EVENT:
+                return Event.TABLE_NAME;
+            case MATCH:
+                return Match.TABLE_NAME;
+            case NOTE:
+                return Notes.TABLE_NAME;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    public static String getDatabaseId(Table table) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return Team._ID;
+            case EVENT:
+                return Event._ID;
+            case MATCH:
+                return Match._ID;
+            case NOTE:
+                return Notes._ID;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    public static String getLinkName(Table table, Table link) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return getTeamLinkName(link);
+            case MATCH:
+                return getMatchLinkName(link);
+            case EVENT:
+                return getEventLinkName(link);
+            case NOTE:
+                return getNoteLinkName(link);
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getTeamLinkName(Table table) throws DatabaseException {
+        switch (table) {
+            case EVENT:
+                return Teams_Events.TABLE_NAME;
+            case MATCH:
+                return Matches_Teams.TABLE_NAME;
+            case NOTE:
+                return Team_Notes.TABLE_NAME;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getMatchLinkName(Table table) throws DatabaseException {
+        switch (table) {
+            case EVENT:
+                return Matches_Event.TABLE_NAME;
+            case TEAM:
+                return Matches_Teams.TABLE_NAME;
+            case NOTE:
+                return Match_Notes.TABLE_NAME;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getEventLinkName(Table table) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return Teams_Events.TABLE_NAME;
+            case MATCH:
+                return Matches_Event.TABLE_NAME;
+            case NOTE:
+                return Event_Notes.TABLE_NAME;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getNoteLinkName(Table table) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return Team_Notes.TABLE_NAME;
+            case MATCH:
+                return Match_Notes.TABLE_NAME;
+            case EVENT:
+                return Event_Notes.TABLE_NAME;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    public static String getLinkId(Table table, Table link) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return getTeamLinkId(link);
+            case MATCH:
+                return getMatchLinkId(link);
+            case EVENT:
+                return getEventLinkId(link);
+            case NOTE:
+                return getNoteLinkId(link);
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getTeamLinkId(Table table) throws DatabaseException {
+        switch (table) {
+            case EVENT:
+                return Teams_Events.EVENT;
+            case MATCH:
+                return Matches_Teams.MATCH;
+            case NOTE:
+                return Team_Notes.NOTE;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getMatchLinkId(Table table) throws DatabaseException {
+        switch (table) {
+            case EVENT:
+                return Matches_Event.EVENT;
+            case TEAM:
+                return Matches_Teams.TEAM;
+            case NOTE:
+                return Match_Notes.NOTE;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getEventLinkId(Table table) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return Teams_Events.TEAM;
+            case MATCH:
+                return Matches_Event.MATCH;
+            case NOTE:
+                return Event_Notes.NOTE;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+    private static String getNoteLinkId(Table table) throws DatabaseException {
+        switch (table) {
+            case TEAM:
+                return Team_Notes.TEAM;
+            case MATCH:
+                return Match_Notes.MATCH;
+            case EVENT:
+                return Event_Notes.EVENT;
+            default:
+                throw new DatabaseException("Unknown database table requested " + table, new IllegalArgumentException());
+        }
+    }
+
+
     public abstract class Team implements BaseColumns {
         public static final String TABLE_NAME = "teams";
         public static final String TEAM_NUMBER = "team_number";

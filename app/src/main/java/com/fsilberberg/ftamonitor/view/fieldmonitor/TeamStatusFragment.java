@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
@@ -26,7 +26,7 @@ import java.text.DecimalFormat;
  * Use the {@link TeamStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TeamStatusFragment extends Fragment implements IObserver<TeamUpdateType> {
+public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateType> {
     // Bundle parameters
     private static final String STATION_NUMBER = "station_number";
     private static final String ALLIANCE_COLOR = "alliance_color";

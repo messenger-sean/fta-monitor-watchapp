@@ -7,6 +7,6 @@ package com.fsilberberg.ftamonitor.common;
  *
  * @author Fredric
  */
-public interface IObserver<E extends Enum<E>> {
+public interface Observer<E extends Enum<E>> {
     void update(E updateType);
 }

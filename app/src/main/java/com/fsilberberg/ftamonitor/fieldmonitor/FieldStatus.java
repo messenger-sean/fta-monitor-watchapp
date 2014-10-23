@@ -8,8 +8,8 @@ import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Card;
-import com.fsilberberg.ftamonitor.common.IObservable;
-import com.fsilberberg.ftamonitor.common.IObserver;
+import com.fsilberberg.ftamonitor.common.Observable;
+import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.fmsdatatypes.MatchInfo;
 
@@ -35,7 +35,7 @@ import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.TELEOP_TIM
  *
  * @author Fredric
  */
-public class FieldStatus implements IObservable<FieldUpdateType> {
+public class FieldStatus implements Observable<FieldUpdateType> {
     // Teams
     private final TeamStatus m_red1 = new TeamStatus(1, Alliance.RED);
     private final TeamStatus m_red2 = new TeamStatus(2, Alliance.RED);
@@ -51,7 +51,7 @@ public class FieldStatus implements IObservable<FieldUpdateType> {
     private Period m_teleopTime;
 
     // Observers
-    private final Collection<IObserver<FieldUpdateType>> m_observers = new ArrayList<>();
+    private final Collection<Observer<FieldUpdateType>> m_observers = new ArrayList<>();
 
     FieldStatus(int defaultAutoSeconds, int defaultTeleopSeconds) {
         m_autoTime = Period.seconds(defaultAutoSeconds);
@@ -226,16 +226,16 @@ public class FieldStatus implements IObservable<FieldUpdateType> {
         }
     }
 
-    public void registerObserver(IObserver<FieldUpdateType> observer) {
+    public void registerObserver(Observer<FieldUpdateType> observer) {
         m_observers.add(observer);
     }
 
-    public void deregisterObserver(IObserver<FieldUpdateType> observer) {
+    public void deregisterObserver(Observer<FieldUpdateType> observer) {
         m_observers.remove(observer);
     }
 
     private void updateObservers(FieldUpdateType update) {
-        for (IObserver<FieldUpdateType> observer : m_observers) {
+        for (Observer<FieldUpdateType> observer : m_observers) {
             observer.update(update);
         }
     }
