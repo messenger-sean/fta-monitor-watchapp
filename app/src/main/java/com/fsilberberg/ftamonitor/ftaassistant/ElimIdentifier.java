@@ -20,6 +20,16 @@ public class ElimIdentifier implements MatchIdentifier {
     }
 
     @Override
+    public String getIdentifier() {
+        return m_identifier;
+    }
+
+    @Override
+    public int getReplay() {
+        return m_replay;
+    }
+
+    @Override
     public int compareTo(MatchIdentifier matchIdentifier) {
         // TODO: Parse the identifier string for round and match info
         return 0;

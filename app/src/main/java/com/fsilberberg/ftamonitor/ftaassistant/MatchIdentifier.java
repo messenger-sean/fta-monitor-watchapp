@@ -15,4 +15,17 @@ public interface MatchIdentifier extends Comparable<MatchIdentifier> {
      */
     public MatchPeriod getPeriod();
 
+    /**
+     * Gets the string representation of the match identifier
+     *
+     * @return The identifier
+     */
+    public String getIdentifier();
+
+    /**
+     * Gets the replay number of this match
+     *
+     * @return The match replay
+     */
+    public int getReplay();
 }

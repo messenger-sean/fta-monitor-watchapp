@@ -87,6 +87,6 @@
     <orderEntry type="library" exported="" name="signalr-client-sdk-1.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.0" level="project" />
- </component>
+  </component>
 </module>
 

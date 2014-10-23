@@ -19,6 +19,16 @@ public class PracticeIdentifier implements MatchIdentifier {
     }
 
     @Override
+    public String getIdentifier() {
+        return String.valueOf(m_matchNumber);
+    }
+
+    @Override
+    public int getReplay() {
+        return 0; // Practice matches aren't replayed
+    }
+
+    @Override
     public String toString() {
         return "P" + String.valueOf(m_matchNumber);
     }

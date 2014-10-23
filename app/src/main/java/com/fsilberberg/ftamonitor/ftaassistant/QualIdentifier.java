@@ -21,6 +21,16 @@ public class QualIdentifier implements MatchIdentifier {
     }
 
     @Override
+    public String getIdentifier() {
+        return String.valueOf(m_matchNum);
+    }
+
+    @Override
+    public int getReplay() {
+        return m_replay;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Q");

@@ -100,4 +100,12 @@ public interface Database {
      * @throws DatabaseException If an error occurs while saving the data
      */
     void saveNote(Note... notes) throws DatabaseException;
+
+    /**
+     * Removes a note from the database, deleting any relationships with the other objects
+     *
+     * @param notes The notes to remove
+     * @throws DatabaseException If an error occurs while removing the data
+     */
+    void deleteNote(Note... notes) throws DatabaseException;
 }

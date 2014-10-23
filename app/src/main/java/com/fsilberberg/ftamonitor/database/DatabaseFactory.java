@@ -26,7 +26,7 @@ public class DatabaseFactory {
 
     private DatabaseFactory(Context context) {
         m_context = context;
-        m_database = new SQLiteDatabase(m_context);
+        m_database = new FTAMonitorDatabase(m_context);
     }
 
     /**

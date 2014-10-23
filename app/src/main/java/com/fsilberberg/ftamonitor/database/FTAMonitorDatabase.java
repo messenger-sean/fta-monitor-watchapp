@@ -1,7 +1,10 @@
 package com.fsilberberg.ftamonitor.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.ftaassistant.AssistantFactory;
@@ -24,12 +27,12 @@ import static com.fsilberberg.ftamonitor.database.Table.TEAM;
  * Implementation of the Database that uses the SQLite definitions defined by {@link com.fsilberberg.ftamonitor.database.FTAMonitorContract}
  * and the SQLite Helper {@link com.fsilberberg.ftamonitor.database.SQLiteDatabaseHelper}
  */
-public class SQLiteDatabase implements Database {
+public class FTAMonitorDatabase implements Database {
 
     private static final String AS = " AS ";
     private final SQLiteDatabaseHelper m_helper;
 
-    SQLiteDatabase(Context context) {
+    FTAMonitorDatabase(Context context) {
         m_helper = new SQLiteDatabaseHelper(context);
     }
 
@@ -133,7 +136,66 @@ public class SQLiteDatabase implements Database {
 
     @Override
     public void saveMatch(Match... matches) throws DatabaseException {
+        SQLiteDatabase db = m_helper.getWritableDatabase();
+        for (Match m : matches) {
+            if (m.getId() == AssistantFactory.NO_ID) {
+                // This is a new match, make a new entry. This is the parts that go in the main table
+                ContentValues mainCv = new ContentValues();
+                mainCv.put(FTAMonitorContract.Match.MATCH_IDENTIFIER, m.getMatchId().getIdentifier());
+                mainCv.put(FTAMonitorContract.Match.MATCH_PERIOD, m.getMatchId().getPeriod().ordinal());
+                mainCv.put(FTAMonitorContract.Match.REPLAY, m.getMatchId().getReplay());
+                long newId = db.insert(FTAMonitorContract.getDatabaseName(MATCH), null, mainCv);
+                if (newId == -1) {
+                    Log.w(FTAMonitorDatabase.class.getName(), "Unknown error when trying to insert match");
+                }
 
+                // If the teams list has content, then add all relationships
+                if (m.getTeams().size() > 0) {
+                    for (Team t : m.getTeams()) {
+                        ContentValues teamCv = new ContentValues();
+                        teamCv.put(FTAMonitorContract.Matches_Teams.TEAM, t.getId());
+                        teamCv.put(FTAMonitorContract.Matches_Teams.MATCH, newId);
+                        db.insert(FTAMonitorContract.getLinkId(MATCH, TEAM), null, teamCv);
+                    }
+                }
+
+                // If the event list has content, then add all relationships
+                if (m.getEvent() != null) {
+                    ContentValues eventCv = new ContentValues();
+                    eventCv.put(FTAMonitorContract.Matches_Event.EVENT, m.getEvent().getId());
+                    eventCv.put(FTAMonitorContract.Matches_Event.MATCH, newId);
+                    db.insert(FTAMonitorContract.getLinkName(MATCH, EVENT), null, eventCv);
+                }
+
+                // If the notes list has content, then add all relationships
+                if (m.getNotes().size() > 0) {
+                    for (Note n : m.getNotes()) {
+                        ContentValues noteCv = new ContentValues();
+                        noteCv.put(FTAMonitorContract.Match_Notes.NOTE, n.getId());
+                        noteCv.put(FTAMonitorContract.Match_Notes.MATCH, newId);
+                        db.insert(FTAMonitorContract.getLinkId(MATCH, NOTE), null, noteCv);
+                    }
+                }
+            } else {
+                // This is an existing match, update the existing entry
+                ContentValues mainCv = new ContentValues();
+                mainCv.put(FTAMonitorContract.Match.MATCH_PERIOD, m.getMatchId().getPeriod().ordinal());
+                mainCv.put(FTAMonitorContract.Match.MATCH_IDENTIFIER, m.getMatchId().getIdentifier());
+                mainCv.put(FTAMonitorContract.Match.REPLAY, m.getMatchId().getReplay());
+                db.update(FTAMonitorContract.Match.TABLE_NAME,
+                        mainCv,
+                        FTAMonitorContract.Match._ID + "=?",
+                        new String[]{String.valueOf(m.getId())});
+
+                // TODO: Loop through relationships and find out if they exist, and add if they do not
+                /*
+                TODO: Remove relationships. I don't think this is necessary here:
+                    * Relationships with an event will never change
+                    * Relationships with a team will never change
+                    * Relationships with a note will be deleted when the note is deleted
+                 */
+            }
+        }
     }
 
     @Override
@@ -149,6 +211,11 @@ public class SQLiteDatabase implements Database {
     @Override
     public void saveNote(Note... notes) throws DatabaseException {
 
+    }
+
+    @Override
+    public void deleteNote(Note... notes) throws DatabaseException {
+        
     }
 
     /**
