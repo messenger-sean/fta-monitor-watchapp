@@ -1,5 +1,6 @@
 package com.fsilberberg.ftamonitor.view;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ public class DrawerActivity extends ActionBarActivity {
         m_drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         // If we're on L, then set the elevation. Otherwise, we can't :(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            m_drawerLayout.setElevation(3);
+            setupMaterialDesign();
         }
         m_drawerToggle = new ActionBarDrawerToggle(this, m_drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         m_drawerLayout.setDrawerListener(m_drawerToggle);
@@ -61,7 +62,6 @@ public class DrawerActivity extends ActionBarActivity {
         getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
 
         // Display the activity when the screen is locked!
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 
     @Override
@@ -136,6 +136,11 @@ public class DrawerActivity extends ActionBarActivity {
         } else {
             throw new RuntimeException("Error: Unknown fragment active");
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void setupMaterialDesign() {
+        m_drawerLayout.setElevation(3);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

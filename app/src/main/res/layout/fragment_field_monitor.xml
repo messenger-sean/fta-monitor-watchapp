@@ -42,11 +42,13 @@
         <FrameLayout
             android:id="@+id/field_status_fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:elevation="2dp"/>
 
         <FrameLayout
             android:id="@+id/team_status_fragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:elevation="0dp"/>
     </LinearLayout>
 </FrameLayout>

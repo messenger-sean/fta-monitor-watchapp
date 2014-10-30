@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;
 
@@ -67,6 +70,7 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
         super.onResume();
         update(FieldConnectionService.getState());
         FieldConnectionService.registerConnectionObserver(this);
+        setupLockscreen();
     }
 
     @Override
@@ -145,7 +149,10 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
             public void run() {
                 updateView(updateType);
                 if (updateType == ConnectionState.Connected) {
+                    setupLockscreen();
                     m_conButton.setVisibility(View.INVISIBLE);
+                } else {
+                    removeLockscreen();
                 }
             }
         });
@@ -158,5 +165,20 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
         Intent serviceIntent = new Intent(getActivity(), MainForegroundService.class);
         serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
         getActivity().startService(serviceIntent);
+    }
+
+    private void setupLockscreen() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String lockKey = getString(R.string.lock_screen_display_key);
+        if (prefs.getBoolean(lockKey, false) && FieldConnectionService.getState().equals(ConnectionState.Connected)) {
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        } else {
+            // Make absolutely sure not to display in these cases
+            removeLockscreen();
+        }
+    }
+
+    private void removeLockscreen() {
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 }

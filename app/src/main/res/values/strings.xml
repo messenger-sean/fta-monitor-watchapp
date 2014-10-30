@@ -27,6 +27,10 @@
     <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
     <string name="field_settings_title">Field Settings</string>
     <string name="fms_settings_title">FMS Settings</string>
+    <string name="app_settings_title">Application Settings</string>
+    <string name="lock_screen_display_key">lock_screen_display</string>
+    <string name="lock_screen_display">Display Field Monitor on Lock Screen</string>
+    <string name="lock_screen_display_desc">Display the Field Monitor on the lock screen when connected.</string>
 
     <!-- Field Monitor Strings -->
     <string name="ds_ethernet">DS-ETH</string>

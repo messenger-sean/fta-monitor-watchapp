@@ -85,8 +85,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             EditTextPreference pref = (EditTextPreference) findPreference(m_fmsKey);
             pref.setSummary(newUrl);
             Log.d(SettingsFragment.class.getName(), "Text is " + pref.getSummary());
-        } else if (key.equals(m_teleopKey) || key.equals(m_autoKey)) {
-            updatePref(key);
         }
     }
 
