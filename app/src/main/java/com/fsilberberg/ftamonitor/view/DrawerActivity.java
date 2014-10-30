@@ -1,6 +1,7 @@
 package com.fsilberberg.ftamonitor.view;
 
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
@@ -46,20 +47,11 @@ public class DrawerActivity extends ActionBarActivity {
 
         // Set up the drawer toggle and listeners
         m_drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        m_drawerToggle = new ActionBarDrawerToggle(this, m_drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                m_title = getSupportActionBar().getTitle();
-                getSupportActionBar().setTitle(getString(R.string.app_name));
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                getSupportActionBar().setTitle(m_title);
-            }
-        };
+        // If we're on L, then set the elevation. Otherwise, we can't :(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            m_drawerLayout.setElevation(3);
+        }
+        m_drawerToggle = new ActionBarDrawerToggle(this, m_drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         m_drawerLayout.setDrawerListener(m_drawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

@@ -5,7 +5,8 @@
         <!-- Customize your theme here. -->
         <!-- Set AppCompat’s color theming attrs -->
         <item name="colorPrimary">@color/FRC_GREY</item>
-        <item name="colorPrimaryDark">@color/FRC_BLACK</item>
+        <item name="colorPrimaryDark">@color/FRC_DARK_GREY</item>
+        <item name="colorAccent">@color/FRC_DARK_GREY</item>
     </style>
 
 </resources>
