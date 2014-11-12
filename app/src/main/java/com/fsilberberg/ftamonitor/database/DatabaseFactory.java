@@ -8,6 +8,7 @@ import android.content.Context;
 public class DatabaseFactory {
 
     private static DatabaseFactory instance;
+    private static DaoSession session;
 
     public static void initializeDatabase(Context context) {
         instance = new DatabaseFactory(context);
@@ -26,7 +27,7 @@ public class DatabaseFactory {
 
     private DatabaseFactory(Context context) {
         m_context = context;
-        m_database = new FTAMonitorDatabase(m_context);
+        m_database = new GreenDaoDatabase(context);
     }
 
     /**
