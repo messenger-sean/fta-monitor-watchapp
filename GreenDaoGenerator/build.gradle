@@ -18,6 +18,11 @@ task createDocs {
 }
 
 run {
+    def docs = file(outputDir)
+    if (docs.isDirectory()) {
+        docs.delete()
+    }
+    docs.mkdirs()
     args outputDir
 }
 

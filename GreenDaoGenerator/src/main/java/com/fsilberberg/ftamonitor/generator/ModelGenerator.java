@@ -1,9 +1,7 @@
 package com.fsilberberg.ftamonitor.generator;
 
-import de.greenrobot.daogenerator.DaoGenerator;
-import de.greenrobot.daogenerator.Entity;
-import de.greenrobot.daogenerator.Property;
-import de.greenrobot.daogenerator.Schema;
+import com.sun.javafx.css.CssError;
+import de.greenrobot.daogenerator.*;
 
 import static com.fsilberberg.ftamonitor.generator.FTAMonitorContract.*;
 
@@ -17,7 +15,7 @@ public class ModelGenerator {
 
         // Add the event table. All relations are added together below
         Entity eventEntity = mainSchema.addEntity(FTAMonitorContract.Event.TABLE_NAME);
-        Property eventIdProperty = eventEntity.addIdProperty().getProperty();
+        eventEntity.addIdProperty();
         eventEntity.addStringProperty(FTAMonitorContract.Event.EVENT_CODE).notNull();
         eventEntity.addStringProperty(FTAMonitorContract.Event.EVENT_NAME);
         eventEntity.addDateProperty(FTAMonitorContract.Event.START_DATE);
@@ -26,50 +24,71 @@ public class ModelGenerator {
 
         // Add the team table
         Entity teamEntity = mainSchema.addEntity(FTAMonitorContract.Team.TABLE_NAME);
-        Property teamIdProperty = teamEntity.addIdProperty().getProperty();
-        teamEntity.addStringProperty(FTAMonitorContract.Team.TEAM_NUMBER).notNull();
+        teamEntity.addIdProperty();
+        teamEntity.addIntProperty(FTAMonitorContract.Team.TEAM_NUMBER).notNull();
         teamEntity.addStringProperty(FTAMonitorContract.Team.TEAM_NAME);
         teamEntity.addStringProperty(FTAMonitorContract.Team.TEAM_NICK);
 
         // Add the match table
         Entity matchEntity = mainSchema.addEntity(FTAMonitorContract.Match.TABLE_NAME);
-        Property matchIdProperty = matchEntity.addIdProperty().getProperty();
-        matchEntity.addStringProperty(FTAMonitorContract.Match.MATCH_IDENTIFIER);
+        matchEntity.addIdProperty();
+        Property matchIdProperty = matchEntity.addStringProperty(FTAMonitorContract.Match.MATCH_IDENTIFIER).getProperty();
         matchEntity.addIntProperty(FTAMonitorContract.Match.MATCH_PERIOD);
         matchEntity.addIntProperty(FTAMonitorContract.Match.REPLAY);
+        Property matchEventProperty = matchEntity.addLongProperty(FTAMonitorContract.Match.MATCH_EVENT).getProperty();
 
         // Add the note table
         Entity noteEntity = mainSchema.addEntity(FTAMonitorContract.Notes.TABLE_NAME);
-        Property noteIdProperty = noteEntity.addIdProperty().getProperty();
+        Property noteIdProperty = noteEntity.addIdProperty().primaryKey().getProperty();
         noteEntity.addStringProperty(FTAMonitorContract.Notes.CONTENT);
+        Property noteTeamProperty = noteEntity.addLongProperty(FTAMonitorContract.Notes.NOTE_TEAM).getProperty();
+        Property noteMatchProperty = noteEntity.addLongProperty(FTAMonitorContract.Notes.NOTE_MATCH).getProperty();
+        Property noteEventProperty = noteEntity.addLongProperty(FTAMonitorContract.Notes.NOTE_EVENT).getProperty();
 
         // Team to Event subtable
-        addManyToManyRelationship(mainSchema,
-                FTAMonitorContract.Teams_Events.TABLE_NAME,
-                teamEntity, teamIdProperty, FTAMonitorContract.Team.TEAM_EVENTS,
-                eventEntity, eventIdProperty, FTAMonitorContract.Event.EVENT_TEAMS);
+        Entity teamEventsEntity = mainSchema.addEntity(FTAMonitorContract.Teams_Events.TABLE_NAME);
+        teamEventsEntity.addIdProperty();
+        Property teamEventsTeamProperty = teamEventsEntity.addLongProperty(FTAMonitorContract.Teams_Events.TEAM_ID).getProperty();
+        Property teamEventsEventProperty = teamEventsEntity.addLongProperty(FTAMonitorContract.Teams_Events.EVENT_ID).getProperty();
+        ToMany teamEventsTeamMany = teamEntity.addToMany(teamEventsEntity, teamEventsTeamProperty);
+        teamEventsTeamMany.setName(FTAMonitorContract.Team.TEAM_EVENTS);
+        teamEventsEntity.addToOne(teamEntity, teamEventsTeamProperty);
+        ToMany teamEventsEventMany = eventEntity.addToMany(teamEventsEntity, teamEventsEventProperty);
+        teamEventsEventMany.setName(FTAMonitorContract.Event.EVENT_TEAMS);
+        teamEventsEntity.addToOne(eventEntity, teamEventsEventProperty);
 
         // Team to Match subtable
-        addManyToManyRelationship(mainSchema,
-                FTAMonitorContract.Matches_Teams.TABLE_NAME,
-                teamEntity, teamIdProperty, FTAMonitorContract.Team.TEAM_MATCHES,
-                matchEntity, matchIdProperty, FTAMonitorContract.Match.MATCH_TEAMS);
+        Entity teamMatchEntity = mainSchema.addEntity(FTAMonitorContract.Matches_Teams.TABLE_NAME);
+        teamMatchEntity.addIdProperty();
+        Property teamMatchTeamProperty = teamMatchEntity.addLongProperty(FTAMonitorContract.Matches_Teams.TEAM_ID).getProperty();
+        Property teamMatchMatchProperty = teamMatchEntity.addLongProperty(FTAMonitorContract.Matches_Teams.MATCH_ID).getProperty();
+        ToMany teamMatchTeamMany = teamEntity.addToMany(teamMatchEntity, teamMatchTeamProperty);
+        teamMatchTeamMany.setName(FTAMonitorContract.Team.TEAM_MATCHES);
+        teamMatchEntity.addToOne(teamEntity, teamMatchTeamProperty);
+        ToMany teamMatchMatchMany = matchEntity.addToMany(teamMatchEntity, teamMatchMatchProperty);
+        teamMatchMatchMany.setName(FTAMonitorContract.Match.MATCH_TEAMS);
+        teamMatchEntity.addToOne(matchEntity, teamMatchMatchProperty);
 
         // Event to Match
-        eventEntity.addToMany(matchEntity, matchIdProperty, FTAMonitorContract.Event.EVENT_MATCHES);
-        matchEntity.addToOne(eventEntity, eventIdProperty, FTAMonitorContract.Match.MATCH_EVENT);
+        ToMany eventMatches = eventEntity.addToMany(matchEntity, matchEventProperty);
+        eventMatches.setName(FTAMonitorContract.Event.EVENT_MATCHES);
+        eventMatches.orderDesc(matchIdProperty);
+        matchEntity.addToOne(eventEntity, matchEventProperty);
 
         // Team to Notes
-        teamEntity.addToMany(noteEntity, noteIdProperty, FTAMonitorContract.Team.TEAM_NOTES);
-        noteEntity.addToOne(teamEntity, teamIdProperty, FTAMonitorContract.Notes.NOTE_TEAM);
+        ToMany teamNotes = teamEntity.addToMany(noteEntity, noteTeamProperty);
+        teamNotes.setName(FTAMonitorContract.Team.TEAM_NOTES);
+        noteEntity.addToOne(teamEntity, noteTeamProperty);
 
         // Event to Notes
-        eventEntity.addToMany(noteEntity, noteIdProperty, FTAMonitorContract.Event.EVENT_NOTES);
-        noteEntity.addToOne(eventEntity, eventIdProperty, FTAMonitorContract.Notes.NOTE_EVENT);
+        ToMany eventNotes = eventEntity.addToMany(noteEntity, noteEventProperty);
+        eventNotes.setName(FTAMonitorContract.Event.EVENT_NOTES);
+        noteEntity.addToOne(eventEntity, noteEventProperty);
 
         // Match to Notes
-        matchEntity.addToMany(noteEntity, noteIdProperty, FTAMonitorContract.Match.MATCH_NOTES);
-        noteEntity.addToOne(matchEntity, matchIdProperty, FTAMonitorContract.Notes.NOTE_MATCH);
+        ToMany matchNotes = matchEntity.addToMany(noteEntity, noteMatchProperty);
+        matchNotes.setName(FTAMonitorContract.Match.MATCH_NOTES);
+        noteEntity.addToOne(matchEntity, noteMatchProperty);
 
         try {
             new DaoGenerator().generateAll(mainSchema, args[0]);
@@ -77,21 +96,4 @@ public class ModelGenerator {
             throw new RuntimeException(e);
         }
     }
-
-    public static void addManyToManyRelationship(Schema mainSchema,
-                                                 String linkName,
-                                                 Entity table1Entity,
-                                                 Property table1Id,
-                                                 String table1ManyName,
-                                                 Entity table2Entity,
-                                                 Property table2Id,
-                                                 String table2ManyName) {
-        Entity manyLinkEntity = mainSchema.addEntity(linkName);
-        Property linkId = manyLinkEntity.addIdProperty().getProperty();
-        manyLinkEntity.addToOne(table1Entity, table1Id);
-        manyLinkEntity.addToOne(table2Entity, table2Id);
-        table1Entity.addToMany(manyLinkEntity, linkId, table1ManyName);
-        table2Entity.addToMany(manyLinkEntity, linkId, table2ManyName);
-    }
-
 }
