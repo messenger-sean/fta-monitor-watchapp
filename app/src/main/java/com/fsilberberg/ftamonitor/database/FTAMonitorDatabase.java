@@ -187,7 +187,9 @@ public class FTAMonitorDatabase implements Database {
                         FTAMonitorContract.Match._ID + "=?",
                         new String[]{String.valueOf(m.getId())});
 
-                // TODO: Loop through relationships and find out if they exist, and add if they do not
+                // Get all created TEAM/NOTES links, and verify that all notes have been made
+
+
                 /*
                 TODO: Remove relationships. I don't think this is necessary here:
                     * Relationships with an event will never change
