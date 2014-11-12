@@ -4,13 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.ftaassistant.*;
+import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.query.QueryBuilder;
 import org.joda.time.DateTime;
 
 import java.net.ContentHandler;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * This is a database implementation that uses the GreenDao ORM protocol
@@ -62,40 +61,65 @@ class GreenDaoDatabase implements Database {
 
     @Override
     public Collection<Team> getTeams(Event event, Match match, Note note) throws DatabaseException {
-        List<Teams> dbTeams = m_daoSession.getTeamsDao().loadAll();
-        Collection<Team> teams = new ArrayList<>();
+        // If there is nothing to filter by, then just return all events
+        if (event == null && match == null && note == null) {
+            return mapDb(m_daoSession.getTeamsDao(), new MapCall<Teams, Team>() {
+                @Override
+                public Team execute(Teams val) {
+                    return fromDB(val);
+                }
+            });
+        } else {
+            // This algorithm works by checking each many-many relation where we have a filter argument
+            // and executing a where, retrieving all valid relations. We then add 1 to the tableIn map under
+            // the relation key. After the filtering is complete, we go through the map. If the integer in the
+            // map equals numValidated, we retrieve it from the database and add it to the return collection
+            int numValidated = 0;
+            Map<Long, Integer> tableIn = new HashMap<>();
 
-        for (Teams team : dbTeams) {
-            boolean eventValid = event == null, matchValid = match == null, noteValid = note == null;
-            if (!eventValid) {
-                for (Teams_Events eventsDb : team.getTeam_events_id()) {
-                    if (eventsDb.getTeam_event_event_id() == event.getId()) {
-                        eventValid = true;
-                        break;
-                    }
+            // Events
+            if (event != null) {
+                numValidated++;
+
+                // Load all relations from the team-event relation table
+                List<Teams_Events> teamEventRelations = m_daoSession.getTeams_EventsDao()._queryEvents_Event_teams_id(event.getId());
+                for (Teams_Events teamEventRelation : teamEventRelations) {
+                    increaseKey(tableIn, teamEventRelation.getTeam_event_team_id());
+                }
+            }
+            
+            // Matches
+            if (match != null) {
+                numValidated++;
+                
+                // Load all relations from the team-match relation table
+                List<Matches_Teams> teamMatchRelations = m_daoSession.getMatches_TeamsDao()._queryMatches_Match_teams_id(match.getId());
+                for (Matches_Teams teamMatchRelation : teamMatchRelations) {
+                    increaseKey(tableIn, teamMatchRelation.getTeam_match_team_id());
                 }
             }
 
-            if (!matchValid) {
-                for (Matches_Teams matchDb : team.getTeam_matches_id()) {
-                    if (matchDb.getTeam_match_match_id() == match.getId()) {
-                        matchValid = true;
-                        break;
-                    }
+            // Note has a 1 to many, so we can just check the team of the note
+            if (note != null) {
+                numValidated++;
+                Notes dbNote = m_daoSession.getNotesDao().load(note.getId());
+                if (dbNote.getNote_team_id() != null) {
+                    increaseKey(tableIn, dbNote.getNote_team_id());
                 }
             }
 
-            if (!noteValid) {
-                Notes noteDb = m_daoSession.getNotesDao().load(note.getId());
-                noteValid = noteDb != null && noteDb.getNote_team_id() == team.getId();
+            // Now loop through the found keys. Any that have been increased to equal numValidated have been matched, so
+            // Include them in the return val
+            Collection<Team> teams = new ArrayList<>();
+            TeamsDao teamsDao = m_daoSession.getTeamsDao();
+            for (Map.Entry<Long, Integer> pair : tableIn.entrySet()) {
+                if (pair.getValue() == numValidated) {
+                    teams.add(fromDB(teamsDao.load(pair.getKey())));
+                }
             }
 
-            if (eventValid && matchValid && noteValid) {
-                teams.add(fromDB(team));
-            }
+            return teams;
         }
-
-        return teams;
     }
 
     @Override
@@ -223,4 +247,41 @@ class GreenDaoDatabase implements Database {
         return AssistantFactory.getInstance().makeNote(note.getId(), note.getContent());
     }
 
+    /**
+     * Implementation of map for transforming a list of DB objects to a list of real objects by calling a function.
+     *
+     * @param db     The db object to query
+     * @param mapper The {@link GreenDaoDatabase.MapCall} implementation to call
+     * @param <Ret>  The type of collection to that MapCall returns
+     * @param <Arg>  The db type
+     * @param <Dao>  The DAO that returns Arg type
+     * @param <M>    The type of the mapcall that maps from arg to ret
+     * @return The mapped list
+     */
+    private <Ret, Arg, Dao extends AbstractDao<Arg, Long>, M extends MapCall<Arg, Ret>> Collection<Ret> mapDb(Dao db, M mapper) {
+        Collection<Ret> returnVal = new ArrayList<>();
+        for (Arg arg : db.loadAll()) {
+            returnVal.add(mapper.execute(arg));
+        }
+
+        return returnVal;
+    }
+
+    private void increaseKey(Map<Long, Integer> map, Long key) {
+        if (map.containsKey(key)) {
+            map.put(key, map.get(key) + 1);
+        } else {
+            map.put(key, 1);
+        }
+    }
+
+    /**
+     * Defines a call that maps from T to U
+     *
+     * @param <T> The argument type
+     * @param <U> The return type
+     */
+    private interface MapCall<T, U> {
+        U execute(T val);
+    }
 }
