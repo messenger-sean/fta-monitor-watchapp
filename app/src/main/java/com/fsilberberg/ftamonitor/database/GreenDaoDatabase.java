@@ -5,16 +5,50 @@ import android.database.sqlite.SQLiteDatabase;
 import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.ftaassistant.*;
 import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.query.QueryBuilder;
 import org.joda.time.DateTime;
 
-import java.net.ContentHandler;
 import java.util.*;
 
 /**
- * This is a database implementation that uses the GreenDao ORM protocol
+ * This is a database implementation that uses the GreenDao ORM protocol. The getX filtration methods use an algorithm
+ * for retrieving matches from the database by checking all relations in O(n) time. This algorithm works by checking each
+ * many-many relation where we have a filter argument and executing a where, retrieving all valid relations. We then add 1
+ * to the tableIn map under the relation key. After the filtering is complete, we go through the map. If the integer in the
+ * map equals numValidated, we retrieve it from the database and add it to the return collection
  */
 class GreenDaoDatabase implements Database {
+
+    /**
+     * Implementations of {@link GreenDaoDatabase.MapCall} for each of the db types
+     */
+
+    private static final MapCall<Teams, Team> teamMapper = new MapCall<Teams, Team>() {
+        @Override
+        public Team execute(Teams val) {
+            return fromDB(val);
+        }
+    };
+
+    private static final MapCall<Events, Event> eventMapper = new MapCall<Events, Event>() {
+        @Override
+        public Event execute(Events val) {
+            return fromDB(val);
+        }
+    };
+
+    private static final MapCall<Matches, Match> matchMapper = new MapCall<Matches, Match>() {
+        @Override
+        public Match execute(Matches val) {
+            return fromDB(val);
+        }
+    };
+
+    private static final MapCall<Notes, Note> noteMapper = new MapCall<Notes, Note>() {
+        @Override
+        public Note execute(Notes val) {
+            return fromDB(val);
+        }
+    };
 
     private final DaoSession m_daoSession;
 
@@ -27,36 +61,41 @@ class GreenDaoDatabase implements Database {
 
     @Override
     public Collection<Match> getMatches(Team team, Event event, Note note) throws DatabaseException {
-        List<Matches> databaseMatches = m_daoSession.getMatchesDao().loadAll();
-        Collection<Match> matches = new ArrayList<>();
-        for (Matches match : databaseMatches) {
-            // If any of the inputs aren't null, then we must evaluate for matches. If none of the inputs
-            // are valid, then we're retrieving the whole database, so we'll just add everything to the list
-            boolean teamValid = team == null, eventValid = event == null, noteValid = note == null;
-            if (!teamValid) {
-                for (Matches_Teams matchTeamDb : match.getMatch_teams_id()) {
-                    if (matchTeamDb.getTeam_match_team_id() == team.getId()) {
-                        teamValid = true;
-                        break;
-                    }
+        if (team == null && event == null && note == null) {
+            return mapDb(m_daoSession.getMatchesDao(), matchMapper);
+        } else {
+            int numValidated = 0;
+            Map<Long, Integer> matchIn = new HashMap<>();
+
+            if (team != null) {
+                numValidated++;
+
+                List<Matches_Teams> matchesTeamsRelations = m_daoSession.getMatches_TeamsDao()._queryTeams_Team_matches_id(team.getId());
+                for (Matches_Teams relation : matchesTeamsRelations) {
+                    increaseKey(matchIn, relation.getTeam_match_match_id());
                 }
             }
 
-            if (!eventValid) {
-                eventValid = match.getEvents().getId() == event.getId();
+            if (event != null) {
+                numValidated++;
+
+                Events events = m_daoSession.getEventsDao().load(event.getId());
+                for (Matches match : events.getEvent_matches_id()) {
+                    increaseKey(matchIn, match.getId());
+                }
             }
 
-            if (!noteValid) {
-                Notes noteDb = m_daoSession.getNotesDao().load(note.getId());
-                noteValid = noteDb != null && noteDb.getNote_match_id() == match.getId();
+            // Note is a 1 to many relation, so just load the note and check the relations
+            if (note != null) {
+                numValidated++;
+                Notes dbNote = m_daoSession.getNotesDao().load(note.getId());
+                if (dbNote != null && dbNote.getNote_team_id() != null) {
+                    increaseKey(matchIn, dbNote.getNote_match_id());
+                }
             }
 
-            if (teamValid && eventValid && noteValid) {
-                matches.add(fromDB(match));
-            }
+            return loadMatching(m_daoSession.getMatchesDao(), matchMapper, matchIn, numValidated);
         }
-
-        return matches;
     }
 
     @Override
@@ -70,10 +109,6 @@ class GreenDaoDatabase implements Database {
                 }
             });
         } else {
-            // This algorithm works by checking each many-many relation where we have a filter argument
-            // and executing a where, retrieving all valid relations. We then add 1 to the tableIn map under
-            // the relation key. After the filtering is complete, we go through the map. If the integer in the
-            // map equals numValidated, we retrieve it from the database and add it to the return collection
             int numValidated = 0;
             Map<Long, Integer> tableIn = new HashMap<>();
 
@@ -82,16 +117,16 @@ class GreenDaoDatabase implements Database {
                 numValidated++;
 
                 // Load all relations from the team-event relation table
-                List<Teams_Events> teamEventRelations = m_daoSession.getTeams_EventsDao()._queryEvents_Event_teams_id(event.getId());
+                List<Teams_Events> teamEventRelations = m_daoSession.getTeams_EventsDao()._queryTeams_Team_events_id(event.getId());
                 for (Teams_Events teamEventRelation : teamEventRelations) {
                     increaseKey(tableIn, teamEventRelation.getTeam_event_team_id());
                 }
             }
-            
+
             // Matches
             if (match != null) {
                 numValidated++;
-                
+
                 // Load all relations from the team-match relation table
                 List<Matches_Teams> teamMatchRelations = m_daoSession.getMatches_TeamsDao()._queryMatches_Match_teams_id(match.getId());
                 for (Matches_Teams teamMatchRelation : teamMatchRelations) {
@@ -103,111 +138,153 @@ class GreenDaoDatabase implements Database {
             if (note != null) {
                 numValidated++;
                 Notes dbNote = m_daoSession.getNotesDao().load(note.getId());
-                if (dbNote.getNote_team_id() != null) {
+                if (dbNote != null && dbNote.getNote_team_id() != null) {
                     increaseKey(tableIn, dbNote.getNote_team_id());
                 }
             }
 
-            // Now loop through the found keys. Any that have been increased to equal numValidated have been matched, so
-            // Include them in the return val
-            Collection<Team> teams = new ArrayList<>();
-            TeamsDao teamsDao = m_daoSession.getTeamsDao();
-            for (Map.Entry<Long, Integer> pair : tableIn.entrySet()) {
-                if (pair.getValue() == numValidated) {
-                    teams.add(fromDB(teamsDao.load(pair.getKey())));
-                }
-            }
-
-            return teams;
+            return loadMatching(m_daoSession.getTeamsDao(), teamMapper, tableIn, numValidated);
         }
     }
 
     @Override
     public Collection<Event> getEvents(Team team, Match match, Note note, DateTime year) throws DatabaseException {
-        List<Events> dbEvents = m_daoSession.getEventsDao().loadAll();
-        Collection<Event> events = new ArrayList<>();
+        Collection<Event> unfilteredYear = new ArrayList<>();
+        if (team == null && match == null && note == null) {
+            unfilteredYear = mapDb(m_daoSession.getEventsDao(), eventMapper);
+        } else {
+            int numValidated = 0;
+            Map<Long, Integer> tableIn = new HashMap<>();
 
-        for (Events event : dbEvents) {
-            boolean teamValid = team == null, matchValid = match == null, noteValid = note == null;
-            if (!teamValid) {
-                List<Teams_Events> teamEventsDb = event.getEvent_teams_id();
-                for (Teams_Events teamEventDb : teamEventsDb) {
-                    if (teamEventDb.getTeam_event_team_id() == team.getId()) {
-                        teamValid = true;
-                        break;
-                    }
+            if (team != null) {
+                numValidated++;
+
+                // Load all relations from the team-event relation table
+                List<Teams_Events> teamEventRelations = m_daoSession.getTeams_EventsDao()._queryEvents_Event_teams_id(team.getId());
+                for (Teams_Events teamEventRelation : teamEventRelations) {
+                    increaseKey(tableIn, teamEventRelation.getTeam_event_event_id());
                 }
             }
 
-            if (!matchValid) {
-                List<Matches> matchesDb = event.getEvent_matches_id();
-                for (Matches matchDb : matchesDb) {
-                    if (matchDb.getId() == match.getId()) {
-                        matchValid = true;
-                        break;
-                    }
+            // This is a 1 to many relation, so here we just load the match and increase its key
+            if (match != null) {
+                numValidated++;
+                Matches dbMatch = m_daoSession.getMatchesDao().load(match.getId());
+                if (dbMatch != null && dbMatch.getMatch_events_id() != null) {
+                    increaseKey(tableIn, dbMatch.getMatch_events_id());
                 }
             }
 
-            if (!noteValid) {
-                Notes noteDb = m_daoSession.getNotesDao().load(note.getId());
-                noteValid = noteDb != null && noteDb.getId() == note.getId();
+            // This is also a 1 to many relation, so same thing
+            if (note != null) {
+                numValidated++;
+                Notes dbNotes = m_daoSession.getNotesDao().load(note.getId());
+                if (dbNotes != null && dbNotes.getNote_event_id() != null) {
+                    increaseKey(tableIn, dbNotes.getNote_event_id());
+                }
             }
 
-            if (teamValid && matchValid && noteValid) {
-                events.add(fromDB(event));
-            }
+            unfilteredYear = loadMatching(m_daoSession.getEventsDao(), eventMapper, tableIn, numValidated);
         }
 
-        return events;
+        // Filter out any events that don't match the year
+        Collection<Event> retVal = new ArrayList<>();
+        for (Event event : unfilteredYear) {
+            if (event.getStartDate().year().equals(year.year())) {
+                retVal.add(event);
+            }
+        }
+        return retVal;
     }
 
     @Override
     public Collection<Note> getNotes(Team team, Match match, Event event) throws DatabaseException {
-        List<Notes> notesDb = m_daoSession.getNotesDao().loadAll();
-        Collection<Note> notes = new ArrayList<>();
+        if (team == null && match == null && event == null) {
+            return mapDb(m_daoSession.getNotesDao(), noteMapper);
+        } else {
+            int numValidated = 0;
+            Map<Long, Integer> tableIn = new HashMap<>();
 
-        for (Notes note : notesDb) {
-            boolean teamValid = team == null, matchValid = match == null, eventValid = event == null;
-
-            if (!teamValid) {
-                teamValid = note.getNote_team_id() == team.getId();
+            if (team != null) {
+                numValidated++;
+                Teams dbTeam = m_daoSession.getTeamsDao().load(team.getId());
+                if (dbTeam != null) {
+                    for (Notes note : dbTeam.getTeam_notes_id()) {
+                        increaseKey(tableIn, note.getId());
+                    }
+                }
             }
 
-            if (!eventValid) {
-                eventValid = note.getNote_event_id() == event.getId();
+            if (event != null) {
+                numValidated++;
+                Events dbEvent = m_daoSession.getEventsDao().load(event.getId());
+                if (dbEvent != null) {
+                    for (Notes note : dbEvent.getEvent_notes_id()) {
+                        increaseKey(tableIn, note.getId());
+                    }
+                }
             }
 
-            if (!matchValid) {
-                matchValid = note.getNote_match_id() == match.getId();
+            if (match != null) {
+                numValidated++;
+                Matches dbMatches = m_daoSession.getMatchesDao().load(match.getId());
+                if (dbMatches != null) {
+                    for (Notes note : dbMatches.getMatch_notes_id()) {
+                        increaseKey(tableIn, note.getId());
+                    }
+                }
             }
 
-            if (teamValid && eventValid && matchValid) {
-                notes.add(fromDB(note));
-            }
+            return loadMatching(m_daoSession.getNotesDao(), noteMapper, tableIn, numValidated);
         }
-
-        return notes;
     }
 
     @Override
     public void saveMatch(Match... matches) throws DatabaseException {
-
+        for (Match match : matches) {
+            Matches dbMatch = toDB(match);
+            if (match.getId() == AssistantFactory.NO_ID) {
+                m_daoSession.getMatchesDao().insert(dbMatch);
+            } else {
+                m_daoSession.getMatchesDao().update(dbMatch);
+            }
+        }
     }
 
     @Override
     public void saveTeam(Team... teams) throws DatabaseException {
-
+        for (Team team : teams) {
+            Teams dbTeam = toDB(team);
+            if (team.getId() == AssistantFactory.NO_ID) {
+                m_daoSession.getTeamsDao().insert(dbTeam);
+            } else {
+                m_daoSession.getTeamsDao().update(dbTeam);
+            }
+        }
     }
 
     @Override
     public void saveEvent(Event... events) throws DatabaseException {
-
+        for (Event event : events) {
+            Events dbEvent = toDB(event);
+            if (event.getId() == AssistantFactory.NO_ID) {
+                m_daoSession.getEventsDao().insert(dbEvent);
+            } else {
+                m_daoSession.getEventsDao().update(dbEvent);
+            }
+        }
     }
 
     @Override
     public void saveNote(Note... notes) throws DatabaseException {
-
+        for (Note note : notes) {
+            Notes dbNote = toDB(note);
+            if (note.getId() == AssistantFactory.NO_ID) {
+                m_daoSession.getNotesDao().insert(dbNote);
+            } else {
+                m_daoSession.getNotesDao().update(dbNote);
+            }
+        }
     }
 
     @Override
@@ -217,7 +294,7 @@ class GreenDaoDatabase implements Database {
         }
     }
 
-    private Match fromDB(Matches match) {
+    private static Match fromDB(Matches match) {
         return AssistantFactory.getInstance().makeMatch(
                 match.getId(),
                 MatchPeriod.fromOrd(match.getMatch_period()),
@@ -225,7 +302,16 @@ class GreenDaoDatabase implements Database {
                 match.getReplay());
     }
 
-    private Event fromDB(Events event) {
+    private static Matches toDB(Match match) {
+        return new Matches(
+                match.getId(),
+                match.getMatchId().getIdentifier(),
+                match.getMatchId().getPeriod().ordinal(),
+                match.getMatchId().getReplay(),
+                match.getEvent() != null ? match.getEvent().getId() : null);
+    }
+
+    private static Event fromDB(Events event) {
         return AssistantFactory.getInstance().makeEvent(
                 event.getId(),
                 event.getEvent_code(),
@@ -235,7 +321,17 @@ class GreenDaoDatabase implements Database {
                 new DateTime(event.getEnd_date()));
     }
 
-    private Team fromDB(Teams team) {
+    private static Events toDB(Event event) {
+        return new Events(
+                event.getId(),
+                event.getEventCode(),
+                event.getEventName(),
+                event.getStartDate().toDate(),
+                event.getEndDate().toDate(),
+                event.getEventLoc());
+    }
+
+    private static Team fromDB(Teams team) {
         return AssistantFactory.getInstance().makeTeam(
                 team.getId(),
                 team.getTeam_number(),
@@ -243,8 +339,51 @@ class GreenDaoDatabase implements Database {
                 team.getTeam_nick());
     }
 
-    private Note fromDB(Notes note) {
+    private static Teams toDB(Team team) {
+        return new Teams(
+                team.getId(),
+                team.getTeamNumber(),
+                team.getTeamName(),
+                team.getTeamNick());
+    }
+
+    private static Note fromDB(Notes note) {
         return AssistantFactory.getInstance().makeNote(note.getId(), note.getContent());
+    }
+
+    private static Notes toDB(Note note) {
+        return new Notes(
+                note.getId(),
+                note.getContent(),
+                note.getTeam() == null ? null : note.getTeam().getId(),
+                note.getMatch() == null ? null : note.getMatch().getId(),
+                note.getEvent() == null ? null : note.getMatch().getId());
+    }
+
+    /**
+     * Executes the map-if-validated algorithm, that loops through the entries in a given map and returns the loaded value
+     * if the entry has been matched numValidated number of times
+     *
+     * @param db           The db to query
+     * @param mapper       The transformation function from Arg to Ret
+     * @param map          The map to loop through
+     * @param numValidated The cutoff number for the algorithm
+     * @param <Ret>        The return type of the Collection
+     * @param <Arg>        The argument type to load from the db
+     * @return
+     */
+    private <Ret, Arg> Collection<Ret> loadMatching(AbstractDao<Arg, Long> db,
+                                                    MapCall<Arg, Ret> mapper,
+                                                    Map<Long, Integer> map,
+                                                    int numValidated) {
+        Collection<Ret> retList = new ArrayList<>();
+        for (Map.Entry<Long, Integer> pair : map.entrySet()) {
+            if (pair.getValue() == numValidated) {
+                retList.add(mapper.execute(db.load(pair.getKey())));
+            }
+        }
+
+        return retList;
     }
 
     /**
@@ -254,11 +393,9 @@ class GreenDaoDatabase implements Database {
      * @param mapper The {@link GreenDaoDatabase.MapCall} implementation to call
      * @param <Ret>  The type of collection to that MapCall returns
      * @param <Arg>  The db type
-     * @param <Dao>  The DAO that returns Arg type
-     * @param <M>    The type of the mapcall that maps from arg to ret
      * @return The mapped list
      */
-    private <Ret, Arg, Dao extends AbstractDao<Arg, Long>, M extends MapCall<Arg, Ret>> Collection<Ret> mapDb(Dao db, M mapper) {
+    private <Ret, Arg> Collection<Ret> mapDb(AbstractDao<Arg, Long> db, MapCall<Arg, Ret> mapper) {
         Collection<Ret> returnVal = new ArrayList<>();
         for (Arg arg : db.loadAll()) {
             returnVal.add(mapper.execute(arg));
@@ -267,6 +404,12 @@ class GreenDaoDatabase implements Database {
         return returnVal;
     }
 
+    /**
+     * Increases the value of a key in the given map. If the key does not yet exist, it adds it to the map
+     *
+     * @param map The map to increase
+     * @param key The key to increase
+     */
     private void increaseKey(Map<Long, Integer> map, Long key) {
         if (map.containsKey(key)) {
             map.put(key, map.get(key) + 1);
