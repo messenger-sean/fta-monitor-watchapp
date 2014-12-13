@@ -1,5 +1,8 @@
 package com.fsilberberg.ftamonitor.ftaassistant;
 
+import com.fsilberberg.ftamonitor.common.Alliance;
+import com.fsilberberg.ftamonitor.common.Station;
+
 import java.util.Collection;
 
 /**
@@ -23,6 +26,11 @@ public class MatchImpl implements Match {
     @Override
     public MatchIdentifier getMatchId() {
         return m_matchIdentifier;
+    }
+
+    @Override
+    public Team getTeam(Alliance alliance, Station station) {
+        return null;
     }
 
     @Override

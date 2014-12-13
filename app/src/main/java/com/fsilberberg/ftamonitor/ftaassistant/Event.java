@@ -56,14 +56,14 @@ public interface Event {
      *
      * @return The teams at the event
      */
-    public Collection<Team> getTeams();
+    public Collection<? extends Team> getTeams();
 
     /**
      * Gets the matches played at this event
      *
      * @return The match list
      */
-    public Collection<Match> getMatches();
+    public Collection<? extends Match> getMatches();
 
     /**
      * Gets the notes associated with this match, if there are any. If there are no notes, this
@@ -71,5 +71,5 @@ public interface Event {
      *
      * @return The notes associated with this match
      */
-    public Collection<Note> getNotes();
+    public Collection<? extends Note> getNotes();
 }

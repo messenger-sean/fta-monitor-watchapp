@@ -1,6 +1,7 @@
 package com.fsilberberg.ftamonitor.database;
 
 import android.content.Context;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
  * Factory for getting database objects
@@ -9,32 +10,38 @@ public class DatabaseFactory {
 
     private static DatabaseFactory instance;
 
-    public static void initializeDatabase(Context context) {
-        instance = new DatabaseFactory(context);
-    }
-
     public static DatabaseFactory getInstance() {
         if (instance == null) {
-            throw new RuntimeException("Error: You must call DatabaseFactory.Initialze before attempting to get the database factory instance");
+            instance = new DatabaseFactory();
         }
 
         return instance;
     }
 
-    private final Context m_context;
-    private final Database m_database;
 
-    private DatabaseFactory(Context context) {
-        m_context = context;
-        m_database = new FTAMonitorDatabase(m_context);
+    private DatabaseFactory() {
     }
 
     /**
-     * Gets the {@link Database} implementation used by this program
+     * Gets the {@link Database} implementation used by this program. This Database <b>MUST</b> be released after use,
+     * with the {@link #release(Database)} method.
      *
      * @return The Database
      */
-    public Database getDatabase() {
-        return m_database;
+    public Database getDatabase(Context context) {
+        return new OrmLiteDatabase(OpenHelperManager.getHelper(context, OrmLiteDatabaseHelper.class));
+    }
+
+    /**
+     * Releases the db instance, so that the usage counter is decremented. After release is called, you should call
+     * getDatabase again before attempting to use the database
+     *
+     * @param db The db to release.
+     */
+    public void release(Database db) {
+        if (db instanceof OrmLiteDatabase) {
+            OrmLiteDatabase ormDb = (OrmLiteDatabase) db;
+            ormDb.release();
+        }
     }
 }

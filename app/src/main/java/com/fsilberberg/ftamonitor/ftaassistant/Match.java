@@ -1,5 +1,8 @@
 package com.fsilberberg.ftamonitor.ftaassistant;
 
+import com.fsilberberg.ftamonitor.common.Alliance;
+import com.fsilberberg.ftamonitor.common.Station;
+
 import java.util.Collection;
 
 /**
@@ -20,6 +23,15 @@ public interface Match {
      * @return The identifier of this match
      */
     public MatchIdentifier getMatchId();
+
+    /**
+     * Gets a specific team at a specific station
+     *
+     * @param alliance The alliance of the team
+     * @param station  The station of the team
+     * @return The team at that station on that alliance
+     */
+    public Team getTeam(Alliance alliance, Station station);
 
     /**
      * Gets the teams that are participating in this match

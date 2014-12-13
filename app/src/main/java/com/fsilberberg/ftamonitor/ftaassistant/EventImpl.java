@@ -1,10 +1,5 @@
 package com.fsilberberg.ftamonitor.ftaassistant;
 
-import com.fsilberberg.ftamonitor.ftaassistant.Event;
-import com.fsilberberg.ftamonitor.ftaassistant.Match;
-import com.fsilberberg.ftamonitor.ftaassistant.Note;
-import com.fsilberberg.ftamonitor.ftaassistant.Team;
-
 import org.joda.time.DateTime;
 
 import java.util.Collection;
@@ -64,17 +59,17 @@ public class EventImpl implements Event {
     }
 
     @Override
-    public Collection<Team> getTeams() {
+    public Collection<? extends Team> getTeams() {
         return null;
     }
 
     @Override
-    public Collection<Match> getMatches() {
+    public Collection<? extends Match> getMatches() {
         return null;
     }
 
     @Override
-    public Collection<Note> getNotes() {
+    public Collection<? extends Note> getNotes() {
         return null;
     }
 }
