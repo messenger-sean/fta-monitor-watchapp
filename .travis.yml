@@ -6,4 +6,4 @@ android:
     - build-tools-21.1.2
 
 script:
-  gradle build connectedCheck
+  gradle build
