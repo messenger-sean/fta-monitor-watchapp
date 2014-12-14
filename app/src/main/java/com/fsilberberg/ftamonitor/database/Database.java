@@ -5,6 +5,7 @@ import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import com.fsilberberg.ftamonitor.ftaassistant.Match;
 import com.fsilberberg.ftamonitor.ftaassistant.Note;
 import com.fsilberberg.ftamonitor.ftaassistant.Team;
+import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 
 import java.util.Collection;
@@ -25,7 +26,7 @@ public interface Database {
      * @param event           The event the match is being held at
      * @return The match from the database. If the match is not in the database, null is returned.
      */
-    Match getMatch(MatchPeriod period, String matchIdentifier, Event event);
+    Optional<Match> getMatch(MatchPeriod period, String matchIdentifier, int replay, Event event);
 
     /**
      * Gets the team for a given number.
@@ -33,7 +34,7 @@ public interface Database {
      * @param number The number of the team
      * @return The team. If the team is not in the database, null is returned
      */
-    Team getTeam(int number);
+    Optional<Team> getTeam(int number);
 
     /**
      * Gets the event from a given year with the given code.
@@ -42,7 +43,7 @@ public interface Database {
      * @param eventCode The code of the event. This is the FIRST standard, code, such as MAWOR for WPI
      * @return The event. If the year/code combination is not found, null is returned
      */
-    Event getEvent(DateTime year, String eventCode);
+    Optional<Event> getEvent(DateTime year, String eventCode);
 
     /**
      * Gets all events for a given year
@@ -50,7 +51,7 @@ public interface Database {
      * @param year The year to look for events
      * @return All events in the database for that year. If there are no events, the empty collection is returned
      */
-    Collection<Event> getEvents(DateTime year);
+    Collection<? extends Event> getEvents(DateTime year);
 
     /**
      * Saves a given list of matches to the database.
