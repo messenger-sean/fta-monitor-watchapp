@@ -34,7 +34,7 @@ public class MatchImpl implements Match {
     }
 
     @Override
-    public Collection<Team> getTeams() {
+    public Collection<? extends Team> getTeams() {
         return null;
     }
 
@@ -44,7 +44,7 @@ public class MatchImpl implements Match {
     }
 
     @Override
-    public Collection<Note> getNotes() {
+    public Collection<? extends Note> getNotes() {
         return null;
     }
 }

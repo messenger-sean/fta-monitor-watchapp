@@ -40,17 +40,17 @@ public class TeamImpl implements Team {
     }
 
     @Override
-    public Collection<Event> getEvents() {
+    public Collection<? extends Event> getEvents() {
         return null;
     }
 
     @Override
-    public Collection<Match> getMatches(Event event) {
+    public Collection<? extends Match> getMatches(Event event) {
         return null;
     }
 
     @Override
-    public Collection<Note> getNotes() {
+    public Collection<? extends Note> getNotes() {
         return null;
     }
 }

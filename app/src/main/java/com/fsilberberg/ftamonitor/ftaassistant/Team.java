@@ -40,7 +40,7 @@ public interface Team {
      *
      * @return The team's events
      */
-    public Collection<Event> getEvents();
+    public Collection<? extends Event> getEvents();
 
     /**
      * Gets the matches a team participated in at a given event.
@@ -48,12 +48,12 @@ public interface Team {
      * @param event The event to search for matches in
      * @return The matches the team participated in
      */
-    public Collection<Match> getMatches(Event event);
+    public Collection<? extends Match> getMatches(Event event);
 
     /**
      * Gets the notes that have been made about the team
      *
      * @return The notes made on a team
      */
-    public Collection<Note> getNotes();
+    public Collection<? extends Note> getNotes();
 }

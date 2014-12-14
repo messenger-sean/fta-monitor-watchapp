@@ -38,7 +38,7 @@ public interface Match {
      *
      * @return The teams in the match
      */
-    public Collection<Team> getTeams();
+    public Collection<? extends Team> getTeams();
 
     /**
      * Gets the event where this match is being held
@@ -52,5 +52,5 @@ public interface Match {
      *
      * @return The match notes
      */
-    public Collection<Note> getNotes();
+    public Collection<? extends Note> getNotes();
 }

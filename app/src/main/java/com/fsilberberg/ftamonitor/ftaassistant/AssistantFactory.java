@@ -117,7 +117,7 @@ public class AssistantFactory {
      * @param replay           The replay number of this match
      * @return The match identifier describing the given arguments
      */
-    private MatchIdentifier makeMatchIdentifier(MatchPeriod period, String numberIdentifier, int replay) {
+    public MatchIdentifier makeMatchIdentifier(MatchPeriod period, String numberIdentifier, int replay) {
         MatchIdentifier mi = null;
         switch (period) {
             case PRAC:
