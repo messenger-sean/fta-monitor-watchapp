@@ -29,9 +29,6 @@ public class FTAMonitorApplication extends Application {
 
         _context = getApplicationContext();
 
-        // Initialize the database
-        DatabaseFactory.initializeDatabase();
-
         // Initialize the field monitor factory
         FieldMonitorFactory.initialize(this);
 
