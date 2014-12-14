@@ -9,6 +9,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 public class DatabaseFactory {
 
     private static DatabaseFactory instance;
+    private static DaoSession session;
 
     public static DatabaseFactory getInstance() {
         if (instance == null) {
