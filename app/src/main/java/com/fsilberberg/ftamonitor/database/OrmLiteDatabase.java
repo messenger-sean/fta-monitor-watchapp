@@ -2,14 +2,15 @@ package com.fsilberberg.ftamonitor.database;
 
 import android.util.Log;
 import com.fsilberberg.ftamonitor.common.MatchPeriod;
-import com.fsilberberg.ftamonitor.database.ormmodels.OrmEvent;
-import com.fsilberberg.ftamonitor.database.ormmodels.OrmMatch;
-import com.fsilberberg.ftamonitor.database.ormmodels.OrmTeam;
+import com.fsilberberg.ftamonitor.database.ormmodels.*;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import com.fsilberberg.ftamonitor.ftaassistant.Match;
 import com.fsilberberg.ftamonitor.ftaassistant.Note;
 import com.fsilberberg.ftamonitor.ftaassistant.Team;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -129,21 +130,109 @@ public class OrmLiteDatabase implements Database {
 
     @Override
     public void saveTeam(Team... teams) throws DatabaseException {
+        for (Team team : teams) {
+            if (team instanceof OrmTeam) {
+                try {
+                    m_helper.getTeamDao().createOrUpdate((OrmTeam) team);
 
+                    Collection<OrmEvent> events = ((OrmTeam) team).getEventsNoRefresh();
+                    if (events != null) {
+                        // Get all relations from the table involving this team, and loop through them. If they're in the
+                        // events list, do nothing. If they're not, remove them from the database. Remove them from the
+                        // events list, and at the end, if there are still events in the events list, add them in
+                        for (final OrmTeamEvent te : getTeamEventList(OrmTeamEvent.TEAM_ID, team.getId())) {
+                            final Predicate<OrmEvent> testPredicate = new Predicate<OrmEvent>() {
+                                @Override
+                                public boolean apply(OrmEvent input) {
+                                    return te.getEvent().getId() == input.getId();
+                                }
+                            };
+                            if (Iterables.any(events, testPredicate)) {
+                                events = Collections2.filter(events, testPredicate);
+                            } else {
+                                m_helper.getTeamEventDao().delete(te);
+                            }
+                        }
+
+                        for (OrmEvent event : events) {
+                            OrmTeamEvent te = new OrmTeamEvent((OrmTeam) team, event);
+                            m_helper.getTeamEventDao().create(te);
+                        }
+                    }
+                } catch (SQLException e) {
+                    Log.w(OrmLiteDatabase.class.getName(), "Could not save team", e);
+                }
+            }
+        }
     }
 
     @Override
     public void saveEvent(Event... events) throws DatabaseException {
+        for (Event event : events) {
+            if (event instanceof OrmEvent) {
+                try {
+                    m_helper.getEventDao().createOrUpdate((OrmEvent) event);
 
+                    // Loop through all teamevent pairs. If the team in the pair is in this collection, remove it from
+                    // this collection. Otherwise, remove the pair from the database. At the end, if there are any new
+                    // teams, add them to the database
+                    Collection<OrmTeam> teams = ((OrmEvent) event).getTeamsNoRefresh();
+                    for (final OrmTeamEvent te : getTeamEventList(OrmTeamEvent.EVENT_ID, event.getId())) {
+                        Predicate<OrmTeam> testPredicate = new Predicate<OrmTeam>() {
+                            @Override
+                            public boolean apply(OrmTeam input) {
+                                return input.getId() == te.getTeam().getId();
+                            }
+                        };
+
+                        if (Iterables.any(teams, testPredicate)) {
+                            teams = Collections2.filter(teams, testPredicate);
+                        } else {
+                            m_helper.getTeamEventDao().delete(te);
+                        }
+                    }
+
+                    for (OrmTeam team : teams) {
+                        OrmTeamEvent te = new OrmTeamEvent(team, (OrmEvent) event);
+                        m_helper.getTeamEventDao().create(te);
+                    }
+                } catch (SQLException e) {
+                    Log.w(OrmLiteDatabase.class.getName(), "Could not save event", e);
+                }
+
+            }
+        }
     }
 
     @Override
     public void saveNote(Note... notes) throws DatabaseException {
-
+        for (Note note : notes) {
+            if (note instanceof OrmNote) {
+                try {
+                    m_helper.getNoteDao().createOrUpdate((OrmNote) note);
+                } catch (SQLException e) {
+                    Log.w(OrmLiteDatabase.class.getName(), "Could not save note", e);
+                }
+            }
+        }
     }
 
     @Override
     public void deleteNote(Note... notes) throws DatabaseException {
+        for (Note note : notes) {
+            if (note instanceof OrmNote) {
+                try {
+                    m_helper.getNoteDao().delete((OrmNote) note);
+                } catch (SQLException e) {
+                    Log.w(OrmLiteDatabase.class.getName(), "Could not delete note", e);
+                }
+            }
+        }
+    }
 
+    private Collection<OrmTeamEvent> getTeamEventList(String col, Long id) throws SQLException {
+        QueryBuilder<OrmTeamEvent, Long> qb = m_helper.getTeamEventDao().queryBuilder();
+        qb.where().eq(col, id);
+        return m_helper.getTeamEventDao().query(qb.prepare());
     }
 }

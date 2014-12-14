@@ -21,6 +21,14 @@ public class OrmTeamEvent {
     @DatabaseField(columnName = EVENT_ID, foreign = true, foreignAutoRefresh = true)
     private OrmEvent event;
 
+    public OrmTeamEvent() {
+    }
+
+    public OrmTeamEvent(OrmTeam team, OrmEvent event) {
+        this.team = team;
+        this.event = event;
+    }
+
     public OrmTeam getTeam() {
         return team;
     }

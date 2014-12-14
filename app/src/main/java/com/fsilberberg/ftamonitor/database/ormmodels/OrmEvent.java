@@ -177,6 +177,16 @@ public class OrmEvent implements Event {
         return notes;
     }
 
+    /**
+     * Gets the team list without attempting to refresh if the teams list is currently null. This is intended for use
+     * by the database.
+     *
+     * @return The list of teams
+     */
+    public Collection<OrmTeam> getTeamsNoRefresh() {
+        return teams;
+    }
+
     private OrmLiteDatabaseHelper getHelper() {
         return OpenHelperManager.getHelper(FTAMonitorApplication.getContext(), OrmLiteDatabaseHelper.class);
     }

@@ -89,6 +89,16 @@ public class OrmTeam implements Team {
         return notes;
     }
 
+    /**
+     * Gets the events from this model without doing any refresh, if the events list hasn't been accessed yet
+     * This is really only intended for database use, not for general consumption
+     *
+     * @return The events list, if it has already been fetched.
+     */
+    public Collection<OrmEvent> getEventsNoRefresh() {
+        return events;
+    }
+
     private void checkRefresh() {
         if (events == null) {
             OrmLiteDatabaseHelper helper = OpenHelperManager.getHelper(FTAMonitorApplication.getContext(), OrmLiteDatabaseHelper.class);
