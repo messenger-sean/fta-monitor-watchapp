@@ -28,8 +28,7 @@
             android:paddingRight="15dp"
             android:text="Retry"
             android:textSize="@dimen/large_text_size"
-            android:visibility="invisible"
-            android:onClick="FieldMonitorFragment"/>
+            android:visibility="invisible"/>
     </LinearLayout>
 
     <LinearLayout
