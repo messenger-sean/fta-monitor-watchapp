@@ -37,6 +37,70 @@ public class OrmEvent implements Event {
     public static final String MATCHES = "matches";
     public static final String NOTES = "notes";
 
+    public static final Function<Event, OrmEvent> copyMapper = new Function<Event, OrmEvent>() {
+        @Override
+        public OrmEvent apply(Event input) {
+            if (input == null) {
+                return null;
+            } else if (input instanceof OrmEvent) {
+                return (OrmEvent) input;
+            } else {
+                return new OrmEvent(input);
+            }
+        }
+    };
+
+    /**
+     * Default constructor for OrmLite
+     */
+    public OrmEvent() {
+    }
+
+    /**
+     * Copy constructor for OrmEvent
+     *
+     * @param event The event to copy
+     */
+    public OrmEvent(Event event) {
+        if (event instanceof OrmEvent) {
+            OrmEvent e = (OrmEvent) event;
+            this.eventCode = e.eventCode;
+            this.eventName = e.eventName;
+            this.eventLoc = e.eventLoc;
+            this.startDate = e.startDate;
+            this.endDate = e.endDate;
+            // If there are no matches and teams specified, then this doesn't have any yet, since this is being made
+            // with no id. Initialize these lists to empty
+            this.matches = e.matches;
+            this.notes = e.notes;
+            this.teams = e.teams;
+        } else {
+            this.id = 0;
+            this.eventCode = event.getEventCode();
+            this.eventName = event.getEventName();
+            this.eventLoc = event.getEventLoc();
+            this.startDate = event.getStartDate().toDate();
+            this.endDate = event.getEndDate().toDate();
+            this.matches = Collections2.transform(event.getMatches(), OrmMatch.copyMapper);
+            this.notes = Collections2.transform(event.getNotes(), OrmNote.copyMapper);
+            this.teams = Collections2.transform(event.getTeams(), OrmTeam.copyMapper);
+        }
+    }
+
+    public OrmEvent(String eventCode, String eventName, String eventLoc, Date startDate, Date endDate,
+                    Collection<Match> matches, Collection<Note> notes, Collection<Team> teams) {
+        this.eventCode = eventCode;
+        this.eventName = eventName;
+        this.eventLoc = eventLoc;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        // If there are no matches and teams specified, then this doesn't have any yet, since this is being made
+        // with no id. Initialize these lists to empty
+        this.matches = matches == null ? new ArrayList<OrmMatch>() : Collections2.transform(matches, OrmMatch.copyMapper);
+        this.notes = notes == null ? new ArrayList<OrmNote>() : Collections2.transform(notes, OrmNote.copyMapper);
+        this.teams = teams == null ? new ArrayList<OrmTeam>() : Collections2.transform(teams, OrmTeam.copyMapper);
+    }
+
     @DatabaseField(generatedId = true)
     private long id;
 
@@ -64,15 +128,6 @@ public class OrmEvent implements Event {
     // The list of teams going to this event. This is not stored in the table for this object, as OrmLite doesn't
     // support many-many relations. Rather, the TeamEvent table stores those relations
     private Collection<OrmTeam> teams;
-
-    public OrmEvent(Event event) {
-        id = event.getId();
-        eventCode = event.getEventCode();
-        eventName = event.getEventName();
-        eventLoc = event.getEventLoc();
-        startDate = event.getStartDate().toDate();
-        endDate = event.getEndDate().toDate();
-    }
 
     @Override
     public long getId() {

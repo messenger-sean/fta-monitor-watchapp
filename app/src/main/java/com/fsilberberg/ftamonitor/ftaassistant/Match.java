@@ -1,7 +1,9 @@
 package com.fsilberberg.ftamonitor.ftaassistant;
 
 import com.fsilberberg.ftamonitor.common.Alliance;
+import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.common.Station;
+import com.google.common.collect.Table;
 
 import java.util.Collection;
 
@@ -18,27 +20,33 @@ public interface Match {
     public long getId();
 
     /**
-     * Gets the match identifier
+     * Gets the replay number of this match
      *
-     * @return The identifier of this match
+     * @return The match replay
      */
-    public MatchIdentifier getMatchId();
+    public int getReplay();
 
     /**
-     * Gets a specific team at a specific station
+     * Gets the period of the match
      *
-     * @param alliance The alliance of the team
-     * @param station  The station of the team
-     * @return The team at that station on that alliance
+     * @return What period this match is playing in
      */
-    public Team getTeam(Alliance alliance, Station station);
+    public MatchPeriod getPeriod();
 
     /**
-     * Gets the teams that are participating in this match
+     * Gets the string representation of the match identifier
      *
-     * @return The teams in the match
+     * @return The identifier
      */
-    public Collection<? extends Team> getTeams();
+    public String getIdentifier();
+
+
+    /**
+     * Gets the teams in this match. The table allows for access to a specific team
+     *
+     * @return The team table
+     */
+    public Table<Alliance, Station, Team> getTeams();
 
     /**
      * Gets the event where this match is being held

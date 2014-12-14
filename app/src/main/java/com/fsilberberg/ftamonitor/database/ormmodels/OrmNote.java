@@ -7,6 +7,7 @@ import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import com.fsilberberg.ftamonitor.ftaassistant.Match;
 import com.fsilberberg.ftamonitor.ftaassistant.Note;
 import com.fsilberberg.ftamonitor.ftaassistant.Team;
+import com.google.common.base.Function;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -24,6 +25,19 @@ public class OrmNote implements Note {
     public static final String EVENT = "event";
     public static final String MATCH = "match";
 
+    public static final Function<Note, OrmNote> copyMapper = new Function<Note, OrmNote>() {
+        @Override
+        public OrmNote apply(Note input) {
+            if (input == null) {
+                return  null;
+            } else if (input instanceof OrmNote) {
+                return (OrmNote) input;
+            } else {
+                return new OrmNote(input);
+            }
+        }
+    };
+
     @DatabaseField(columnName = "id", generatedId = true)
     private long id;
 
@@ -38,6 +52,33 @@ public class OrmNote implements Note {
 
     @DatabaseField(columnName = MATCH, foreign = true)
     private OrmMatch match;
+
+    /**
+     * Default constructor for OrmLite
+     */
+    public OrmNote() {
+    }
+
+    public OrmNote(String content, Team team, Event event, Match match) {
+        this.content = content;
+        this.team = OrmTeam.copyMapper.apply(team);
+        this.event = OrmEvent.copyMapper.apply(event);
+        this.match = OrmMatch.copyMapper.apply(match);
+    }
+
+    public OrmNote(Note note) {
+        if (note instanceof OrmNote) {
+            this.content = ((OrmNote) note).content;
+            this.team = ((OrmNote) note).team;
+            this.event = ((OrmNote) note).event;
+            this.match = ((OrmNote) note).match;
+        } else {
+            this.content = note.getContent();
+            this.team = OrmTeam.copyMapper.apply(note.getTeam());
+            this.event = OrmEvent.copyMapper.apply(note.getEvent());
+            this.match = OrmMatch.copyMapper.apply(note.getMatch());
+        }
+    }
 
     @Override
     public long getId() {

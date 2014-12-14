@@ -31,6 +31,19 @@ public class OrmTeam implements Team {
     public static final String MATCHES = "matches";
     public static final String NOTES = "notes";
 
+    public static final Function<Team, OrmTeam> copyMapper = new Function<Team, OrmTeam>() {
+        @Override
+        public OrmTeam apply(Team input) {
+            if (input == null) {
+                return null;
+            } else if (input instanceof OrmTeam) {
+                return (OrmTeam) input;
+            } else {
+                return new OrmTeam(input);
+            }
+        }
+    };
+
     @DatabaseField(generatedId = true, columnName = "id")
     private long id;
 
@@ -50,6 +63,39 @@ public class OrmTeam implements Team {
     private Collection<OrmNote> notes;
 
     private Collection<OrmEvent> events;
+
+    /**
+     * Default constructor for OrmLite
+     */
+    public OrmTeam() {
+    }
+
+    public OrmTeam(int teamNumber, String teamName, String teamNick, Collection<Match> matches, Collection<Note> notes, Collection<Event> events) {
+        this.teamNumber = teamNumber;
+        this.teamName = teamName;
+        this.teamNick = teamNick;
+        this.matches = matches != null ? Collections2.transform(matches, OrmMatch.copyMapper) : new ArrayList<OrmMatch>();
+        this.notes = notes != null ? Collections2.transform(notes, OrmNote.copyMapper) : new ArrayList<OrmNote>();
+        this.events = events != null ? Collections2.transform(events, OrmEvent.copyMapper) : new ArrayList<OrmEvent>();
+    }
+
+    public OrmTeam(Team team) {
+        this.teamNumber = team.getTeamNumber();
+        this.teamName = team.getTeamName();
+        this.teamNick = team.getTeamNick();
+        if (team instanceof OrmTeam) {
+            this.matches = ((OrmTeam) team).matches;
+            this.notes = ((OrmTeam) team).notes;
+            this.events = ((OrmTeam) team).events;
+        } else {
+            this.events = Collections2.transform(team.getEvents(), OrmEvent.copyMapper);
+            this.matches = new ArrayList<>();
+            for (Event e : team.getEvents()) {
+                matches.addAll(Collections2.transform(team.getMatches(e), OrmMatch.copyMapper));
+            }
+            this.notes = Collections2.transform(team.getNotes(), OrmNote.copyMapper);
+        }
+    }
 
     @Override
     public long getId() {

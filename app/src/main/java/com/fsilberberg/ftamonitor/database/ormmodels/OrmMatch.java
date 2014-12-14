@@ -6,7 +6,14 @@ import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.common.Station;
 import com.fsilberberg.ftamonitor.database.OrmLiteDatabaseHelper;
-import com.fsilberberg.ftamonitor.ftaassistant.*;
+import com.fsilberberg.ftamonitor.ftaassistant.Event;
+import com.fsilberberg.ftamonitor.ftaassistant.Match;
+import com.fsilberberg.ftamonitor.ftaassistant.Note;
+import com.fsilberberg.ftamonitor.ftaassistant.Team;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -14,7 +21,6 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -34,6 +40,19 @@ public class OrmMatch implements Match {
     public static final String BLUE3 = "blue3";
     public static final String EVENT = "event";
     public static final String NOTES = "notes";
+
+    public static final Function<Match, OrmMatch> copyMapper = new Function<Match, OrmMatch>() {
+        @Override
+        public OrmMatch apply(Match input) {
+            if (input == null) {
+                return null;
+            } else if (input instanceof OrmMatch) {
+                return (OrmMatch) input;
+            } else {
+                return new OrmMatch(input);
+            }
+        }
+    };
 
     @DatabaseField(columnName = "id")
     private long id;
@@ -71,7 +90,57 @@ public class OrmMatch implements Match {
     @ForeignCollectionField(columnName = NOTES)
     private Collection<OrmNote> notes;
 
-    private MatchIdentifier matchIdentifierObject;
+    /**
+     * Default constructor for OrmLite
+     */
+    public OrmMatch() {
+    }
+
+    public OrmMatch(Event event, Collection<Note> notes, Table<Alliance, Station, Team> teams, MatchPeriod period, int replay, String matchId) {
+        this.event = OrmEvent.copyMapper.apply(event);
+        this.notes = Collections2.transform(notes, OrmNote.copyMapper);
+        this.period = period;
+        this.replay = replay;
+        this.matchId = matchId;
+        extractTeams(teams);
+    }
+
+    public OrmMatch(Match match) {
+        if (match instanceof OrmMatch) {
+            OrmMatch m = (OrmMatch) match;
+            this.id = m.id;
+            this.event = m.event;
+            this.notes = m.notes;
+            this.period = m.period;
+            this.replay = m.replay;
+            this.matchId = m.matchId;
+            this.red1 = m.red1;
+            this.red2 = m.red2;
+            this.red3 = m.red3;
+            this.blue1 = m.blue1;
+            this.blue2 = m.blue2;
+            this.blue3 = m.blue3;
+        } else {
+            this.id = 0;
+            this.event = OrmEvent.copyMapper.apply(match.getEvent());
+            this.notes = Collections2.transform(match.getNotes(), OrmNote.copyMapper);
+            this.period = match.getPeriod();
+            this.replay = match.getReplay();
+            this.matchId = match.getIdentifier();
+            extractTeams(match.getTeams());
+        }
+    }
+
+    private void extractTeams(Table<Alliance, Station, Team> teams) {
+        if (teams != null) {
+            red1 = OrmTeam.copyMapper.apply(teams.get(Alliance.RED, Station.STATION1));
+            red2 = OrmTeam.copyMapper.apply(teams.get(Alliance.RED, Station.STATION2));
+            red3 = OrmTeam.copyMapper.apply(teams.get(Alliance.RED, Station.STATION3));
+            blue1 = OrmTeam.copyMapper.apply(teams.get(Alliance.BLUE, Station.STATION1));
+            blue2 = OrmTeam.copyMapper.apply(teams.get(Alliance.BLUE, Station.STATION2));
+            blue3 = OrmTeam.copyMapper.apply(teams.get(Alliance.BLUE, Station.STATION3));
+        }
+    }
 
     @Override
     public long getId() {
@@ -79,46 +148,30 @@ public class OrmMatch implements Match {
     }
 
     @Override
-    public MatchIdentifier getMatchId() {
-        if (matchIdentifierObject == null) {
-            matchIdentifierObject = AssistantFactory.getInstance().makeMatchIdentifier(period, matchId, replay);
-        }
-
-        return matchIdentifierObject;
+    public int getReplay() {
+        return replay;
     }
 
     @Override
-    public Team getTeam(Alliance alliance, Station station) {
-        checkRefresh();
-        switch (alliance) {
-            case RED:
-                switch (station) {
-                    case STATION1:
-                        return red1;
-                    case STATION2:
-                        return red2;
-                    case STATION3:
-                        return red3;
-                }
-                break;
-            case BLUE:
-                switch (station) {
-                    case STATION1:
-                        return blue1;
-                    case STATION2:
-                        return blue2;
-                    case STATION3:
-                        return blue3;
-                }
-                break;
-        }
-        return null;
+    public MatchPeriod getPeriod() {
+        return period;
     }
 
     @Override
-    public Collection<? extends Team> getTeams() {
-        checkRefresh();
-        return Arrays.asList(red1, red2, red3, blue1, blue2, blue3);
+    public String getIdentifier() {
+        return matchId;
+    }
+
+    @Override
+    public Table<Alliance, Station, Team> getTeams() {
+        Table<Alliance, Station, Team> teams = HashBasedTable.create();
+        teams.put(Alliance.RED, Station.STATION1, red1);
+        teams.put(Alliance.RED, Station.STATION2, red2);
+        teams.put(Alliance.RED, Station.STATION3, red3);
+        teams.put(Alliance.BLUE, Station.STATION1, blue1);
+        teams.put(Alliance.BLUE, Station.STATION2, blue2);
+        teams.put(Alliance.BLUE, Station.STATION3, blue3);
+        return teams;
     }
 
     @Override
