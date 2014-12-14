@@ -148,7 +148,7 @@ public class OrmLiteDatabase implements Database {
                                 }
                             };
                             if (Iterables.any(events, testPredicate)) {
-                                events = Collections2.filter(events, testPredicate);
+                                events.removeAll(Collections2.filter(events, testPredicate));
                             } else {
                                 m_helper.getTeamEventDao().delete(te);
                             }
@@ -186,7 +186,7 @@ public class OrmLiteDatabase implements Database {
                         };
 
                         if (Iterables.any(teams, testPredicate)) {
-                            teams = Collections2.filter(teams, testPredicate);
+                            teams.removeAll(Collections2.filter(teams, testPredicate));
                         } else {
                             m_helper.getTeamEventDao().delete(te);
                         }
