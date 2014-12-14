@@ -1,13 +1,15 @@
 package com.fsilberberg.ftamonitor.database;
 
 import android.util.Log;
+import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.database.ormmodels.OrmMatch;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import com.fsilberberg.ftamonitor.ftaassistant.Match;
 import com.fsilberberg.ftamonitor.ftaassistant.Note;
 import com.fsilberberg.ftamonitor.ftaassistant.Team;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 import org.joda.time.DateTime;
 
 import java.sql.SQLException;
@@ -28,27 +30,33 @@ public class OrmLiteDatabase implements Database {
         OpenHelperManager.releaseHelper();
     }
 
+
     @Override
-    public Collection<Match> getMatches(Team team, Event event, Note note) throws DatabaseException {
-        if (team == null && event == null && note == null) {
-            return m_helper.getMatchDao().queryForAll();
+    public Match getMatch(MatchPeriod period, String matchIdentifier, Event event) {
+        try {
+            Dao<OrmMatch, Long> matchDao = m_helper.getMatchDao();
+            QueryBuilder<OrmMatch, Long> qb = matchDao.queryBuilder();
+            qb.where().
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
+
         return null;
     }
 
     @Override
-    public Collection<Team> getTeams(Event event, Match match, Note note) throws DatabaseException {
+    public Team getTeam(int number) {
         return null;
     }
 
     @Override
-    public Collection<Event> getEvents(Team team, Match match, Note note, DateTime year) throws DatabaseException {
+    public Event getEvent(DateTime year, String eventCode) {
         return null;
     }
 
     @Override
-    public Collection<Note> getNotes(Team team, Match match, Event event) throws DatabaseException {
+    public Collection<Event> getEvents(DateTime year) {
         return null;
     }
 

@@ -19,19 +19,24 @@ import java.sql.SQLException;
 @DatabaseTable(tableName = "notes")
 public class OrmNote implements Note {
 
+    public static final String CONTENT = "content";
+    public static final String TEAM = "team";
+    public static final String EVENT = "event";
+    public static final String MATCH = "match";
+
     @DatabaseField(columnName = "id", generatedId = true)
     private long id;
 
-    @DatabaseField(columnName = "content")
+    @DatabaseField(columnName = CONTENT)
     private String content;
 
-    @DatabaseField(columnName = "team", foreign = true)
+    @DatabaseField(columnName = TEAM, foreign = true)
     private OrmTeam team;
 
-    @DatabaseField(columnName = "event", foreign = true)
+    @DatabaseField(columnName = EVENT, foreign = true)
     private OrmEvent event;
 
-    @DatabaseField(columnName = "match", foreign = true)
+    @DatabaseField(columnName = MATCH, foreign = true)
     private OrmMatch match;
 
     @Override

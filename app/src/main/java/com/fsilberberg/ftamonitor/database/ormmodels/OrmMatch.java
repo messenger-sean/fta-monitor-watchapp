@@ -23,40 +23,52 @@ import java.util.Collection;
 @DatabaseTable(tableName = "matches")
 public class OrmMatch implements Match {
 
+    public static final String MATCH_IDENTIFIER = "matchId";
+    public static final String REPLAY = "replay";
+    public static final String PERIOD = "period";
+    public static final String RED1 = "red1";
+    public static final String RED2 = "red2";
+    public static final String RED3 = "red3";
+    public static final String BLUE1 = "blue1";
+    public static final String BLUE2 = "blue2";
+    public static final String BLUE3 = "blue3";
+    public static final String EVENT = "event";
+    public static final String NOTES = "notes";
+
     @DatabaseField(columnName = "id")
     private long id;
 
-    @DatabaseField(columnName = "matchId")
+    @DatabaseField(columnName = MATCH_IDENTIFIER)
     private String matchId;
 
-    @DatabaseField(columnName = "replay")
+    @DatabaseField(columnName = REPLAY)
     private int replay;
 
-    @DatabaseField(columnName = "period")
+    @DatabaseField(columnName = PERIOD)
     private MatchPeriod period;
 
-    @DatabaseField(columnName = "red1", canBeNull = false, foreign = true)
+    @DatabaseField(columnName = RED1, canBeNull = false, foreign = true)
     private OrmTeam red1;
 
-    @DatabaseField(columnName = "red2", canBeNull = false, foreign = true)
+    @DatabaseField(columnName = RED2, canBeNull = false, foreign = true)
     private OrmTeam red2;
 
-    @DatabaseField(columnName = "red3", canBeNull = false, foreign = true)
+    @DatabaseField(columnName = RED3, canBeNull = false, foreign = true)
     private OrmTeam red3;
 
-    @DatabaseField(columnName = "blue1", canBeNull = false, foreign = true)
+    @DatabaseField(columnName = BLUE1, canBeNull = false, foreign = true)
     private OrmTeam blue1;
 
-    @DatabaseField(columnName = "blue2", canBeNull = false, foreign = true)
+    @DatabaseField(columnName = BLUE2, canBeNull = false, foreign = true)
     private OrmTeam blue2;
 
-    @DatabaseField(columnName = "blue3", canBeNull = false, foreign = true)
+    @DatabaseField(columnName = BLUE3, canBeNull = false, foreign = true)
     private OrmTeam blue3;
 
-    @DatabaseField(foreign = true, columnName = "event")
+    @DatabaseField(foreign = true, columnName = EVENT)
     private OrmEvent event;
 
-    @ForeignCollectionField(columnName = "notes")
+    @ForeignCollectionField(columnName = NOTES)
     private Collection<OrmNote> notes;
 
     private MatchIdentifier matchIdentifierObject;

@@ -11,6 +11,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -28,28 +29,36 @@ import java.util.Date;
 @DatabaseTable(tableName = "events")
 public class OrmEvent implements Event {
 
+    public static final String EVENT_CODE = "eventCode";
+    public static final String EVENT_NAME = "eventName";
+    public static final String EVENT_LOC = "eventLoc";
+    public static final String START_DATE = "startDate";
+    public static final String END_DATE = "endDate";
+    public static final String MATCHES = "matches";
+    public static final String NOTES = "notes";
+
     @DatabaseField(generatedId = true)
     private long id;
 
-    @DatabaseField(columnName = "eventCode", canBeNull = false)
+    @DatabaseField(columnName = EVENT_CODE, canBeNull = false)
     private String eventCode;
 
-    @DatabaseField(columnName = "eventName")
+    @DatabaseField(columnName = EVENT_NAME)
     private String eventName;
 
-    @DatabaseField(columnName = "eventLoc")
+    @DatabaseField(columnName = EVENT_LOC)
     private String eventLoc;
 
-    @DatabaseField(columnName = "startDate")
+    @DatabaseField(columnName = START_DATE, dataType = DataType.DATE_LONG)
     private Date startDate;
 
-    @DatabaseField(columnName = "endDate")
+    @DatabaseField(columnName = END_DATE, dataType = DataType.DATE_LONG)
     private Date endDate;
 
-    @ForeignCollectionField(columnName = "matches")
+    @ForeignCollectionField(columnName = MATCHES)
     private Collection<OrmMatch> matches;
 
-    @ForeignCollectionField(columnName = "notes")
+    @ForeignCollectionField(columnName = NOTES)
     private Collection<OrmNote> notes;
 
     // The list of teams going to this event. This is not stored in the table for this object, as OrmLite doesn't

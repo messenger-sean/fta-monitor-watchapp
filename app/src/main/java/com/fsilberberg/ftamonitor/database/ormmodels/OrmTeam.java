@@ -25,22 +25,28 @@ import java.util.Collection;
  */
 @DatabaseTable(tableName = "teams")
 public class OrmTeam implements Team {
+    public static final String TEAM_NUMBER = "teamNumber";
+    public static final String TEAM_NAME = "teamName";
+    public static final String TEAM_NICK = "teamNick";
+    public static final String MATCHES = "matches";
+    public static final String NOTES = "notes";
+
     @DatabaseField(generatedId = true, columnName = "id")
     private long id;
 
-    @DatabaseField(columnName = "teamNumber", canBeNull = false)
+    @DatabaseField(columnName = TEAM_NUMBER, canBeNull = false)
     private int teamNumber;
 
-    @DatabaseField(columnName = "teamName")
+    @DatabaseField(columnName = TEAM_NAME)
     private String teamName;
 
-    @DatabaseField(columnName = "teamNick")
+    @DatabaseField(columnName = TEAM_NICK)
     private String teamNick;
 
-    @ForeignCollectionField(columnName = "matches")
+    @ForeignCollectionField(columnName = MATCHES)
     private Collection<OrmMatch> matches;
 
-    @ForeignCollectionField(columnName = "notes")
+    @ForeignCollectionField(columnName = NOTES)
     private Collection<OrmNote> notes;
 
     private Collection<OrmEvent> events;

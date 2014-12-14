@@ -1,10 +1,10 @@
 package com.fsilberberg.ftamonitor.database;
 
+import com.fsilberberg.ftamonitor.common.MatchPeriod;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import com.fsilberberg.ftamonitor.ftaassistant.Match;
 import com.fsilberberg.ftamonitor.ftaassistant.Note;
 import com.fsilberberg.ftamonitor.ftaassistant.Team;
-
 import org.joda.time.DateTime;
 
 import java.util.Collection;
@@ -17,57 +17,40 @@ import java.util.Collection;
 public interface Database {
 
     /**
-     * Gets a collection of matches that match the given filters. If no matches are found, the
-     * empty collection will be returned. This will never return null. If no filters are specified,
-     * all matches in the database will be returned. This could take a long time for all matches,
-     * so please use this sparingly.
+     * Gets the information for a match from the given period, with the given identifier, from the specified event.
+     * If the match is not found, null will be returned.
      *
-     * @param team  The team to filter by. If no team filter is required, use null
-     * @param event The event to filter by. If no event filter is required, use null
-     * @param note  The note to filter by. If no note filter is required, use null
-     * @return The list of matches that match the given criteria.
+     * @param period          The period of the match
+     * @param matchIdentifier The string that identifies the match, such as 1, or Semi 1-1
+     * @param event           The event the match is being held at
+     * @return The match from the database. If the match is not in the database, null is returned.
      */
-    Collection<Match> getMatches(Team team, Event event, Note note) throws DatabaseException;
+    Match getMatch(MatchPeriod period, String matchIdentifier, Event event);
 
     /**
-     * Gets a collection of teams that match the given filters. If no teams are found, the
-     * empty collection will be returned. This will never return null. If no filters are specified,
-     * all teams in the database will be returned. This could take a long time for all teams,
-     * so please use this sparingly.
+     * Gets the team for a given number.
      *
-     * @param event The event to filter by. If no event filter is required, use null
-     * @param match The match to filter by. If no match filter is required, use null
-     * @param note  The note to filter by. If no note filter is required, use null
-     * @return The list of matches that match the given criteria.
+     * @param number The number of the team
+     * @return The team. If the team is not in the database, null is returned
      */
-    Collection<Team> getTeams(Event event, Match match, Note note) throws DatabaseException;
+    Team getTeam(int number);
 
     /**
-     * Gets a collection of events that match the given filters. If no events are found, the
-     * empty collection will be returned. This will never return null. If no filters are specified,
-     * all events in the database will be returned. This could take a long time for all events,
-     * so please use this sparingly.
+     * Gets the event from a given year with the given code.
      *
-     * @param team  The team to filter by. If no team filter is required, use null
-     * @param match The match to filter by. If no match filter is required, use null
-     * @param note  The note to filter by. If no note filter is required, use null
-     * @param year  The event year to filter by. If no year is required, use null
-     * @return The list of matches that match the given criteria.
+     * @param year      The year of the event
+     * @param eventCode The code of the event. This is the FIRST standard, code, such as MAWOR for WPI
+     * @return The event. If the year/code combination is not found, null is returned
      */
-    Collection<Event> getEvents(Team team, Match match, Note note, DateTime year) throws DatabaseException;
+    Event getEvent(DateTime year, String eventCode);
 
     /**
-     * Gets a collection of notes that match the given filters. If no notes are found, the
-     * empty collection will be returned. This will never return null. If no filters are specified,
-     * all notes in the database will be returned. This could take a long time for all notes,
-     * so please use this sparingly.
+     * Gets all events for a given year
      *
-     * @param team  The team to filter by. If no team filter is required, use null
-     * @param match The match to filter by. If no match filter is required, use null
-     * @param event The event to filter by. If no event filter is required, use null
-     * @return The list of matches that match the given criteria.
+     * @param year The year to look for events
+     * @return All events in the database for that year. If there are no events, the empty collection is returned
      */
-    Collection<Note> getNotes(Team team, Match match, Event event) throws DatabaseException;
+    Collection<Event> getEvents(DateTime year);
 
     /**
      * Saves a given list of matches to the database.
