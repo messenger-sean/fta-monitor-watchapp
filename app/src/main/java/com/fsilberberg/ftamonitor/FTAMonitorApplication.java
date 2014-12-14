@@ -4,18 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
-
-import com.fsilberberg.ftamonitor.database.DaoMaster;
-import com.fsilberberg.ftamonitor.database.DaoSession;
-import com.fsilberberg.ftamonitor.database.Database;
-import com.fsilberberg.ftamonitor.database.DatabaseFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;
-
-import java.sql.SQLInput;
 
 /**
  * This is the main entry point of the application. On startup, it will create the main foreground

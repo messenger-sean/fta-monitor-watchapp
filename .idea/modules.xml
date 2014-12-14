@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GreenDaoGenerator/GreenDaoGenerator.iml" filepath="$PROJECT_DIR$/GreenDaoGenerator/GreenDaoGenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fta-monitor.iml" filepath="$PROJECT_DIR$/fta-monitor.iml" />
     </modules>
   </component>
 </project>
