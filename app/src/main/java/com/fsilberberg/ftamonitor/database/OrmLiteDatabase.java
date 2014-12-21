@@ -216,7 +216,7 @@ public class OrmLiteDatabase implements Database {
         for (Note n : notes) {
             OrmNote note = OrmNote.copyMapper.apply(n);
             try {
-                m_helper.getNoteDao().delete((OrmNote) note);
+                m_helper.getNoteDao().delete(note);
             } catch (SQLException e) {
                 Log.w(OrmLiteDatabase.class.getName(), "Could not delete note", e);
             }
