@@ -1,0 +1,5 @@
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn sun.misc.Unsafe
+-dontwarn org.joda.convert.ToString
+-dontwarn org.joda.convert.FromString
