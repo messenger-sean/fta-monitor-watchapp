@@ -140,8 +140,18 @@ public class OrmEvent implements Event {
     }
 
     @Override
+    public void setEventCode(String eventCode) {
+        this.eventCode = eventCode;
+    }
+
+    @Override
     public String getEventName() {
         return eventName;
+    }
+
+    @Override
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
     @Override
@@ -150,13 +160,28 @@ public class OrmEvent implements Event {
     }
 
     @Override
+    public void setEventLoc(String eventLoc) {
+        this.eventLoc = eventLoc;
+    }
+
+    @Override
     public DateTime getStartDate() {
         return new DateTime(startDate);
     }
 
     @Override
+    public void setStartDate(DateTime startDate) {
+        this.startDate = startDate.toDate();
+    }
+
+    @Override
     public DateTime getEndDate() {
         return new DateTime(endDate);
+    }
+
+    @Override
+    public void getEndDate(DateTime endDate) {
+        this.endDate = endDate.toDate();
     }
 
     @Override
@@ -188,6 +213,13 @@ public class OrmEvent implements Event {
     }
 
     @Override
+    public void setTeams(Collection<? extends Team> teams) {
+        if (teams != null) {
+            this.teams = Collections2.transform(teams, OrmTeam.copyMapper);
+        }
+    }
+
+    @Override
     public Collection<? extends Match> getMatches() {
         if (matches == null) {
             OrmLiteDatabaseHelper helper = getHelper();
@@ -211,6 +243,13 @@ public class OrmEvent implements Event {
     }
 
     @Override
+    public void setMatches(Collection<? extends Match> matches) {
+        if (matches != null) {
+            this.matches = Collections2.transform(matches, OrmMatch.copyMapper);
+        }
+    }
+
+    @Override
     public Collection<? extends Note> getNotes() {
         if (notes == null) {
             OrmLiteDatabaseHelper helper = getHelper();
@@ -230,6 +269,13 @@ public class OrmEvent implements Event {
         }
 
         return notes;
+    }
+
+    @Override
+    public void setNotes(Collection<? extends Note> notes) {
+        if (notes != null) {
+            this.notes = Collections2.transform(notes, OrmNote.copyMapper);
+        }
     }
 
     /**

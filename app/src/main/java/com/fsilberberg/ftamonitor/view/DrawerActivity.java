@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.view.eventslist.EventListFragment;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
 
 
@@ -108,6 +109,10 @@ public class DrawerActivity extends ActionBarActivity {
                 newFrag = new FieldMonitorFragment();
                 break;
             case 1:
+                m_title = "Events";
+                newFrag = new EventListFragment();
+                break;
+            case 2:
                 m_title = getString(R.string.action_settings);
                 newFrag = new SettingsFragment();
                 break;
@@ -129,10 +134,13 @@ public class DrawerActivity extends ActionBarActivity {
     private int getCurrentTab() {
         Fragment fieldFrag = getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName());
         Fragment settingsFrag = getFragmentManager().findFragmentByTag(SettingsFragment.class.getName());
+        Fragment eventsFrag = getFragmentManager().findFragmentByTag(EventListFragment.class.getName());
         if (fieldFrag != null && fieldFrag.isVisible()) {
             return 0;
+        } else if (eventsFrag != null && eventsFrag.isVisible()) {
+           return 1;
         } else if (settingsFrag != null && settingsFrag.isVisible()) {
-            return 1;
+            return 2;
         } else {
             throw new RuntimeException("Error: Unknown fragment active");
         }

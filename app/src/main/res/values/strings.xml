@@ -40,7 +40,7 @@
     <string name="code">Code</string>
 
     <!-- Notification Strings -->
-    <string formatted="false" name="main_error_string">%s %d - %d has %s</string>
+    <string name="main_error_string" formatted="false">%s %d - %d has %s</string>
     <string name="ds_ethernet_error">no driver station ethernet</string>
     <string name="ds_error">no driver station</string>
     <string name="radio_error">no radio</string>
@@ -50,9 +50,11 @@
 
     <string-array name="drawer_tabs">
         <item>Field Monitor</item>
+        <item>Events</item>
         <item>Settings</item>
     </string-array>
 
     <string name="title_activity_my">MyActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

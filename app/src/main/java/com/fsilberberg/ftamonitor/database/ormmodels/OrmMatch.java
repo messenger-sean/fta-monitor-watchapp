@@ -54,7 +54,7 @@ public class OrmMatch implements Match {
         }
     };
 
-    @DatabaseField(columnName = "id")
+    @DatabaseField(generatedId = true, columnName = "id")
     private long id;
 
     @DatabaseField(columnName = MATCH_IDENTIFIER)
