@@ -12,11 +12,19 @@
         android:layout_gravity="start|top" />
 
     <ProgressBar
+        android:id="@+id/eventsSpinner"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/eventsSpinner"
         android:layout_gravity="center"
         android:indeterminateOnly="true" />
+
+    <TextView
+        android:id="@+id/eventsListBodyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_margin="@dimen/table_margin" />
 
 </FrameLayout>

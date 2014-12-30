@@ -5,9 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,6 +28,7 @@ public class EventListFragment extends Fragment {
 
     private ListView m_eventsList;
     private ProgressBar m_progressBar;
+    private TextView m_bodyText;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -43,20 +42,31 @@ public class EventListFragment extends Fragment {
 
         m_eventsList = (ListView) mainView.findViewById(R.id.eventsList);
         m_progressBar = (ProgressBar) mainView.findViewById(R.id.eventsSpinner);
+        m_bodyText = (TextView) mainView.findViewById(R.id.eventsListBodyText);
 
         m_eventsList.setVisibility(View.INVISIBLE);
+        m_bodyText.setVisibility(View.INVISIBLE);
 
         new LoadEventsTask(getActivity()).execute();
 
         return mainView;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-    private class LoadEventsTask extends AsyncTask {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.events_list_refresh, menu);
+    }
+
+    private class LoadEventsTask extends AsyncTask<Void, Void, List<Event>> {
 
         private Context m_context;
         private Database db;
-        private List<Event> m_eventList;
 
         public LoadEventsTask(Context context) {
             m_context = context;
@@ -64,21 +74,23 @@ public class EventListFragment extends Fragment {
         }
 
         @Override
-        protected Object doInBackground(Object[] objects) {
+        protected List<Event> doInBackground(Void... voids) {
             Collection<? extends Event> events = db.getEvents(DateTime.now());
-            m_eventList = new ArrayList<>(events);
-            return null;
+            return new ArrayList<>(events);
         }
 
         @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            if (m_eventsList != null) {
-                m_eventsList.setAdapter(new EventListAdapter(m_context, R.id.eventsList, m_eventList));
+        protected void onPostExecute(List<Event> events) {
+            if (events != null && events.size() > 0) {
+                m_eventsList.setAdapter(new EventListAdapter(m_context, R.id.eventsList, events));
+                m_eventsList.setVisibility(View.VISIBLE);
+            } else {
+                m_bodyText.setText("No Events were found for the current year. " +
+                        "Please hit the refresh button at the top of the screen to retrieve the events list.");
+                m_bodyText.setVisibility(View.VISIBLE);
             }
 
             m_progressBar.setVisibility(View.INVISIBLE);
-            m_eventsList.setVisibility(View.VISIBLE);
             if (db != null) {
                 DatabaseFactory.getInstance().release(db);
                 db = null;
