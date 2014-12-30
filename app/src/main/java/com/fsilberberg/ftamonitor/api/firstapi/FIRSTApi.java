@@ -1,23 +1,27 @@
 package com.fsilberberg.ftamonitor.api.firstapi;
 
 import android.util.Log;
+import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.api.Api;
+import com.fsilberberg.ftamonitor.database.Database;
+import com.fsilberberg.ftamonitor.database.DatabaseException;
+import com.fsilberberg.ftamonitor.database.DatabaseFactory;
+import com.fsilberberg.ftamonitor.ftaassistant.AssistantFactory;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import com.fsilberberg.ftamonitor.ftaassistant.Team;
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.http.protocol.HTTP;
+import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.BufferOverflowException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Implementation of the {@link com.fsilberberg.ftamonitor.api.Api} interface that talks to the official FIRST Api
@@ -54,24 +58,53 @@ public class FIRSTApi implements Api {
             Log.w(FIRSTApi.class.getName(), "Could not retrieve events: null connection");
             return;
         }
+
         BufferedReader jsonReader = null;
         try {
             connection.connect();
+            // If there was an error while attempting to refresh the events, then return
             if (((HttpURLConnection) connection).getResponseCode() != HttpURLConnection.HTTP_OK) {
                 Log.e(FIRSTApi.class.getName(), "Received response code " + ((HttpURLConnection) connection).getResponseCode());
+                return;
             }
             jsonReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             Gson gson = new GsonBuilder().create();
             EventsApi.EventsListingModel model = gson.fromJson(jsonReader, EventsApi.EventsListingModel.class);
-            Log.d(FIRSTApi.class.getName(), model.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+            Database db = DatabaseFactory.getInstance().getDatabase(FTAMonitorApplication.getContext());
+            if (model.eventCount > 0) {
+                Collection<Event> finalEvents = new ArrayList<>();
+                for (EventsApi.EventModel em : model.Events) {
+                    // Query the database and see if the event already exists
+                    Optional<Event> query = db.getEvent(DateTime.now().withYear(year), em.code);
+                    if (query.isPresent()) {
+                        Event event = query.get();
+                        event.setEventLoc(em.location);
+                        event.setEventName(em.name);
+                        event.setStartDate(new DateTime(em.dateStart));
+                        event.setEndDate(new DateTime(em.dateEnd));
+                        finalEvents.add(event);
+                    } else {
+                        Event event = AssistantFactory.getInstance().makeEvent(em.code,
+                                em.name,
+                                em.location,
+                                new DateTime(em.dateStart),
+                                new DateTime(em.dateEnd),
+                                null, null, null);
+                        finalEvents.add(event);
+                    }
+                }
+
+                Event[] arr = new Event[0];
+                db.saveEvent(finalEvents.toArray(arr));
+            }
+        } catch (IOException | DatabaseException e) {
+            Log.e(FIRSTApi.class.getName(), "Error when trying to update the event list", e);
         } finally {
             if (jsonReader != null) {
                 try {
                     jsonReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.w(FIRSTApi.class.getName(), "Exception thrown when trying to close the reader", e);
                 }
             }
         }

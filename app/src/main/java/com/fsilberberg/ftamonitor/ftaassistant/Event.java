@@ -85,7 +85,7 @@ public interface Event {
      *
      * @return The end date
      */
-    public void getEndDate(DateTime endDate);
+    public void setEndDate(DateTime endDate);
 
     /**
      * Gets the teams attending this event

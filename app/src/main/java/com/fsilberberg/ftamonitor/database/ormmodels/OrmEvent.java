@@ -180,7 +180,7 @@ public class OrmEvent implements Event {
     }
 
     @Override
-    public void getEndDate(DateTime endDate) {
+    public void setEndDate(DateTime endDate) {
         this.endDate = endDate.toDate();
     }
 

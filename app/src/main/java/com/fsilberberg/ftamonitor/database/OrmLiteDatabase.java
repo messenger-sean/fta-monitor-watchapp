@@ -174,24 +174,26 @@ public class OrmLiteDatabase implements Database {
                 // this collection. Otherwise, remove the pair from the database. At the end, if there are any new
                 // teams, add them to the database
                 Collection<OrmTeam> teams = event.getTeamsNoRefresh();
-                for (final OrmTeamEvent te : getTeamEventList(OrmTeamEvent.EVENT_ID, event.getId())) {
-                    Predicate<OrmTeam> testPredicate = new Predicate<OrmTeam>() {
-                        @Override
-                        public boolean apply(OrmTeam input) {
-                            return input.getId() == te.getTeam().getId();
+                if (teams != null) {
+                    for (final OrmTeamEvent te : getTeamEventList(OrmTeamEvent.EVENT_ID, event.getId())) {
+                        Predicate<OrmTeam> testPredicate = new Predicate<OrmTeam>() {
+                            @Override
+                            public boolean apply(OrmTeam input) {
+                                return input.getId() == te.getTeam().getId();
+                            }
+                        };
+
+                        if (Iterables.any(teams, testPredicate)) {
+                            teams.removeAll(Collections2.filter(teams, testPredicate));
+                        } else {
+                            m_helper.getTeamEventDao().delete(te);
                         }
-                    };
-
-                    if (Iterables.any(teams, testPredicate)) {
-                        teams.removeAll(Collections2.filter(teams, testPredicate));
-                    } else {
-                        m_helper.getTeamEventDao().delete(te);
                     }
-                }
 
-                for (OrmTeam team : teams) {
-                    OrmTeamEvent te = new OrmTeamEvent(team, event);
-                    m_helper.getTeamEventDao().create(te);
+                    for (OrmTeam team : teams) {
+                        OrmTeamEvent te = new OrmTeamEvent(team, event);
+                        m_helper.getTeamEventDao().create(te);
+                    }
                 }
             } catch (SQLException ex) {
                 Log.w(OrmLiteDatabase.class.getName(), "Could not save event", ex);

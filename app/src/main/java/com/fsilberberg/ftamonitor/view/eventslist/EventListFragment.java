@@ -21,9 +21,7 @@ import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import org.joda.time.DateTime;
 
 import java.nio.DoubleBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -91,7 +89,22 @@ public class EventListFragment extends Fragment {
         @Override
         protected List<Event> doInBackground(Void... voids) {
             Collection<? extends Event> events = db.getEvents(DateTime.now());
-            return new ArrayList<>(events);
+            List<Event> eventsList = new ArrayList<>(events);
+            Collections.sort(eventsList, new Comparator<Event>() {
+                @Override
+                public int compare(Event e1, Event e2) {
+                    if (e1.getEventCode().equals(e2.getEventCode())) {
+                        return 0;
+                    } else if (e1.getStartDate().isBefore(e2.getStartDate())) {
+                        return -1;
+                    } else if (e2.getStartDate().isBefore(e1.getStartDate())) {
+                        return 1;
+                    } else {
+                        return e1.getEventName().compareTo(e2.getEventName());
+                    }
+                }
+            });
+            return eventsList;
         }
 
         @Override
@@ -122,6 +135,13 @@ public class EventListFragment extends Fragment {
         }
 
         @Override
+        protected void onPreExecute() {
+            m_eventsList.setVisibility(View.INVISIBLE);
+            m_bodyText.setVisibility(View.INVISIBLE);
+            m_progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected Void doInBackground(Integer... integers) {
             if (integers == null || integers[0] == null) {
                 Log.w(RefreshEventsTask.class.getName(), "Asked to refresh null year!");
@@ -132,6 +152,11 @@ public class EventListFragment extends Fragment {
             Api api = ApiFactory.getInstance().getApi();
             api.retrieveAllEvents(year);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            new LoadEventsTask(m_context).execute();
         }
     }
 
@@ -159,7 +184,7 @@ public class EventListFragment extends Fragment {
             eventLoc.setText(event.getEventLoc());
             eventDate.setText(event.getStartDate().toString("d MMM, y"));
 
-            return super.getView(position, convertView, parent);
+            return eventView;
         }
     }
 }
