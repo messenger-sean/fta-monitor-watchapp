@@ -10,8 +10,10 @@ public interface Api {
     /**
      * Retrieves all defined events from the server. This does <b>NOT</b> update the team list or match list. If an event
      * is already defined in the database, it is updated, not removed.
+     *
+     * @param year The year to retrieve events for
      */
-    void retrieveAllEvents();
+    void retrieveAllEvents(int year);
 
     /**
      * Updates the event, <b>INCLUDING</b> match and team list.

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.*;
 
 import android.widget.ArrayAdapter;
@@ -12,11 +13,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.api.Api;
+import com.fsilberberg.ftamonitor.api.ApiFactory;
 import com.fsilberberg.ftamonitor.database.Database;
 import com.fsilberberg.ftamonitor.database.DatabaseFactory;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import org.joda.time.DateTime;
 
+import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +67,17 @@ public class EventListFragment extends Fragment {
         inflater.inflate(R.menu.events_list_refresh, menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.events_list_refresh:
+                new RefreshEventsTask(getActivity()).execute(2014);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private class LoadEventsTask extends AsyncTask<Void, Void, List<Event>> {
 
         private Context m_context;
@@ -95,6 +110,28 @@ public class EventListFragment extends Fragment {
                 DatabaseFactory.getInstance().release(db);
                 db = null;
             }
+        }
+    }
+
+    private class RefreshEventsTask extends AsyncTask<Integer, Void, Void> {
+
+        private final Context m_context;
+
+        public RefreshEventsTask(Context context) {
+            m_context = context;
+        }
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            if (integers == null || integers[0] == null) {
+                Log.w(RefreshEventsTask.class.getName(), "Asked to refresh null year!");
+                return null;
+            }
+            int year = integers[0];
+            Log.i(LoadEventsTask.class.getName(), "Starting events refresh for year " + year);
+            Api api = ApiFactory.getInstance().getApi();
+            api.retrieveAllEvents(year);
+            return null;
         }
     }
 
