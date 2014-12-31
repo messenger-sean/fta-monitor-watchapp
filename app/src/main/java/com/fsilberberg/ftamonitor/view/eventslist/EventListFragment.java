@@ -1,13 +1,14 @@
 package com.fsilberberg.ftamonitor.view.eventslist;
 
 
+import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.*;
-
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -20,8 +21,10 @@ import com.fsilberberg.ftamonitor.database.DatabaseFactory;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
 import org.joda.time.DateTime;
 
-import java.nio.DoubleBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +34,9 @@ public class EventListFragment extends Fragment {
     private ListView m_eventsList;
     private ProgressBar m_progressBar;
     private TextView m_bodyText;
+
+    private SortingOrder order = SortingOrder.DATE;
+    private List<Event> events = null;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -71,10 +77,26 @@ public class EventListFragment extends Fragment {
             case R.id.events_list_refresh:
                 new RefreshEventsTask(getActivity()).execute(2014);
                 return true;
+            case R.id.events_list_sort:
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Sort Events By:");
+                builder.setItems(SortingOrder.getStrings(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        order = SortingOrder.values()[i];
+                        if (m_eventsList.getVisibility() == View.VISIBLE) {
+                            Collections.sort(events, order.getComparator());
+                            m_eventsList.setAdapter(new EventListAdapter(getActivity(), R.id.eventsList, events));
+                        }
+                    }
+                });
+                builder.create().show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     private class LoadEventsTask extends AsyncTask<Void, Void, List<Event>> {
 
@@ -90,20 +112,7 @@ public class EventListFragment extends Fragment {
         protected List<Event> doInBackground(Void... voids) {
             Collection<? extends Event> events = db.getEvents(DateTime.now());
             List<Event> eventsList = new ArrayList<>(events);
-            Collections.sort(eventsList, new Comparator<Event>() {
-                @Override
-                public int compare(Event e1, Event e2) {
-                    if (e1.getEventCode().equals(e2.getEventCode())) {
-                        return 0;
-                    } else if (e1.getStartDate().isBefore(e2.getStartDate())) {
-                        return -1;
-                    } else if (e2.getStartDate().isBefore(e1.getStartDate())) {
-                        return 1;
-                    } else {
-                        return e1.getEventName().compareTo(e2.getEventName());
-                    }
-                }
-            });
+            Collections.sort(eventsList, order.getComparator());
             return eventsList;
         }
 
@@ -112,6 +121,7 @@ public class EventListFragment extends Fragment {
             if (events != null && events.size() > 0) {
                 m_eventsList.setAdapter(new EventListAdapter(m_context, R.id.eventsList, events));
                 m_eventsList.setVisibility(View.VISIBLE);
+                EventListFragment.this.events = events;
             } else {
                 m_bodyText.setText("No Events were found for the current year. " +
                         "Please hit the refresh button at the top of the screen to retrieve the events list.");
@@ -163,11 +173,9 @@ public class EventListFragment extends Fragment {
     private class EventListAdapter extends ArrayAdapter<Event> {
 
         private LayoutInflater m_inflater;
-        private Context m_context;
 
         public EventListAdapter(Context context, int resource, List<Event> objects) {
             super(context, resource, objects);
-            m_context = context;
             m_inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
