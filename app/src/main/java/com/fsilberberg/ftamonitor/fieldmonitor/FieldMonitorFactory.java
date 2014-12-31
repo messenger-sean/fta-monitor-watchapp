@@ -3,7 +3,6 @@ package com.fsilberberg.ftamonitor.fieldmonitor;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
 import com.fsilberberg.ftamonitor.R;
 
 /**

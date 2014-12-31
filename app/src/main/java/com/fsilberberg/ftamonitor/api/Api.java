@@ -1,7 +1,6 @@
 package com.fsilberberg.ftamonitor.api;
 
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
-import com.fsilberberg.ftamonitor.ftaassistant.Team;
 
 /**
  * API interface for updating and retrieving information about FRC events

@@ -1,12 +1,10 @@
 package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 
 import android.util.Log;
-
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 /**

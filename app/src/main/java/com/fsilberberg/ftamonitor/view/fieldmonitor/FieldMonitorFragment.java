@@ -14,14 +14,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
-import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
-import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;
-
 import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**

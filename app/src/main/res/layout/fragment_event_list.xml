@@ -4,12 +4,40 @@
     android:layout_height="match_parent"
     tools:context="com.fsilberberg.ftamonitor.view.eventslist.EventListFragment">
 
-
-    <ListView
-        android:id="@+id/eventsList"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|top" />
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/events_list_search_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/table_margin"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/events_list_search_box"
+                android:hint="@string/events_list_search_hint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="text" />
+
+            <ImageButton
+                android:id="@+id/events_list_search_cancel"
+                android:background="@null"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_cancel" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/eventsList"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/eventsSpinner"
@@ -24,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_margin="@dimen/table_margin" />
+        android:layout_margin="@dimen/table_margin"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </FrameLayout>

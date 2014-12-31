@@ -3,16 +3,10 @@ package com.fsilberberg.ftamonitor.fieldmonitor;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.common.Card;
-import com.fsilberberg.ftamonitor.common.Observable;
-import com.fsilberberg.ftamonitor.common.Observer;
-import com.fsilberberg.ftamonitor.common.MatchStatus;
+import com.fsilberberg.ftamonitor.common.*;
 import com.fsilberberg.ftamonitor.fieldmonitor.fmsdatatypes.MatchInfo;
-
 import org.joda.time.Period;
 
 import java.util.ArrayList;
@@ -22,10 +16,7 @@ import static com.fsilberberg.ftamonitor.common.Alliance.BLUE;
 import static com.fsilberberg.ftamonitor.common.Card.NONE;
 import static com.fsilberberg.ftamonitor.common.Card.YELLOW;
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
-import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.AUTO_TIME;
-import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.MATCH_NUMBER;
-import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.MATCH_STATUS;
-import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.TELEOP_TIME;
+import static com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType.*;
 
 /**
  * The field status maintains the current status of the field via updates from signalr, so that there

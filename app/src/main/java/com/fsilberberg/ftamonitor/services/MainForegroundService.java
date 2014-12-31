@@ -7,15 +7,13 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
-
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.view.DrawerActivity;
+import microsoft.aspnet.signalr.client.ConnectionState;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
  * This service is the main background service that runs all of the other service threads and

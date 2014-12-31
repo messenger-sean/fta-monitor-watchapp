@@ -8,22 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.fsilberberg.ftamonitor.common.Card.NONE;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.BATTERY;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.BYPASSED;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.CARD;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.CODE;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DATA_RATE;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DROPPED_PACKETS;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DS;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.DS_ETH;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ENABLED;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ESTOP;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.RADIO;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ROBOT;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.ROUND_TRIP;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.SIGNAL_QUALITY;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.SIGNAL_STRENGTH;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.TEAM_NUMBER;
+import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.*;
 
 /**
  * Encapsulates the current status of one of the alliance team members. There are however many of these

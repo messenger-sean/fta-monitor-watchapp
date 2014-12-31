@@ -3,7 +3,6 @@ package com.fsilberberg.ftamonitor.ftaassistant;
 import org.joda.time.DateTime;
 
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * Represents an FRC match

@@ -2,15 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/events_list_search"
+        android:icon="@drawable/ic_action_search"
+        android:orderInCategory="400"
+        android:title="@string/events_search"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/events_list_refresh"
         android:icon="@drawable/ic_action_refresh"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:title="@string/refresh_events"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/events_list_sort"
-        android:icon="@drawable/ic_action_edit"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         android:title="@string/sort_by"
         app:showAsAction="never" />
 </menu>

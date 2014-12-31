@@ -2,7 +2,6 @@ package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.google.gson.JsonObject;
-
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 /**

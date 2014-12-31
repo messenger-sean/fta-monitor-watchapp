@@ -1,9 +1,7 @@
 package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 
 import android.util.Log;
-
 import com.google.gson.JsonObject;
-
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 /**

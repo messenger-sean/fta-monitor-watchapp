@@ -11,12 +11,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.eventslist.EventListFragment;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;

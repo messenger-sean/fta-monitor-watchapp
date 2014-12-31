@@ -7,7 +7,6 @@ import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;

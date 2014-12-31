@@ -3,41 +3,22 @@ package com.fsilberberg.ftamonitor.services;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
 import com.fsilberberg.ftamonitor.common.Observable;
 import com.fsilberberg.ftamonitor.common.Observer;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.NoopHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateDSToFMSStatusHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateEStopChangedHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateFieldNetworkStatusHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchChangedHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchNotReadyHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchPlayStatusHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateMatchStatusHandler;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.UpdateStationConnectionChangedHandler;
+import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.ExecutionException;
-
 import microsoft.aspnet.signalr.client.ConnectionState;
 import microsoft.aspnet.signalr.client.ErrorCallback;
 import microsoft.aspnet.signalr.client.StateChangedCallback;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;
 
-import static com.fsilberberg.ftamonitor.common.MatchStatus.AUTO;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.AUTO_END;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.AUTO_PAUSED;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.MATCH_READY;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.OVER;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.PRESTART_COMPLETED;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.PRESTART_INITIATED;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.READY_TO_PRESTART;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.TELEOP;
-import static com.fsilberberg.ftamonitor.common.MatchStatus.TELEOP_PAUSED;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+
+import static com.fsilberberg.ftamonitor.common.MatchStatus.*;
 
 /**
  * This "service" maintains the connection to field, and sets up the various proxy functions for
