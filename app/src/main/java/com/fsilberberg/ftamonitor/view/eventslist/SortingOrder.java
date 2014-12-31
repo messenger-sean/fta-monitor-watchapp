@@ -54,6 +54,7 @@ enum SortingOrder {
 
     /**
      * Gets an array of printable strings.
+     *
      * @return The printable string for each element
      */
     public static String[] getStrings() {

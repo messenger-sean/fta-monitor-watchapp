@@ -10,7 +10,6 @@ import com.fsilberberg.ftamonitor.R;
 
 /**
  * This is just a blank fragment for replacing the Field Monitor sections when we are disconnected
- *
  */
 public class BlankFragment extends Fragment {
 

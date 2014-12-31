@@ -25,6 +25,7 @@ public interface Api {
      * Updates the information in a team. This does <b>NOT</b> update the team's event or match list. To update those,
      * use the {@link #updateEvent(com.fsilberberg.ftamonitor.ftaassistant.Event)} method for the event the team
      * participates in
+     *
      * @param team
      */
     void updateTeam(int team);

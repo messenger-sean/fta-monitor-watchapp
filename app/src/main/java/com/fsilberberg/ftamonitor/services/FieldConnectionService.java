@@ -178,6 +178,7 @@ public class FieldConnectionService implements ForegroundService {
 
     /**
      * Gets the url being used by the connection
+     *
      * @return The connection url
      */
     public String getUrl() {

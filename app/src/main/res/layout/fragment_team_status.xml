@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">
 
     <TableLayout
         android:layout_width="match_parent"
@@ -23,8 +23,7 @@
                 android:padding="@dimen/table_margin"
                 android:text="#"
                 android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size"
-                />
+                android:textSize="@dimen/medium_text_size" />
 
             <!-- Team Number -->
             <TextView
@@ -37,7 +36,7 @@
                 android:padding="@dimen/table_margin"
                 android:text="1"
                 android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size"/>
+                android:textSize="@dimen/medium_text_size" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -56,7 +55,7 @@
                     android:padding="@dimen/table_margin"
                     android:text="Volt"
                     android:textColor="@color/black_text"
-                    android:textSize="@dimen/medium_text_size"/>
+                    android:textSize="@dimen/medium_text_size" />
 
                 <!-- Enabled -->
                 <TextView
@@ -70,7 +69,7 @@
                     android:padding="@dimen/table_margin"
                     android:text="En"
                     android:textColor="@color/white_text"
-                    android:textSize="@dimen/medium_text_size"/>
+                    android:textSize="@dimen/medium_text_size" />
 
             </LinearLayout>
 
@@ -87,7 +86,7 @@
                 android:text="BW"
                 android:textColor="@color/black_text"
                 android:textSize="@dimen/medium_text_size"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/team_status_missed_packets"
@@ -101,7 +100,7 @@
                 android:text="MP"
                 android:textColor="@color/black_text"
                 android:textSize="@dimen/medium_text_size"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/team_status_round_trip"
@@ -115,7 +114,7 @@
                 android:text="RT"
                 android:textColor="@color/black_text"
                 android:textSize="@dimen/medium_text_size"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -135,7 +134,7 @@
                     android:text="SQ"
                     android:textColor="@color/black_text"
                     android:textSize="@dimen/medium_text_size"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
 
                 <TextView
                     android:id="@+id/team_status_signal_strength"
@@ -149,7 +148,7 @@
                     android:text="SS"
                     android:textColor="@color/black_text"
                     android:textSize="@dimen/medium_text_size"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
             </LinearLayout>
         </TableRow>
     </TableLayout>
@@ -164,5 +163,5 @@
         android:paddingBottom="@dimen/table_margin"
         android:paddingTop="@dimen/table_margin"
         android:textColor="@color/black_text"
-        android:textSize="@dimen/medium_text_size"/>
+        android:textSize="@dimen/medium_text_size" />
 </FrameLayout>

@@ -136,7 +136,7 @@ public class DrawerActivity extends ActionBarActivity {
         if (fieldFrag != null && fieldFrag.isVisible()) {
             return 0;
         } else if (eventsFrag != null && eventsFrag.isVisible()) {
-           return 1;
+            return 1;
         } else if (settingsFrag != null && settingsFrag.isVisible()) {
             return 2;
         } else {

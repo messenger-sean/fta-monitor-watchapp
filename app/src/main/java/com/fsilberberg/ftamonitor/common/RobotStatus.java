@@ -1,7 +1,7 @@
 package com.fsilberberg.ftamonitor.common;
 
 /**
- *  Represents the various robot states that FMS supports
+ * Represents the various robot states that FMS supports
  */
 public enum RobotStatus {
     ENABLED("Enabled"), DISABLED("Disabled"), BYPASSED("Bypassed");

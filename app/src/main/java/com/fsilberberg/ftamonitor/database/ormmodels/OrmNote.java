@@ -29,7 +29,7 @@ public class OrmNote implements Note {
         @Override
         public OrmNote apply(Note input) {
             if (input == null) {
-                return  null;
+                return null;
             } else if (input instanceof OrmNote) {
                 return (OrmNote) input;
             } else {
