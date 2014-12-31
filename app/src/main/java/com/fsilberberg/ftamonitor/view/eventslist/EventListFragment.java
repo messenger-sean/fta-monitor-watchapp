@@ -97,7 +97,9 @@ public class EventListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // TODO Create a bundle and pass it to the new fragment
-                Fragment detailFrag = new EventDetailFragment();
+                Event event = m_adapterEvents.get(i);
+                Log.d(EventListFragment.class.getName(), "Sending event code " + event.getEventCode());
+                Fragment detailFrag = EventDetailFragment.newInstance(event.getStartDate().getYear(), event.getEventCode());
                 getFragmentManager().beginTransaction().replace(R.id.container, detailFrag).commit();
             }
         });

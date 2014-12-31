@@ -60,5 +60,8 @@
     <string name="sort_by">Sort By</string>
     <string name="events_search">Search Events</string>
     <string name="events_list_search_hint">Event Name</string>
+    <string name="event_code_description">Code:</string>
+    <string name="event_dates">Dates:</string>
+    <string name="event_location">Location:</string>
 
 </resources>
