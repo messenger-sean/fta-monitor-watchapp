@@ -40,7 +40,8 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.android.support:support-v4:21.0.+'
     compile 'com.android.support:appcompat-v7:21.0.+'
+    compile 'com.android.support:support-v13:21.0.+'
+    compile 'com.android.support:support-v4:21.0.+'
     compile 'com.google.android.gms:play-services-maps:6.5.+'
 }

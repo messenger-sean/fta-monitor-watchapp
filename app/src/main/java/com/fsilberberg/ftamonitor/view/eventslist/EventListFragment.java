@@ -18,6 +18,7 @@ import com.fsilberberg.ftamonitor.api.ApiFactory;
 import com.fsilberberg.ftamonitor.database.Database;
 import com.fsilberberg.ftamonitor.database.DatabaseFactory;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
+import com.fsilberberg.ftamonitor.view.eventdetail.EventDetailFragment;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.joda.time.DateTime;
@@ -88,6 +89,16 @@ public class EventListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 clearSearch();
+            }
+        });
+
+
+        m_eventsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // TODO Create a bundle and pass it to the new fragment
+                Fragment detailFrag = new EventDetailFragment();
+                getFragmentManager().beginTransaction().replace(R.id.container, detailFrag).commit();
             }
         });
 

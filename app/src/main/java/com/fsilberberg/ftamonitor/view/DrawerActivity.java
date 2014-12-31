@@ -1,8 +1,6 @@
 package com.fsilberberg.ftamonitor.view;
 
-import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.view.eventdetail.EventDetailFragment;
 import com.fsilberberg.ftamonitor.view.eventslist.EventListFragment;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
 
@@ -47,10 +46,7 @@ public class DrawerActivity extends ActionBarActivity {
 
         // Set up the drawer toggle and listeners
         m_drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        // If we're on L, then set the elevation. Otherwise, we can't :(
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupMaterialDesign();
-        }
+
         m_drawerToggle = new ActionBarDrawerToggle(this, m_drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         m_drawerLayout.setDrawerListener(m_drawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -59,8 +55,6 @@ public class DrawerActivity extends ActionBarActivity {
 
         // Set up the main content
         getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
-
-        // Display the activity when the screen is locked!
     }
 
     @Override
@@ -73,7 +67,6 @@ public class DrawerActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return m_drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-
     }
 
     @Override
@@ -133,20 +126,18 @@ public class DrawerActivity extends ActionBarActivity {
         Fragment fieldFrag = getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName());
         Fragment settingsFrag = getFragmentManager().findFragmentByTag(SettingsFragment.class.getName());
         Fragment eventsFrag = getFragmentManager().findFragmentByTag(EventListFragment.class.getName());
+        Fragment eventsDetailFrag = getFragmentManager().findFragmentByTag(EventDetailFragment.class.getName());
         if (fieldFrag != null && fieldFrag.isVisible()) {
             return 0;
-        } else if (eventsFrag != null && eventsFrag.isVisible()) {
+        } else if ((eventsFrag != null && eventsFrag.isVisible()) ||
+                (eventsDetailFrag != null && eventsDetailFrag.isVisible())) {
             return 1;
         } else if (settingsFrag != null && settingsFrag.isVisible()) {
             return 2;
         } else {
-            throw new RuntimeException("Error: Unknown fragment active");
+            // We're on an unknown tab, so make the value be impossible to reach normally
+            return Integer.MAX_VALUE;
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void setupMaterialDesign() {
-        m_drawerLayout.setElevation(3);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
