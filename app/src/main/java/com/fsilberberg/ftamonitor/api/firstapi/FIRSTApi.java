@@ -53,58 +53,49 @@ public class FIRSTApi implements Api {
 
     @Override
     public void retrieveAllEvents(int year) {
-        URLConnection connection = new EventsApi().getEventsConnection(year, null);
+        URLConnection connection = EventsApi.getEventsConnection(year, null);
         if (connection == null) {
             Log.w(FIRSTApi.class.getName(), "Could not retrieve events: null connection");
             return;
         }
 
-        BufferedReader jsonReader = null;
-        try {
-            connection.connect();
-            // If there was an error while attempting to refresh the events, then return
-            if (((HttpURLConnection) connection).getResponseCode() != HttpURLConnection.HTTP_OK) {
-                Log.e(FIRSTApi.class.getName(), "Received response code " + ((HttpURLConnection) connection).getResponseCode());
-                return;
-            }
-            jsonReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            Gson gson = new GsonBuilder().create();
-            EventsApi.EventsListingModel model = gson.fromJson(jsonReader, EventsApi.EventsListingModel.class);
-            Database db = DatabaseFactory.getInstance().getDatabase(FTAMonitorApplication.getContext());
-            if (model.eventCount > 0) {
-                Collection<Event> finalEvents = new ArrayList<>();
-                for (EventsApi.EventModel em : model.Events) {
-                    // Query the database and see if the event already exists
-                    Optional<Event> query = db.getEvent(DateTime.now().withYear(year), em.code);
-                    if (query.isPresent()) {
-                        Event event = query.get();
-                        event.setEventLoc(em.location);
-                        event.setEventName(em.name);
-                        event.setStartDate(new DateTime(em.dateStart));
-                        event.setEndDate(new DateTime(em.dateEnd));
-                        finalEvents.add(event);
-                    } else {
-                        Event event = AssistantFactory.getInstance().makeEvent(em.code,
-                                em.name,
-                                em.location,
-                                new DateTime(em.dateStart),
-                                new DateTime(em.dateEnd),
-                                null, null, null);
-                        finalEvents.add(event);
+        Optional<EventsApi.EventsListingModel> modelOptional = getModel(connection, EventsApi.EventsListingModel.class);
+        if (modelOptional.isPresent()) {
+            EventsApi.EventsListingModel model = modelOptional.get();
+            Database db = null;
+            try {
+                db = DatabaseFactory.getInstance().getDatabase(FTAMonitorApplication.getContext());
+                if (model.eventCount > 0) {
+                    Collection<Event> finalEvents = new ArrayList<>();
+                    for (EventsApi.EventModel em : model.Events) {
+                        // Query the database and see if the event already exists
+                        Optional<Event> query = db.getEvent(DateTime.now().withYear(year), em.code);
+                        if (query.isPresent()) {
+                            Event event = query.get();
+                            event.setEventLoc(em.location);
+                            event.setEventName(em.name);
+                            event.setStartDate(new DateTime(em.dateStart));
+                            event.setEndDate(new DateTime(em.dateEnd));
+                            finalEvents.add(event);
+                        } else {
+                            Event event = AssistantFactory.getInstance().makeEvent(em.code,
+                                    em.name,
+                                    em.location,
+                                    new DateTime(em.dateStart),
+                                    new DateTime(em.dateEnd),
+                                    null, null, null);
+                            finalEvents.add(event);
+                        }
                     }
-                }
 
-                Event[] arr = new Event[0];
-                db.saveEvent(finalEvents.toArray(arr));
-            }
-        } catch (IOException | DatabaseException e) {
-            Log.e(FIRSTApi.class.getName(), "Error when trying to update the event list", e);
-        } finally {
-            if (jsonReader != null) {
-                try {
-                    jsonReader.close();
-                } catch (IOException e) {
-                    Log.w(FIRSTApi.class.getName(), "Exception thrown when trying to close the reader", e);
+                    Event[] arr = new Event[0];
+                    db.saveEvent(finalEvents.toArray(arr));
+                }
+            } catch (DatabaseException e) {
+                Log.e(FIRSTApi.class.getName(), "Error when trying to update the event list", e);
+            } finally {
+                if (db != null) {
+                    DatabaseFactory.getInstance().release(db);
                 }
             }
         }
@@ -116,7 +107,79 @@ public class FIRSTApi implements Api {
     }
 
     @Override
-    public void updateTeam(Team team) {
+    public void updateTeam(int teamNumber) {
+        URLConnection connection = TeamsApi.getTeamsConnection(teamNumber, DateTime.now().getYear());
+        if (connection == null) {
+            Log.e(FIRSTApi.class.getName(), "Could not retrieve team: connection is null");
+            return;
+        }
 
+        Optional<TeamsApi.TeamsListingModel> modelOptional = getModel(connection, TeamsApi.TeamsListingModel.class);
+        if (modelOptional.isPresent()) {
+            TeamsApi.TeamsListingModel model = modelOptional.get();
+
+            if (model.teamCountTotal < 0) {
+                Log.w(FIRSTApi.class.getName(), "Could not retrieve information on team " + teamNumber);
+                return;
+            } else if (model.teamCountTotal > 1) {
+                Log.w(FIRSTApi.class.getName(), "Multiple records found for team " + teamNumber +
+                        ". Using first one.");
+            }
+
+            TeamsApi.TeamModel teamModel = model.teams[0];
+            Database db = null;
+            try {
+                db = DatabaseFactory.getInstance().getDatabase(FTAMonitorApplication.getContext());
+                Optional<Team> teamDbOptional = db.getTeam(teamNumber);
+                Team team = null;
+                if (teamDbOptional.isPresent()) {
+                    team = teamDbOptional.get();
+                    team.setTeamName(teamModel.nameFull);
+                    team.setTeamNick(teamModel.nameNick);
+                } else {
+                    team = AssistantFactory.getInstance().makeTeam(teamModel.number,
+                            teamModel.nameFull,
+                            teamModel.nameNick,
+                            null, null, null);
+                }
+
+                db.saveTeam(team);
+            } catch (DatabaseException e) {
+                Log.e(FIRSTApi.class.getName(), "Database error when saving data for team " + teamNumber, e);
+            } finally {
+                if (db != null) {
+                    DatabaseFactory.getInstance().release(db);
+                }
+            }
+
+        }
+    }
+
+    private <T> Optional<T> getModel(URLConnection connection, Class<T> tClass) {
+        BufferedReader reader = null;
+        try {
+            connection.connect();
+            int status = ((HttpURLConnection) connection).getResponseCode();
+            if (status != HttpURLConnection.HTTP_OK) {
+                Log.e(FIRSTApi.class.getName(), "Received error code " + status + " when retrieving from " + connection.getURL());
+                return Optional.absent();
+            }
+
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            Gson gson = new GsonBuilder().create();
+            T model = gson.fromJson(reader, tClass);
+            return Optional.of(model);
+        } catch (IOException e) {
+            Log.e(FIRSTApi.class.getName(), "Error while trying to retrieve for class " + tClass.getName(), e);
+            return Optional.absent();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(FIRSTApi.class.getName(), "Error while trying to retrieve for class " + tClass.getName(), e);
+                }
+            }
+        }
     }
 }

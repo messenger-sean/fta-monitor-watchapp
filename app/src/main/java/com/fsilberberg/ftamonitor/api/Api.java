@@ -28,5 +28,5 @@ public interface Api {
      * participates in
      * @param team
      */
-    void updateTeam(Team team);
+    void updateTeam(int team);
 }

@@ -22,6 +22,13 @@ public interface Team {
     public int getTeamNumber();
 
     /**
+     * Sets the number of this team
+     *
+     * @param teamNumber the new team number
+     */
+    public void setTeamNumber(int teamNumber);
+
+    /**
      * Gets the name of this team as registered with FIRST.
      *
      * @return The team name
@@ -29,11 +36,25 @@ public interface Team {
     public String getTeamName();
 
     /**
+     * Sets the name of this team as registered with FIRST.
+     *
+     * @param teamName The new team name
+     */
+    public void setTeamName(String teamName);
+
+    /**
      * Gets the team nickname as registered with FIRST.
      *
      * @return The team nickname
      */
     public String getTeamNick();
+
+    /**
+     * Gets the team nickname as registered with FIRST.
+     *
+     * @param teamNick The new team nickname
+     */
+    public void setTeamNick(String teamNick);
 
     /**
      * Gets the events attended by this team

@@ -108,13 +108,28 @@ public class OrmTeam implements Team {
     }
 
     @Override
+    public void setTeamNumber(int teamNumber) {
+        this.teamNumber = teamNumber;
+    }
+
+    @Override
     public String getTeamName() {
         return teamName;
     }
 
     @Override
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    @Override
     public String getTeamNick() {
         return teamNick;
+    }
+
+    @Override
+    public void setTeamNick(String teamNick) {
+        this.teamNick = teamNick;
     }
 
     @Override

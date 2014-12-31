@@ -1,9 +1,7 @@
 package com.fsilberberg.ftamonitor.api.firstapi;
 
 import android.util.Log;
-import org.apache.http.HttpRequest;
 
-import java.net.URL;
 import java.net.URLConnection;
 
 /**
@@ -64,7 +62,7 @@ class EventsApi {
      * @param eventCode The event to query for. If the event is null, all events will be queried
      * @return A connection with the correct headers and location for connecting. It is <b>NOT</b> yet open
      */
-    public URLConnection getEventsConnection(int year, String eventCode) {
+    public static URLConnection getEventsConnection(int year, String eventCode) {
         // TODO: When the api is officially published, update the minimum year to the actual minimum year
         if (year < 2014) {
             Log.e(EventsApi.class.getName(), "Error: Cannot request year less than 2014. Year is " + year);
