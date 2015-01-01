@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_action_event"
         android:title="@string/event_detail_create_event"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/event_detail_open_map"
+        android:icon="@drawable/ic_action_map"
+        android:title="@string/event_detail_open_maps"
+        app:showAsAction="ifRoom" />
 </menu>

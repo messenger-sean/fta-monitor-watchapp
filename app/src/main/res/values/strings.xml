@@ -64,5 +64,6 @@
     <string name="event_dates">Dates:</string>
     <string name="event_location">Location:</string>
     <string name="event_detail_create_event">Create Calendar Event</string>
+    <string name="event_detail_open_maps">Open in Maps</string>
 
 </resources>

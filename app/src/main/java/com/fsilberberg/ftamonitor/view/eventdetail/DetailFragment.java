@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -70,8 +71,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.event_detail_create_event:
-                Log.d(getClass().getName(), "Start millis is " + m_event.getStartDate()
-                        + " end is " + m_event.getEndDate());
                 Intent createEvent = new Intent(Intent.ACTION_INSERT);
                 createEvent.setData(CalendarContract.Events.CONTENT_URI);
                 createEvent.putExtra(CalendarContract.Events.TITLE, m_event.getEventName())
@@ -79,6 +78,11 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                         .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, m_event.getEndDate().toDateTime(DateTimeZone.UTC).getMillis())
                         .putExtra(CalendarContract.Events.EVENT_LOCATION, m_event.getEventLoc());
                 getActivity().startActivity(createEvent);
+                return true;
+            case R.id.event_detail_open_map:
+                Intent openMaps = new Intent(Intent.ACTION_VIEW);
+                openMaps.setData(Uri.parse("geo:0,0?q=" + m_event.getEventLoc().replace(" ", "+")));
+                getActivity().startActivity(openMaps);
                 return true;
             default:
                 return super.onContextItemSelected(item);
