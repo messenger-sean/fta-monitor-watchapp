@@ -63,5 +63,6 @@
     <string name="event_code_description">Code:</string>
     <string name="event_dates">Dates:</string>
     <string name="event_location">Location:</string>
+    <string name="event_detail_create_event">Create Calendar Event</string>
 
 </resources>

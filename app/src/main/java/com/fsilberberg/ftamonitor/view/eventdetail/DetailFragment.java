@@ -1,13 +1,13 @@
 package com.fsilberberg.ftamonitor.view.eventdetail;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.ftaassistant.Event;
@@ -17,6 +17,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import org.joda.time.DateTimeZone;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +52,37 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     public DetailFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.event_detail, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.event_detail_create_event:
+                Log.d(getClass().getName(), "Start millis is " + m_event.getStartDate()
+                        + " end is " + m_event.getEndDate());
+                Intent createEvent = new Intent(Intent.ACTION_INSERT);
+                createEvent.setData(CalendarContract.Events.CONTENT_URI);
+                createEvent.putExtra(CalendarContract.Events.TITLE, m_event.getEventName())
+                        .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, m_event.getStartDate().toDateTime(DateTimeZone.UTC).getMillis())
+                        .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, m_event.getEndDate().toDateTime(DateTimeZone.UTC).getMillis())
+                        .putExtra(CalendarContract.Events.EVENT_LOCATION, m_event.getEventLoc());
+                getActivity().startActivity(createEvent);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     @Override
@@ -91,7 +123,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             if (addresses != null) {
                 Address address = addresses.get(0);
                 LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                 googleMap.addMarker(new MarkerOptions().position(latLng));
                 Log.d(getClass().getName(), "Found address");
             } else {
