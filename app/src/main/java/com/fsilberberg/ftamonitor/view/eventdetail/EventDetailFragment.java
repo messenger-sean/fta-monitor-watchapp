@@ -1,6 +1,7 @@
 package com.fsilberberg.ftamonitor.view.eventdetail;
 
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -79,7 +80,11 @@ public class EventDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        setElevation();
+    }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void setElevation() {
         // Done in onPause and Resume to ensure that the bar is reset every the view is left
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ((ActionBarActivity) getActivity()).getSupportActionBar().setElevation(0);
