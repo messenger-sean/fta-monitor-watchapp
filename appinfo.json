@@ -9,6 +9,12 @@
     "resources": {
         "media": [
             {
+                "characterRegex": "[0-9:a-zA-Z]",
+                "file": "fonts/SourceCodePro-Regular.ttf",
+                "name": "SOURCE_CODE_PRO_REG_38",
+                "type": "font"
+            },
+            {
                 "file": "images/FIRSTicon_RGB.png",
                 "menuIcon": true,
                 "name": "main_icon_image",

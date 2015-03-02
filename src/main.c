@@ -13,6 +13,7 @@ static TextLayer *s_red3;
 static TextLayer *s_blue1;
 static TextLayer *s_blue2;
 static TextLayer *s_blue3;
+static GFont *s_source_code_pro;
 
 static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   // Draw a line down the middle of the screen
@@ -26,12 +27,41 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   graphics_draw_line(ctx, GPoint(0, 112), GPoint(144, 112));
 }
 
+void set_alliance_text(const char *text, uint8_t alliance, uint8_t team) {
+  uint16_t switch_mult = (alliance << 8) & team;
+  TextLayer *team_layer;
+  switch (switch_mult) {
+    case 0x0101:
+    team_layer = s_red1;
+    break;
+    case 0x0102:
+    team_layer = s_red2;
+    break;
+    case 0x0103:
+    team_layer = s_red3;
+    break;
+    case 0x0201:
+    team_layer = s_blue1;
+    break;
+    case 0x0202:
+    team_layer = s_blue2;
+    break;
+    case 0x0203:
+    team_layer = s_blue3;
+    break;
+    default:
+    return;
+  }
+ 
+  text_layer_set_text(team_layer, text);
+}
+
 void setup_alliance_textlayer(TextLayer **layer, Layer *parent, const char *text, int x, int y) {
   *layer = text_layer_create(GRect(x, y, 74, 46));
   text_layer_set_background_color(*layer, GColorClear);
   text_layer_set_text_color(*layer, GColorBlack);
   text_layer_set_text_alignment(*layer, GTextAlignmentCenter);
-  text_layer_set_font(*layer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
+  text_layer_set_font(*layer, s_source_code_pro);
   text_layer_set_text(*layer, text);
   layer_add_child(parent, text_layer_get_layer(*layer));
 }
@@ -87,6 +117,7 @@ static void main_window_unload(Window *window) {
 }
 
 static void init() {
+  s_source_code_pro = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_SOURCE_CODE_PRO_REG_38));
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
@@ -98,6 +129,7 @@ static void init() {
 
 static void deinit() {
   window_destroy(s_main_window);
+  fonts_unload_custom_font(s_source_code_pro);
 }
 
 int main() {
