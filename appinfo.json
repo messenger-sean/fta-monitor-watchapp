@@ -4,16 +4,23 @@
         ""
     ],
     "companyName": "pebble@fsilberberg.com",
-    "longName": "fta-monitor-watchapp",
+    "longName": "FTA Monitor",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/FIRSTicon_RGB.png",
+                "menuIcon": true,
+                "name": "main_icon_image",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "2",
-    "shortName": "fta-monitor-watchapp",
+    "shortName": "FTA Monitor",
     "uuid": "5b742e45-2918-4f69-a510-7c0457d9df16",
     "versionCode": 1,
-    "versionLabel": "1.0",
+    "versionLabel": "0.1",
     "watchapp": {
         "watchface": false
     }
