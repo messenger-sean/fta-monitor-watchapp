@@ -66,7 +66,7 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
         super.onResume();
         update(FieldConnectionService.getState());
         FieldConnectionService.registerConnectionObserver(this);
-        setupLockscreen();
+        setupLockScreen();
     }
 
     @Override
@@ -145,10 +145,10 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
             public void run() {
                 updateView(updateType);
                 if (updateType == ConnectionState.Connected) {
-                    setupLockscreen();
+                    setupLockScreen();
                     m_conButton.setVisibility(View.INVISIBLE);
                 } else {
-                    removeLockscreen();
+                    removeLockScreen();
                 }
             }
         });
@@ -163,18 +163,18 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
         getActivity().startService(serviceIntent);
     }
 
-    private void setupLockscreen() {
+    private void setupLockScreen() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String lockKey = getString(R.string.lock_screen_display_key);
         if (prefs.getBoolean(lockKey, false) && FieldConnectionService.getState().equals(ConnectionState.Connected)) {
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         } else {
             // Make absolutely sure not to display in these cases
-            removeLockscreen();
+            removeLockScreen();
         }
     }
 
-    private void removeLockscreen() {
+    private void removeLockScreen() {
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 }

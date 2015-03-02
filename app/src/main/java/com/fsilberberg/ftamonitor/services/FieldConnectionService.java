@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.util.Log;
 import com.fsilberberg.ftamonitor.common.Observable;
 import com.fsilberberg.ftamonitor.common.Observer;
-import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.*;
+import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.MatchStateProxyHandler;
+import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import microsoft.aspnet.signalr.client.ConnectionState;
 import microsoft.aspnet.signalr.client.ErrorCallback;
 import microsoft.aspnet.signalr.client.StateChangedCallback;
@@ -17,8 +17,6 @@ import microsoft.aspnet.signalr.client.hubs.HubProxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-
-import static com.fsilberberg.ftamonitor.common.MatchStatus.*;
 
 /**
  * This "service" maintains the connection to field, and sets up the various proxy functions for
@@ -32,26 +30,8 @@ public class FieldConnectionService implements ForegroundService {
 
     // Signalr Constants
     private static final String HUB_NAME = "messageservicehub";
-    private static final String UPDATE_MATCH_READY_TO_PRESTART = "updateMatchReadyToPrestart";
-    private static final String UPDATE_MATCH_PRESTART_INITIATED = "updateMatchPreStartInitiated";
-    private static final String UPDATE_MATCH_PRESTART_COMPLETE = "updateMatchPreStartCompleted";
-    private static final String UPDATE_MATCH_READY = "updateMatchReady";
-    private static final String UPDATE_MATCH_NOT_READY = "updateMatchNotReady";
-    private static final String UPDATE_MATCH_START_AUTO = "updateMatchStartAuto";
-    private static final String UPDATE_MATCH_PAUSE_AUT0 = "updateMatchPauseAuto";
-    private static final String UPDATE_MATCH_END_AUTO = "updateMatchEndAuto";
-    private static final String UPDATE_MATCH_START_TELEOP = "updateMatchStartTeleop";
-    private static final String UPDATE_MATCH_PAUSE_TELEOP = "updateMatchPauseTeleop";
-    private static final String UPDATE_MATCH_END_TELEOP = "updateMatchEndTeleop";
-    private static final String UPDATE_MATCH_POST_SCORE = "updateMatchPostScore";
-    private static final String UPDATE_DS_CONTROL = "updateDSControl";
-    private static final String UPDATE_ESTOP_CHANGED = "updateEStopChanged";
-    private static final String UPDATE_STATION_CONNECTION_CHANGED = "updateStationConnectionChanged";
-    private static final String UPDATE_DS_TO_FMS_STATUS = "updateDSToFMSStatus";
-    private static final String UPDATE_MATCH_CHANGED = "updateMatchChanged";
-    private static final String UPDATE_MATCH_PLAY_STATUS = "updateMatchPlayStatus";
-    private static final String UPDATE_FIELD_NETWORK_STATUS = "updateFieldNetworkStatus";
-
+    private static final String FIELD_MONITOR = "fieldMonitorDataChanged";
+    private static final String MATCH_STATE_CHANGED = "matchStateChanged";
 
     private static final ConnectionStateObservable m_observable = new ConnectionStateObservable();
 
@@ -84,25 +64,8 @@ public class FieldConnectionService implements ForegroundService {
     }
 
     private void registerProxyFunctions() {
-        m_fieldProxy.on(UPDATE_MATCH_READY_TO_PRESTART, new UpdateMatchStatusHandler(UPDATE_MATCH_READY_TO_PRESTART, READY_TO_PRESTART), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PRESTART_INITIATED, new UpdateMatchStatusHandler(UPDATE_MATCH_PRESTART_INITIATED, PRESTART_INITIATED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PRESTART_COMPLETE, new UpdateMatchStatusHandler(UPDATE_MATCH_PRESTART_COMPLETE, PRESTART_COMPLETED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_READY, new UpdateMatchStatusHandler(UPDATE_MATCH_READY, MATCH_READY), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_NOT_READY, new UpdateMatchNotReadyHandler(UPDATE_MATCH_NOT_READY));
-        m_fieldProxy.on(UPDATE_MATCH_START_AUTO, new UpdateMatchStatusHandler(UPDATE_MATCH_START_AUTO, AUTO), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PAUSE_AUT0, new UpdateMatchStatusHandler(UPDATE_MATCH_PAUSE_AUT0, AUTO_PAUSED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_END_AUTO, new UpdateMatchStatusHandler(UPDATE_MATCH_END_AUTO, AUTO_END), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_START_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_START_TELEOP, TELEOP), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PAUSE_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_PAUSE_TELEOP, TELEOP_PAUSED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_END_TELEOP, new UpdateMatchStatusHandler(UPDATE_MATCH_END_TELEOP, OVER), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_POST_SCORE, new UpdateMatchStatusHandler(UPDATE_MATCH_POST_SCORE, OVER), JsonObject.class);
-        m_fieldProxy.on(UPDATE_DS_CONTROL, new NoopHandler(), JsonObject.class);
-        m_fieldProxy.on(UPDATE_ESTOP_CHANGED, new UpdateEStopChangedHandler(UPDATE_ESTOP_CHANGED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_STATION_CONNECTION_CHANGED, new UpdateStationConnectionChangedHandler(UPDATE_STATION_CONNECTION_CHANGED), JsonObject.class);
-        m_fieldProxy.on(UPDATE_DS_TO_FMS_STATUS, new UpdateDSToFMSStatusHandler(UPDATE_DS_TO_FMS_STATUS), JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_CHANGED, new UpdateMatchChangedHandler(UPDATE_MATCH_CHANGED), JsonObject.class, JsonObject.class);
-        m_fieldProxy.on(UPDATE_MATCH_PLAY_STATUS, new UpdateMatchPlayStatusHandler(UPDATE_MATCH_PLAY_STATUS), JsonObject.class);
-        m_fieldProxy.on(UPDATE_FIELD_NETWORK_STATUS, new UpdateFieldNetworkStatusHandler(UPDATE_FIELD_NETWORK_STATUS), JsonArray.class);
+        m_fieldProxy.on(FIELD_MONITOR, new TeamProxyHandler(), JsonArray.class);
+        m_fieldProxy.on(MATCH_STATE_CHANGED, new MatchStateProxyHandler(), Integer.class);
     }
 
     @Override

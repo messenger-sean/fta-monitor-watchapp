@@ -14,8 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.view.eventdetail.EventDetailFragment;
-import com.fsilberberg.ftamonitor.view.eventslist.EventListFragment;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
 
 
@@ -100,10 +98,6 @@ public class DrawerActivity extends ActionBarActivity {
                 newFrag = new FieldMonitorFragment();
                 break;
             case 1:
-                m_title = "Events";
-                newFrag = new EventListFragment();
-                break;
-            case 2:
                 m_title = getString(R.string.action_settings);
                 newFrag = new SettingsFragment();
                 break;
@@ -125,15 +119,10 @@ public class DrawerActivity extends ActionBarActivity {
     private int getCurrentTab() {
         Fragment fieldFrag = getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName());
         Fragment settingsFrag = getFragmentManager().findFragmentByTag(SettingsFragment.class.getName());
-        Fragment eventsFrag = getFragmentManager().findFragmentByTag(EventListFragment.class.getName());
-        Fragment eventsDetailFrag = getFragmentManager().findFragmentByTag(EventDetailFragment.class.getName());
         if (fieldFrag != null && fieldFrag.isVisible()) {
             return 0;
-        } else if ((eventsFrag != null && eventsFrag.isVisible()) ||
-                (eventsDetailFrag != null && eventsDetailFrag.isVisible())) {
-            return 1;
         } else if (settingsFrag != null && settingsFrag.isVisible()) {
-            return 2;
+            return 1;
         } else {
             // We're on an unknown tab, so make the value be impossible to reach normally
             return Integer.MAX_VALUE;

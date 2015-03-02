@@ -25,18 +25,6 @@
             android:summary="@string/notify_always_desc"
             android:title="@string/notify_always" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/field_settings_title">
-        <EditTextPreference
-            android:defaultValue="10"
-            android:key="@string/auto_time_key"
-            android:numeric="integer"
-            android:title="@string/auto_time" />
-        <EditTextPreference
-            android:defaultValue="140"
-            android:key="@string/teleop_time_key"
-            android:numeric="integer"
-            android:title="@string/teleop_time" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_settings_title">
         <CheckBoxPreference
             android:defaultValue="false"

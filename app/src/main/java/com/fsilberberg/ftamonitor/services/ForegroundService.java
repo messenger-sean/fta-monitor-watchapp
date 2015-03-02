@@ -6,7 +6,7 @@ import android.content.Intent;
 /**
  * This interface is implemented by all "services" that need to be run by the {@link MainForegroundService}.
  */
-public interface ForegroundService {
+interface ForegroundService {
 
     /**
      * Starts the service in the given context.

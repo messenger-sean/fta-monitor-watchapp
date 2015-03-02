@@ -23,7 +23,7 @@ import java.util.Collection;
 public class MainForegroundService extends Service implements Observer<ConnectionState> {
 
     // Public intent extras for communicating with this service
-    public static final String CLOSE_CONNECTION_INTENT_EXTRA = "CLOSE_CONNECTION_INTENT_EXTRA";
+    private static final String CLOSE_CONNECTION_INTENT_EXTRA = "CLOSE_CONNECTION_INTENT_EXTRA";
 
     // Notification ID for updating the ongoing notification. 3 has no special significance other
     // than being my favorite number

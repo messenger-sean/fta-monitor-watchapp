@@ -5,16 +5,15 @@ package com.fsilberberg.ftamonitor.common;
  */
 public enum MatchStatus {
     NOT_READY("Not Ready"),
+    TIMEOUT("Timeout"),
     READY_TO_PRESTART("Ready to Prestart"),
     PRESTART_INITIATED("Prestart Initiated"),
     PRESTART_COMPLETED("Prestart Completed"),
     MATCH_READY("Match Ready"),
     AUTO("Autonomous Running"),
-    AUTO_PAUSED("Autonomous Paused"),
-    AUTO_END("Autonomous Ended"),
     TELEOP("Teleop Running"),
-    TELEOP_PAUSED("Teleop Paused"),
-    OVER("Match Over");
+    OVER("Match Over"),
+    ABORTED("Aborted");
 
 
     private String name;

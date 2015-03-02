@@ -14,7 +14,7 @@ import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType;
+import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 import com.fsilberberg.ftamonitor.view.DrawerActivity;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import static com.fsilberberg.ftamonitor.common.Alliance.RED;
 public class FieldProblemNotificationService implements ForegroundService {
 
     // Intent extra for the settings to tell the service to update the notification settings
-    public static final String UPDATE_NOTIFICATION_SETTINGS_INTENT_EXTRA = "UPDATE_NOTIFICATION_SETTINGS";
+    private static final String UPDATE_NOTIFICATION_SETTINGS_INTENT_EXTRA = "UPDATE_NOTIFICATION_SETTINGS";
 
     // Notification ID. Again no significance, other than 3 is my favorite number, so 3x3 is 9
     private static final int ID = 9;
@@ -92,10 +92,7 @@ public class FieldProblemNotificationService implements ForegroundService {
         MatchStatus status = m_field.getMatchStatus();
         switch (status) {
             case AUTO:
-            case AUTO_END:
-            case AUTO_PAUSED:
             case TELEOP:
-            case TELEOP_PAUSED:
                 return true;
             default:
                 return false;
@@ -152,7 +149,7 @@ public class FieldProblemNotificationService implements ForegroundService {
         }
     }
 
-    private class ProblemObserver implements Observer<TeamUpdateType> {
+    private class ProblemObserver implements Observer<UpdateType> {
 
         private int m_stationNumber;
         private Alliance m_alliance;
@@ -168,16 +165,10 @@ public class FieldProblemNotificationService implements ForegroundService {
         }
 
         @Override
-        public void update(TeamUpdateType updateType) {
+        public void update(UpdateType updateType) {
             // We only care about the states in which there could be an error
             switch (updateType) {
-                case DS_ETH:
-                case DS:
-                case RADIO:
-                case ROBOT:
-                case CODE:
-                case BYPASSED:
-                case ESTOP:
+                case TEAM:
                     // If we should always notify or if a match is playing, then process an update
                     if (m_alwaysNotify || isMatchPlaying()) {
                         updateErrorText();

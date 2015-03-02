@@ -17,8 +17,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private static final String PREVIOUS_CUSTOM_URL_KEY = "PREVIOUS_CUSTOM_URL";
 
     private String m_fmsKey;
-    private String m_autoKey;
-    private String m_teleopKey;
     private String m_defaultKey;
 
     public SettingsFragment() {
@@ -29,8 +27,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         m_fmsKey = getString(R.string.fms_ip_addr_key);
-        m_autoKey = getString(R.string.auto_time_key);
-        m_teleopKey = getString(R.string.teleop_time_key);
         m_defaultKey = getString(R.string.on_field_key);
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
     }
@@ -39,8 +35,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onResume() {
         super.onResume();
         updatePref(m_fmsKey);
-        updatePref(m_autoKey);
-        updatePref(m_teleopKey);
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

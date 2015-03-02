@@ -16,7 +16,7 @@ import com.fsilberberg.ftamonitor.services.MainForegroundService;
 public class FTAMonitorApplication extends Application {
 
     private static Context _context;
-    public static final String DEFAULT_IP = "10.0.100.5";
+    private static final String DEFAULT_IP = "10.0.100.5";
 
     public static Context getContext() {
         return _context;
@@ -29,7 +29,7 @@ public class FTAMonitorApplication extends Application {
         _context = getApplicationContext();
 
         // Initialize the field monitor factory
-        FieldMonitorFactory.initialize(this);
+        FieldMonitorFactory.initialize();
 
         // Start the FMS Service
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
