@@ -1,7 +1,20 @@
 #include <pebble.h>
+#include "utility.h"
+  
+#define RED1 1
+#define RED2 2
+#define RED3 3
+#define BLUE1 4
+#define BLUE2 5
+#define BLUE3 6
+#define CHECK_TYPE(type, size) if (type != TUPLE_UINT && size != 1) { \
+        APP_LOG(APP_LOG_LEVEL_ERROR, "Received nonuint type %d", (int) type); \
+        t = dict_read_next(iter); \
+        continue; \
+                                                 }
   
 // Constant text strings for the connection statuses
-const char *eth = "Eth", *ds = "DS", *radio = "Rd", *rio = "RIO", *code = "Cd", *estop = "Est", *good = "G";
+const char *eth = "Eth", *ds = "DS", *radio = "Rd", *rio = "RIO", *code = "Cd", *estop = "Est", *good = "G", *bwu = "BWU";
   
 static Window *s_main_window;
 static Layer *s_grid_layer;
@@ -14,6 +27,59 @@ static TextLayer *s_blue1;
 static TextLayer *s_blue2;
 static TextLayer *s_blue3;
 static GFont *s_source_code_pro;
+static bool s_vibrate = 0;
+
+typedef enum {
+  ETH=0, DS=1, RADIO=2, RIO=3, CODE=4, ESTOP=5, GOOD=6, BWU=7
+} status_type;
+
+void set_alliance_status(status_type status, uint8_t alliance, uint8_t team);
+
+// Callback for receiving a message
+static void inbox_received_callback(DictionaryIterator *iter, void *ctx) {
+  Tuple *t = dict_read_first(iter);
+  while (t != NULL) {
+    if (t->type != TUPLE_UINT && t->length != 1) {
+        APP_LOG(APP_LOG_LEVEL_ERROR, "Received nonuint type %d", (int) t->type);
+        t = dict_read_next(iter);
+        continue;
+    }
+    uint8_t status = t->value->uint8;
+    switch (t->key) {
+      case RED1:
+      set_alliance_status((status_type) status, 1, 1);
+      break;
+      case RED2:
+      set_alliance_status((status_type) status, 1, 2);
+      break;
+      case RED3:
+      set_alliance_status((status_type) status, 1, 3);
+      break;
+      case BLUE1:
+      set_alliance_status((status_type) status, 2, 1);
+      break;
+      case BLUE2:
+      set_alliance_status((status_type) status, 2, 2);
+      break;
+      case BLUE3:
+      set_alliance_status((status_type) status, 2, 3);
+    }
+    
+    t = dict_read_next(iter);
+  }
+}
+
+static void message_dropped_callback(AppMessageResult reason, void *ctx) {
+  APP_LOG(APP_LOG_LEVEL_WARNING, "Message Dropped: %s", translate_error(reason));
+}
+
+static void outbox_failed_callback(DictionaryIterator *iter, AppMessageResult reason, void *ctx) {
+  APP_LOG(APP_LOG_LEVEL_WARNING, "Outbox Send Failed: %s", translate_error(reason));
+}
+
+static void outbox_send_callback(DictionaryIterator *iter, void *ctx) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox Send Success!");
+}
 
 static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   // Draw a line down the middle of the screen
@@ -27,8 +93,8 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   graphics_draw_line(ctx, GPoint(0, 112), GPoint(144, 112));
 }
 
-void set_alliance_text(const char *text, uint8_t alliance, uint8_t team) {
-  uint16_t switch_mult = (alliance << 8) & team;
+void set_alliance_text(const char *text, bool hi_contrast, uint8_t alliance, uint8_t team) {
+  uint16_t switch_mult = (alliance << 8) | team;
   TextLayer *team_layer;
   switch (switch_mult) {
     case 0x0101:
@@ -54,15 +120,50 @@ void set_alliance_text(const char *text, uint8_t alliance, uint8_t team) {
   }
  
   text_layer_set_text(team_layer, text);
+  if (hi_contrast) {
+    text_layer_set_background_color(team_layer, GColorBlack);
+    text_layer_set_text_color(team_layer, GColorWhite);
+  } else {
+    text_layer_set_background_color(team_layer, GColorWhite);
+    text_layer_set_text_color(team_layer, GColorBlack);
+  }
 }
 
-void setup_alliance_textlayer(TextLayer **layer, Layer *parent, const char *text, int x, int y) {
+// Sets the status of an alliance based on the given status type
+void set_alliance_status(status_type status, uint8_t alliance, uint8_t team) {
+  // If the app has told us to vibrate, then vibrate
+  if (s_vibrate) vibes_short_pulse();
+  switch (status) {
+    case ETH:
+    set_alliance_text(eth, true, alliance, team);
+    break;
+    case DS:
+    set_alliance_text(ds, true, alliance, team);
+    break;
+    case RADIO:
+    set_alliance_text(radio, true, alliance, team);
+    break;
+    case RIO:
+    set_alliance_text(rio, true, alliance, team);
+    break;
+    case CODE:
+    set_alliance_text(code, true, alliance, team);
+    break;
+    case ESTOP:
+    set_alliance_text(estop, true, alliance, team);
+    break;
+    case GOOD:
+    set_alliance_text(good, false, alliance, team);
+    break;
+    case BWU:
+    set_alliance_text(bwu, true, alliance, team);
+  }
+}
+
+void setup_alliance_textlayer(TextLayer **layer, Layer *parent, int x, int y) {
   *layer = text_layer_create(GRect(x, y, 74, 46));
-  text_layer_set_background_color(*layer, GColorClear);
-  text_layer_set_text_color(*layer, GColorBlack);
   text_layer_set_text_alignment(*layer, GTextAlignmentCenter);
   text_layer_set_font(*layer, s_source_code_pro);
-  text_layer_set_text(*layer, text);
   layer_add_child(parent, text_layer_get_layer(*layer));
 }
 
@@ -94,14 +195,18 @@ static void main_window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(s_blue_header));
   
   // Create the layers for the different alliance statuses
-  setup_alliance_textlayer(&s_red1, window_layer, eth, 0, 20);
-  setup_alliance_textlayer(&s_red2, window_layer, ds, 0, 66);
-  setup_alliance_textlayer(&s_red3, window_layer, radio, 0, 112);
-  setup_alliance_textlayer(&s_blue1, window_layer, rio, 74, 20);
-  setup_alliance_textlayer(&s_blue2, window_layer, code, 74, 66);
-  setup_alliance_textlayer(&s_blue3, window_layer, estop, 74, 112);
-  text_layer_set_background_color(s_blue3, GColorBlack);
-  text_layer_set_text_color(s_blue3, GColorWhite);
+  setup_alliance_textlayer(&s_red1, window_layer, 0, 20);
+  setup_alliance_textlayer(&s_red2, window_layer, 0, 66);
+  setup_alliance_textlayer(&s_red3, window_layer, 0, 112);
+  setup_alliance_textlayer(&s_blue1, window_layer, 74, 20);
+  setup_alliance_textlayer(&s_blue2, window_layer, 74, 66);
+  setup_alliance_textlayer(&s_blue3, window_layer, 74, 112);
+  set_alliance_status(ETH, 1, 1);
+  set_alliance_status(DS, 1, 2);
+  set_alliance_status(RADIO, 1, 3);
+  set_alliance_status(RIO, 2, 1);
+  set_alliance_status(BWU, 2, 2);
+  set_alliance_status(GOOD, 2, 3);
 }
 
 static void main_window_unload(Window *window) {
@@ -125,11 +230,19 @@ static void init() {
   });
   
   window_stack_push(s_main_window, true);
+  
+  // Set up AppMessage so we are ready to receive data from the phone
+  app_message_register_inbox_received(inbox_received_callback);
+  app_message_register_inbox_dropped(message_dropped_callback);
+  app_message_register_outbox_sent(outbox_send_callback);
+  app_message_register_outbox_failed(outbox_failed_callback);
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void deinit() {
   window_destroy(s_main_window);
   fonts_unload_custom_font(s_source_code_pro);
+  app_message_deregister_callbacks();
 }
 
 int main() {

@@ -1,5 +1,12 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "BLUE1": 4,
+        "BLUE2": 5,
+        "BLUE3": 6,
+        "RED1": 1,
+        "RED2": 2,
+        "RED3": 3
+    },
     "capabilities": [
         ""
     ],
