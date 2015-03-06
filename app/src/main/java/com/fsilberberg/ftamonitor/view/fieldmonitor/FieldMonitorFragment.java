@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
-import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.FieldConnectionServiceOld;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;
 import microsoft.aspnet.signalr.client.ConnectionState;
 
@@ -64,15 +64,15 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
     @Override
     public void onResume() {
         super.onResume();
-        update(FieldConnectionService.getState());
-        FieldConnectionService.registerConnectionObserver(this);
+        update(FieldConnectionServiceOld.getState());
+        FieldConnectionServiceOld.registerConnectionObserver(this);
         setupLockScreen();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        FieldConnectionService.deregisterConnectionObserver(this);
+        FieldConnectionServiceOld.deregisterConnectionObserver(this);
     }
 
     /**
@@ -159,14 +159,14 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String url = preferences.getString(getString(R.string.fms_ip_addr_key), "10.0.100.5");
         Intent serviceIntent = new Intent(getActivity(), MainForegroundService.class);
-        serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
+        serviceIntent.putExtra(FieldConnectionServiceOld.URL_INTENT_EXTRA, url);
         getActivity().startService(serviceIntent);
     }
 
     private void setupLockScreen() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String lockKey = getString(R.string.lock_screen_display_key);
-        if (prefs.getBoolean(lockKey, false) && FieldConnectionService.getState().equals(ConnectionState.Connected)) {
+        if (prefs.getBoolean(lockKey, false) && FieldConnectionServiceOld.getState().equals(ConnectionState.Connected)) {
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         } else {
             // Make absolutely sure not to display in these cases

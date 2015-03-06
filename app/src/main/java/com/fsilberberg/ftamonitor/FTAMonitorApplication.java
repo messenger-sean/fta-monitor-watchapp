@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
-import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.services.FieldConnectionServiceOld;
 import com.fsilberberg.ftamonitor.services.MainForegroundService;
 
 /**
@@ -35,7 +35,7 @@ public class FTAMonitorApplication extends Application {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         String url = preferences.getString(getString(R.string.fms_ip_addr_key), DEFAULT_IP);
         Intent serviceIntent = new Intent(getBaseContext(), MainForegroundService.class);
-        serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
+        serviceIntent.putExtra(FieldConnectionServiceOld.URL_INTENT_EXTRA, url);
         startService(serviceIntent);
     }
 }

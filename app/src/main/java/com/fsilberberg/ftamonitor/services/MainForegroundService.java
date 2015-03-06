@@ -33,13 +33,13 @@ public class MainForegroundService extends Service implements Observer<Connectio
 
     // Other "services" managed by this service
     private final Collection<ForegroundService> m_services;
-    private final FieldConnectionService m_fieldService;
+    private final FieldConnectionServiceOld m_fieldService;
     private PowerManager.WakeLock m_wl;
 
     public MainForegroundService() {
         m_services = new ArrayList<>();
         // Add all services to the list
-        m_fieldService = new FieldConnectionService();
+        m_fieldService = new FieldConnectionServiceOld();
         m_services.add(m_fieldService);
         m_services.add(new FieldProblemNotificationService());
     }
@@ -53,7 +53,7 @@ public class MainForegroundService extends Service implements Observer<Connectio
     public int onStartCommand(Intent intent, int flags, int startId) {
         // First, check if we should stop the service.
         if (intent.getBooleanExtra(CLOSE_CONNECTION_INTENT_EXTRA, false)) {
-            FieldConnectionService.deregisterConnectionObserver(this);
+            FieldConnectionServiceOld.deregisterConnectionObserver(this);
             for (ForegroundService service : m_services) {
                 service.stopService();
             }
@@ -74,10 +74,10 @@ public class MainForegroundService extends Service implements Observer<Connectio
         }
 
         // Start the service in the foreground
-        startForeground(ID, createNotification(FieldConnectionService.getState()));
+        startForeground(ID, createNotification(FieldConnectionServiceOld.getState()));
 
         // Register this as a connection state observer
-        FieldConnectionService.registerConnectionObserver(this);
+        FieldConnectionServiceOld.registerConnectionObserver(this);
 
         return START_REDELIVER_INTENT;
     }
