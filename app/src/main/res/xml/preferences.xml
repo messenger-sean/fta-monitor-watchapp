@@ -4,7 +4,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:disableDependentsState="true"
-            android:key="on_field"
+            android:key="@string/on_field_key"
             android:summary="@string/on_field_sum"
             android:title="@string/on_field" />
         <EditTextPreference
