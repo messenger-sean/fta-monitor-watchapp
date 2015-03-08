@@ -41,7 +41,6 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
     private ServiceConnection m_connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(FieldMonitorFragment.class.getName(), "Service bound");
             FieldConnectionService.FCSBinder binder = (FieldConnectionService.FCSBinder) service;
             m_service = binder.getService();
             m_isBound = true;
@@ -61,7 +60,6 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
         super.onStart();
         Intent fcsIntent = new Intent(getActivity(), FieldConnectionService.class);
         getActivity().bindService(fcsIntent, m_connection, Context.BIND_AUTO_CREATE);
-        Log.d(FieldMonitorFragment.class.getName(), "In onStart");
     }
 
     @Override

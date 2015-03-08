@@ -27,6 +27,7 @@ import microsoft.aspnet.signalr.client.hubs.HubProxy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 
 import static microsoft.aspnet.signalr.client.ConnectionState.Connecting;
 import static microsoft.aspnet.signalr.client.ConnectionState.Disconnected;
@@ -72,7 +73,6 @@ public class FieldConnectionService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        Log.i(getClass().getName(), "Received intent in FieldConnectionService, current state is " + m_statusObservable.getState());
         m_connectionThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -129,15 +129,16 @@ public class FieldConnectionService extends Service {
                 @Override
                 public void onError(Throwable throwable) {
                     Log.i(FieldConnectionService.class.getName(), "Received Signalr error", throwable);
-                    synchronized (m_lock) {
-                        m_fieldConnection.disconnect();
-                        m_fieldConnection = null;
-                        m_fieldProxy = null;
-                    }
+                    disconnect();
                 }
             });
 
             m_fieldConnection.stateChanged(m_statusObservable);
+            try {
+                m_fieldConnection.start().get();
+            } catch (InterruptedException | ExecutionException e) {
+                Log.w(FieldConnectionService.class.getName(), "Could not start the signalr connection", e);
+            }
         }
     }
 
@@ -162,7 +163,6 @@ public class FieldConnectionService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(FieldConnectionService.class.getName(), "In onBind");
         return m_binder;
     }
 
@@ -233,7 +233,6 @@ public class FieldConnectionService extends Service {
         }
 
         public void updateService() {
-            Log.d(FieldConnectionService.class.getName(), "Updating service");
             Intent intent = new Intent(ctx, FieldConnectionService.class);
             boolean onField = prefs.getBoolean(fmsOnFieldKey, true);
             String fieldUrl = onField ? FTAMonitorApplication.DEFAULT_IP :
