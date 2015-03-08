@@ -106,7 +106,6 @@ public class FieldProblemNotificationService implements ForegroundService {
         }
 
         Intent mainIntent = new Intent(m_context, DrawerActivity.class);
-        mainIntent.putExtra(DrawerActivity.VIEW_INTENT_EXTRA, DrawerActivity.DisplayView.FIELD_MONITOR.ordinal());
         PendingIntent pi = PendingIntent.getActivity(m_context, MAIN_ACTIVITY_ID, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setSmallIcon(R.drawable.ic_launcher)

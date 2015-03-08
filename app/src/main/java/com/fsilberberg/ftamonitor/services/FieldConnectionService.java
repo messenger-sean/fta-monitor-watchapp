@@ -178,7 +178,6 @@ public class FieldConnectionService extends Service {
 
             // Create the intent for the main action
             Intent mainIntent = new Intent(FieldConnectionService.this, DrawerActivity.class);
-            mainIntent.putExtra(DrawerActivity.VIEW_INTENT_EXTRA, DrawerActivity.DisplayView.FIELD_MONITOR.ordinal());
 
             // Create the intent for the action button
             Intent actionIntent = new Intent(FieldConnectionService.this, FieldConnectionService.class);

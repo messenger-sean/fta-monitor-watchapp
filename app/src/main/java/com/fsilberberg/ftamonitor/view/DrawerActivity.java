@@ -1,143 +1,107 @@
 package com.fsilberberg.ftamonitor.view;
 
-import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
-
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 public class DrawerActivity extends ActionBarActivity {
 
-    // If defined with a value of DisplayView, the specified view will be shown
-    public static final String VIEW_INTENT_EXTRA = "VIEW";
-
-    private ListView m_drawerList;
-    private DrawerLayout m_drawerLayout;
-    private ActionBarDrawerToggle m_drawerToggle;
-    private CharSequence m_title;
-
-    private boolean backButtonPressed = false;
+    private String[] m_drawerItems;
+    private Drawer.Result m_drawer = null;
+    private boolean m_backButtonPressed = false;
+    private int m_curPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         super.onCreate(savedInstanceState);
-
-        Log.d(DrawerActivity.class.getName(), "Called Drawer Activity");
-
         setContentView(R.layout.activity_drawer);
 
-        // Set up the drawer content
-        String[] drawerItems = getResources().getStringArray(R.array.drawer_tabs);
-        m_drawerList = (ListView) findViewById(R.id.left_drawer);
-        m_drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.list_white_text, R.id.list_content, drawerItems));
+        m_drawerItems = getResources().getStringArray(R.array.drawer_tabs);
 
-        // Set up the drawer toggle and listeners
-        m_drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // Handle Toolbar
+        m_drawer = new Drawer()
+                .withActivity(this)
+                .withActionBarDrawerToggle(true)
+                .withTranslucentStatusBar(false)
+                .withActionBarDrawerToggleAnimated(true)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(m_drawerItems[0]),
+                        new PrimaryDrawerItem().withName(m_drawerItems[1]),
+                        new PrimaryDrawerItem().withName(m_drawerItems[2])
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                        if (drawerItem instanceof Nameable) {
+                            if (m_curPos != position) {
+                                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                                switch (position) {
+                                    case 0:
+                                        trans.replace(
+                                                R.id.frame_container,
+                                                new FieldMonitorFragment(),
+                                                FieldMonitorFragment.class.getName()
+                                        );
+                                        break;
+                                    case 1:
+                                        return;
+                                    case 2:
+                                        trans.replace(
+                                                R.id.frame_container,
+                                                new SettingsFragment(),
+                                                SettingsFragment.class.getName());
+                                        break;
+                                    default:
+                                        return;
+                                }
+                                trans.commit();
+                                m_curPos = position;
+                            }
+                        }
+                    }
+                }).build();
 
-        m_drawerToggle = new ActionBarDrawerToggle(this, m_drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        m_drawerLayout.setDrawerListener(m_drawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        m_drawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        // Set up the main content
-        getFragmentManager().beginTransaction().replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        m_drawerToggle.syncState();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return m_drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+        getFragmentManager().beginTransaction().replace(R.id.frame_container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (backButtonPressed) {
-            super.onBackPressed();
-            return;
-        }
-
-        backButtonPressed = true;
-        Toast.makeText(this, "Pres Back Again to Exit", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                backButtonPressed = true;
-            }
-        }, 2000);
-    }
-
-    private void selectScreen(int position) {
-        if (position == getCurrentTab()) {
-            m_drawerLayout.closeDrawer(m_drawerList);
-            return;
-        }
-
-        Fragment newFrag = null;
-        switch (position) {
-            case 0:
-                m_title = getString(R.string.action_field_monitor);
-                newFrag = new FieldMonitorFragment();
-                break;
-            case 1:
-                m_title = getString(R.string.action_settings);
-                newFrag = new SettingsFragment();
-                break;
-        }
-
-        // Replace the current fragment
-        if (newFrag != null) {
-            // Highlight item, set title, close drawer
-            m_drawerList.setItemChecked(position, true);
-            getSupportActionBar().setTitle(m_title);
-            m_drawerLayout.closeDrawer(m_drawerList);
-
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, newFrag, newFrag.getClass().getName())
-                    .commit();
-        }
-    }
-
-    private int getCurrentTab() {
-        Fragment fieldFrag = getFragmentManager().findFragmentByTag(FieldMonitorFragment.class.getName());
-        Fragment settingsFrag = getFragmentManager().findFragmentByTag(SettingsFragment.class.getName());
-        if (fieldFrag != null && fieldFrag.isVisible()) {
-            return 0;
-        } else if (settingsFrag != null && settingsFrag.isVisible()) {
-            return 1;
+        if (m_drawer.isDrawerOpen()) {
+            m_drawer.closeDrawer();
+            m_backButtonPressed = false;
         } else {
-            // We're on an unknown tab, so make the value be impossible to reach normally
-            return Integer.MAX_VALUE;
+            if (m_backButtonPressed) {
+                super.onBackPressed();
+                stopService(new Intent(this, FieldConnectionService.class));
+                return;
+            }
+
+            m_backButtonPressed = true;
+            Toast.makeText(this, "Pres Back Again to Exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    m_backButtonPressed = true;
+                }
+            }, 2000);
         }
-    }
-
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            selectScreen(i);
-        }
-    }
-
-    public enum DisplayView {
-        FIELD_MONITOR, SETTINGS
     }
 }
+

@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fsilberberg.ftamonitor">
+<manifest
+    package="com.fsilberberg.ftamonitor"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <!-- The following are requirements for the Maps API -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <!-- Maps needs OpenGL ES 2 -->
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true" />
+        android:required="true"/>
 
     <application
-        android:name="com.fsilberberg.ftamonitor.FTAMonitorApplication"
+        android:name=".FTAMonitorApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <service
-            android:name="com.fsilberberg.ftamonitor.services.FieldConnectionService"
+            android:name=".services.FieldConnectionService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
 
         <activity
-            android:name="com.fsilberberg.ftamonitor.view.DrawerActivity"
+            android:name=".view.DrawerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>

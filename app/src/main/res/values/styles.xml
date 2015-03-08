@@ -1,12 +1,19 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <!-- Set AppCompat’s color theming attrs -->
-        <item name="colorPrimary">@color/FRC_GREY</item>
-        <item name="colorPrimaryDark">@color/FRC_DARK_GREY</item>
-        <item name="colorAccent">@color/FRC_DARK_GREY</item>
+    <style name="AppTheme" parent="MaterialDrawerTheme.Light.DarkToolbar.ActionBar">
+        <item name="material_drawer_header_selection_text">@color/material_drawer_dark_primary_text</item>
+        <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
+        <!-- MaterialDrawer DEFAULT items -->
+        <item name="material_drawer_primary_text">@color/white_text</item>
+        <item name="material_drawer_secondary_text">@color/white_text</item>
+        <item name="material_drawer_window_background">@color/FRC_LIGHT_GREY</item>
+        <item name="material_drawer_background">@color/FRC_LIGHT_GREY</item>
+        <!-- Material DEFAULT text / items items -->
+        <item name="material_drawer_divider">@color/FRC_DARK_GREY</item>
+        <!-- Material DEFAULT drawer items -->
+        <item name="material_drawer_selected">@color/FRC_DARK_GREY</item>
+        <item name="material_drawer_selected_text">@color/white_text</item>
     </style>
 
 </resources>

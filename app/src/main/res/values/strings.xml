@@ -53,6 +53,7 @@
 
     <string-array name="drawer_tabs">
         <item>Field Monitor</item>
+        <item>Testing</item>
         <item>Settings</item>
     </string-array>
 
@@ -67,5 +68,7 @@
     <string name="event_location">Location:</string>
     <string name="event_detail_create_event">Create Calendar Event</string>
     <string name="event_detail_open_maps">Open in Maps</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
