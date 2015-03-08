@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
+import com.fsilberberg.ftamonitor.view.testing.TestingFragment;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -18,7 +19,6 @@ import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 public class DrawerActivity extends ActionBarActivity {
 
-    private String[] m_drawerItems;
     private Drawer.Result m_drawer = null;
     private boolean m_backButtonPressed = false;
     private int m_curPos = 0;
@@ -30,7 +30,7 @@ public class DrawerActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
 
-        m_drawerItems = getResources().getStringArray(R.array.drawer_tabs);
+        String[] drawerItems = getResources().getStringArray(R.array.drawer_tabs);
 
         // Handle Toolbar
         m_drawer = new Drawer()
@@ -39,9 +39,9 @@ public class DrawerActivity extends ActionBarActivity {
                 .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggleAnimated(true)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(m_drawerItems[0]),
-                        new PrimaryDrawerItem().withName(m_drawerItems[1]),
-                        new PrimaryDrawerItem().withName(m_drawerItems[2])
+                        new PrimaryDrawerItem().withName(drawerItems[0]),
+                        new PrimaryDrawerItem().withName(drawerItems[1]),
+                        new PrimaryDrawerItem().withName(drawerItems[2])
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -58,7 +58,12 @@ public class DrawerActivity extends ActionBarActivity {
                                         );
                                         break;
                                     case 1:
-                                        return;
+                                        trans.replace(
+                                                R.id.frame_container,
+                                                new TestingFragment(),
+                                                TestingFragment.class.getName()
+                                        );
+                                        break;
                                     case 2:
                                         trans.replace(
                                                 R.id.frame_container,
