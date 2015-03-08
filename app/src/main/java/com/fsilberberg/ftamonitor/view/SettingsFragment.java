@@ -1,6 +1,5 @@
 package com.fsilberberg.ftamonitor.view;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -8,8 +7,6 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.services.FieldConnectionServiceOld;
-import com.fsilberberg.ftamonitor.services.MainForegroundService;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -47,9 +44,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(m_fmsKey)) {
-            // If the url was updated, send an update with the new url
-            String url = sharedPreferences.getString(key, DEFAULT_SIGNALR_URL);
-            sendServiceUpdate(url);
             updatePref(key);
         } else if (key.equals(m_defaultKey)) {
             boolean defaultUrl = sharedPreferences.getBoolean(key, true);
@@ -62,7 +56,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                         .putString(PREVIOUS_CUSTOM_URL_KEY, oldUrl)
                         .putString(m_fmsKey, DEFAULT_SIGNALR_URL)
                         .apply();
-                sendServiceUpdate(DEFAULT_SIGNALR_URL);
                 newUrl = DEFAULT_SIGNALR_URL;
             } else {
                 // Restore the old default url if it exists
@@ -70,8 +63,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 sharedPreferences.edit()
                         .putString(m_fmsKey, newUrl)
                         .apply();
-
-                sendServiceUpdate(newUrl);
             }
             // The EditText widget's text field is not edited by modifying the shared preferences
             // so we have to manually get the new url and update the widget
@@ -79,14 +70,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             pref.setSummary(newUrl);
             Log.d(SettingsFragment.class.getName(), "Text is " + pref.getSummary());
         }
-    }
-
-    private void sendServiceUpdate(String url) {
-        Log.d(SettingsFragment.class.getName(), "Sending url update with; " + url);
-        Intent intent = new Intent(getActivity(), MainForegroundService.class);
-        intent.putExtra(FieldConnectionServiceOld.URL_INTENT_EXTRA, url);
-        intent.putExtra(FieldConnectionServiceOld.UPDATE_URL_INTENT_EXTRA, true);
-        getActivity().startService(intent);
     }
 
     private void updatePref(String key) {

@@ -6,30 +6,36 @@
             android:disableDependentsState="true"
             android:key="@string/on_field_key"
             android:summary="@string/on_field_sum"
-            android:title="@string/on_field" />
+            android:title="@string/on_field"/>
         <EditTextPreference
             android:defaultValue="10.0.100.5"
             android:dependency="on_field"
             android:key="@string/fms_ip_addr_key"
-            android:title="@string/fms_ip_addr" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:disableDependentsState="false"
-            android:key="@string/notification_key"
-            android:summary="@string/notification_desc"
-            android:title="@string/notification" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="@string/notification_key"
-            android:key="@string/notify_always_key"
-            android:summary="@string/notify_always_desc"
-            android:title="@string/notify_always" />
+            android:title="@string/fms_ip_addr"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_settings_title">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/lock_screen_display_key"
             android:summary="@string/lock_screen_display_desc"
-            android:title="@string/lock_screen_display" />
+            android:title="@string/lock_screen_display"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/notification_key"
+            android:summary="@string/notification_desc"
+            android:title="@string/notification"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/notification_key"
+            android:key="@string/notify_always_key"
+            android:summary="@string/notify_always_desc"
+            android:title="@string/notify_always"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/pebble_key"
+            android:summary="@string/pebble_desc"
+            android:title="@string/pebble"/>
     </PreferenceCategory>
 </PreferenceScreen>

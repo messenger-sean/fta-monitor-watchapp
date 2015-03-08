@@ -22,6 +22,9 @@
     <string name="notification_key">notification</string>
     <string name="notification">Enable Notifications</string>
     <string name="notification_desc">Notify when a team issue is detected during the match</string>
+    <string name="pebble_key">notification</string>
+    <string name="pebble">Enable Pebble Watchapp</string>
+    <string name="pebble_desc">Enable sending updates to the Pebble Watchapp</string>
     <string name="notify_always_key">notify_always</string>
     <string name="notify_always">Enable Out-of-Match Notify</string>
     <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>

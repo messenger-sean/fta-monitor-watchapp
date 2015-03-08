@@ -29,10 +29,7 @@ import static com.fsilberberg.ftamonitor.common.Alliance.RED;
  */
 public class FieldProblemNotificationService implements ForegroundService {
 
-    // Intent extra for the settings to tell the service to update the notification settings
-    private static final String UPDATE_NOTIFICATION_SETTINGS_INTENT_EXTRA = "UPDATE_NOTIFICATION_SETTINGS";
-
-    // Notification ID. Again no significance, other than 3 is my favorite number, so 3x3 is 9
+    // Notification ID. Again no significance, other than 3 is my favorite number, and 3x3 is 9
     private static final int ID = 9;
     private static final int MAIN_ACTIVITY_ID = 4;
 
@@ -46,30 +43,15 @@ public class FieldProblemNotificationService implements ForegroundService {
     private final TeamStatus m_red3 = m_field.getRed3();
 
     private Context m_context;
-    private boolean m_isSetup = false;
     private boolean m_alwaysNotify = false;
     private final Collection<ProblemObserver> m_observers = new ArrayList<>();
 
     @Override
-    public void startService(Context context, Intent intent) {
+    public void startService(Context context) {
         m_context = context;
         SharedPreferences m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String m_notifyKey = context.getString(R.string.notification_key);
         String m_notifyAlwaysKey = context.getString(R.string.notify_always_key);
-
-        // We need to update the notifications on the first run or if the intent has our update
-        // extra
-        if (!m_isSetup || intent.hasExtra(UPDATE_NOTIFICATION_SETTINGS_INTENT_EXTRA)) {
-            boolean notify = m_sharedPreferences.getBoolean(m_notifyKey, true);
-            if (!notify) {
-                // The user doesn't want any notifications, call stop service to ensure that
-                // we are unsubscribed and return
-                stopService();
-                return;
-            }
-            m_alwaysNotify = m_sharedPreferences.getBoolean(m_notifyAlwaysKey, false);
-            m_isSetup = true;
-        }
+        m_alwaysNotify = m_sharedPreferences.getBoolean(m_notifyAlwaysKey, false);
 
         // Register an observer for each team
         m_observers.add(new ProblemObserver(1, BLUE, m_blue1));
