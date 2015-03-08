@@ -71,6 +71,10 @@ public class FieldConnectionService extends Service {
         return m_statusObservable.getState();
     }
 
+    public ConnectionStateObservable getStatusObservable() {
+        return m_statusObservable;
+    }
+
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
         m_connectionThread = new Thread(new Runnable() {
@@ -244,12 +248,13 @@ public class FieldConnectionService extends Service {
     /**
      * Observer implementation for the field connection state
      */
-    private static class ConnectionStateObservable implements Observable<ConnectionState>, StateChangedCallback {
+    public static class ConnectionStateObservable implements Observable<ConnectionState>, StateChangedCallback {
 
         private final Collection<Observer<ConnectionState>> m_observers = new ArrayList<>();
         private ConnectionState m_connectionState = Disconnected;
 
-        private void setConnectionState(ConnectionState newState) {
+        public void setConnectionState(ConnectionState newState) {
+            Log.d(FieldConnectionService.class.getName(), "Connection state changed to " + newState);
             if (!m_connectionState.equals(newState)) {
                 m_connectionState = newState;
                 for (Observer<ConnectionState> observer : m_observers) {
