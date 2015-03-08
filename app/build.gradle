@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'idea'
 
 android {
     compileSdkVersion 21
@@ -39,7 +40,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.+'
     compile 'com.android.support:support-v13:21.0.+'
     compile 'com.android.support:support-v4:21.0.+'
-    compile 'com.getpebble:pebblekit:2.6.0'
+    compile 'com.getpebble:pebblekit:2.6.0@aar'
     compile('com.mikepenz.materialdrawer:library:1.0.2@aar') {
         transitive = true
     }
