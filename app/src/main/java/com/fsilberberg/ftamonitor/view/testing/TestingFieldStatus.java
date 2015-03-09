@@ -19,9 +19,6 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
  */
 public class TestingFieldStatus extends Fragment {
 
-    private MatchStatus m_curStatus = MatchStatus.NOT_READY;
-    private String m_curNumber = "P1";
-
     public TestingFieldStatus() {
         // Required empty public constructor
     }
@@ -37,8 +34,43 @@ public class TestingFieldStatus extends Fragment {
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                m_curStatus = MatchStatus.values()[(checkedId - 1) % 10];
-                FieldMonitorFactory.getInstance().getFieldStatus().setMatchStatus(m_curStatus);
+                MatchStatus status;
+                switch (checkedId) {
+                    case R.id.field_testing_not_started:
+                        status = MatchStatus.NOT_READY;
+                        break;
+                    case R.id.field_testing_timeout:
+                        status = MatchStatus.TIMEOUT;
+                        break;
+                    case R.id.field_testing_ready_prestart:
+                        status = MatchStatus.READY_TO_PRESTART;
+                        break;
+                    case R.id.field_testing_prestart_init:
+                        status = MatchStatus.PRESTART_INITIATED;
+                        break;
+                    case R.id.field_testing_prestart_comp:
+                        status = MatchStatus.PRESTART_COMPLETED;
+                        break;
+                    case R.id.field_testing_match_ready:
+                        status = MatchStatus.MATCH_READY;
+                        break;
+                    case R.id.field_testing_auto:
+                        status = MatchStatus.AUTO;
+                        break;
+                    case R.id.field_testing_teleop:
+                        status = MatchStatus.TELEOP;
+                        break;
+                    case R.id.field_testing_over:
+                        status = MatchStatus.OVER;
+                        break;
+                    case R.id.field_testing_aborted:
+                        status = MatchStatus.ABORTED;
+                        break;
+                    default:
+                        throw new RuntimeException("Encountered unknown field status radio button");
+                }
+
+                FieldMonitorFactory.getInstance().getFieldStatus().setMatchStatus(status);
             }
         });
 
@@ -49,8 +81,7 @@ public class TestingFieldStatus extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                m_curNumber = s.toString();
-                FieldMonitorFactory.getInstance().getFieldStatus().setMatchNumber(m_curNumber);
+                FieldMonitorFactory.getInstance().getFieldStatus().setMatchNumber(s.toString());
             }
 
             @Override

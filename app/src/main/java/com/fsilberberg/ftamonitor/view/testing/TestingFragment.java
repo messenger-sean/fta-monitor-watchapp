@@ -63,6 +63,14 @@ public class TestingFragment extends Fragment {
                     return "Connection Control";
                 case 1:
                     return "Field Control";
+                case 2:
+                case 3:
+                case 4:
+                    return "Red " + (position - 1) + " Control";
+                case 5:
+                case 6:
+                case 7:
+                    return "Blue " + (position - 4) + " Control";
                 default:
                     return "Team " + (position - 1) + " Control";
             }
