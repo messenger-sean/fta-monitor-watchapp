@@ -8,8 +8,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
@@ -32,7 +32,7 @@ public class TestingFieldStatus extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_testing_field_status, container, false);
 
         final RadioGroup group = (RadioGroup) rootView.findViewById(R.id.field_status_radio_group);
-        final TextView matchTextBox = (TextView) rootView.findViewById(R.id.field_match_number_text);
+        final EditText matchTextBox = (EditText) rootView.findViewById(R.id.field_match_number);
 
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
