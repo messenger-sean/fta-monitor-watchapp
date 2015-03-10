@@ -7,6 +7,8 @@
 #define BLUE1 4
 #define BLUE2 5
 #define BLUE3 6
+#define VIBE 7  
+#define UPDATE 8
 #define CHECK_TYPE(type, size) if (type != TUPLE_UINT && size != 1) { \
         APP_LOG(APP_LOG_LEVEL_ERROR, "Received nonuint type %d", (int) type); \
         t = dict_read_next(iter); \
@@ -14,7 +16,7 @@
                                                  }
   
 // Constant text strings for the connection statuses
-const char *eth = "Eth", *ds = "DS", *radio = "Rd", *rio = "RIO", *code = "Cd", *estop = "Est", *good = "G", *bwu = "BWU";
+const char *eth = "Eth", *ds = "DS", *radio = "Rd", *rio = "RIO", *code = "Cd", *estop = "Est", *good = "G", *bwu = "BWU", *byp = "BYP";
   
 static Window *s_main_window;
 static Layer *s_grid_layer;
@@ -27,10 +29,9 @@ static TextLayer *s_blue1;
 static TextLayer *s_blue2;
 static TextLayer *s_blue3;
 static GFont *s_source_code_pro;
-static bool s_vibrate = 0;
 
 typedef enum {
-  ETH=0, DS=1, RADIO=2, RIO=3, CODE=4, ESTOP=5, GOOD=6, BWU=7
+  ETH=0, DS=1, RADIO=2, RIO=3, CODE=4, ESTOP=5, GOOD=6, BWU=7, BYP = 8
 } status_type;
 
 void set_alliance_status(status_type status, uint8_t alliance, uint8_t team);
@@ -63,10 +64,23 @@ static void inbox_received_callback(DictionaryIterator *iter, void *ctx) {
       break;
       case BLUE3:
       set_alliance_status((status_type) status, 2, 3);
+      break;
+      case VIBE:
+      APP_LOG(APP_LOG_LEVEL_INFO, "Vibrating");
+      vibes_short_pulse();
+      break;
     }
     
     t = dict_read_next(iter);
   }
+}
+
+// Requests an update from the companion app, if it's available
+void request_update() {
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  dict_write_uint8(iter, UPDATE, 0);
+  app_message_outbox_send();
 }
 
 static void message_dropped_callback(AppMessageResult reason, void *ctx) {
@@ -132,7 +146,6 @@ void set_alliance_text(const char *text, bool hi_contrast, uint8_t alliance, uin
 // Sets the status of an alliance based on the given status type
 void set_alliance_status(status_type status, uint8_t alliance, uint8_t team) {
   // If the app has told us to vibrate, then vibrate
-  if (s_vibrate) vibes_short_pulse();
   switch (status) {
     case ETH:
     set_alliance_text(eth, true, alliance, team);
@@ -157,6 +170,10 @@ void set_alliance_status(status_type status, uint8_t alliance, uint8_t team) {
     break;
     case BWU:
     set_alliance_text(bwu, true, alliance, team);
+    break;
+    case BYP:
+    set_alliance_text(byp, false, alliance, team);
+    break;
   }
 }
 
@@ -237,6 +254,7 @@ static void init() {
   app_message_register_outbox_sent(outbox_send_callback);
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  request_update();
 }
 
 static void deinit() {
