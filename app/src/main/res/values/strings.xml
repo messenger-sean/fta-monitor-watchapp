@@ -16,25 +16,34 @@
     <string name="on_field_sum">Use Field FMS Connection Settings</string>
     <string name="fms_ip_addr_key">fms_ip_addr</string>
     <string name="fms_ip_addr">FMS IP Address</string>
-    <string name="auto_time_key">auto_time</string>
-    <string name="auto_time">Autonomous Period Length (seconds)</string>
-    <string name="teleop_time_key">teleop_time</string>
-    <string name="teleop_time">Teleop Period Length (seconds)</string>
-    <string name="notification_key">notification</string>
-    <string name="notification">Enable Notifications</string>
-    <string name="notification_desc">Notify when a team issue is detected during the match</string>
-    <string name="pebble_key">notification</string>
-    <string name="pebble">Enable Pebble Watchapp</string>
-    <string name="pebble_desc">Enable sending updates to the Pebble Watchapp</string>
-    <string name="notify_always_key">notify_always</string>
-    <string name="notify_always">Enable Out-of-Match Notify</string>
-    <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
-    <string name="field_settings_title">Field Settings</string>
-    <string name="fms_settings_title">FMS Settings</string>
-    <string name="app_settings_title">Application Settings</string>
+    <string name="bandwidth_key">max_bandwidth</string>
+    <string name="bandwidth">Maximum Bandwidth Usage (Mb/s)</string>
     <string name="lock_screen_display_key">lock_screen_display</string>
     <string name="lock_screen_display">Display Field Monitor on Lock Screen</string>
     <string name="lock_screen_display_desc">Display the Field Monitor on the lock screen when connected.</string>
+
+    <!-- Notification Settings -->
+    <string name="notification_key">notification</string>
+    <string name="notification">Enable Notifications</string>
+    <string name="notification_desc">Notify when a team issue is detected during the match</string>
+    <string name="notify_always_key">notify_always</string>
+    <string name="notify_always">Enable Out-of-Match Notify</string>
+    <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
+
+    <!-- Pebble Settings -->
+    <string name="pebble_key">pebble</string>
+    <string name="pebble">Enable Pebble Watchapp</string>
+    <string name="pebble_desc">Enable sending updates to the Pebble Watchapp</string>
+    <string name="pebble_vibe_interval_key">pebble_vibe_interval</string>
+    <string name="pebble_vibe_interval">Pebble Vibration Interval</string>
+    <string name="pebble_vibe_interval_desc">The minimum interval between vibrations on the Pebble, in milliseconds</string>
+    <string name="pebble_notify_times_key">pebble_notify_times</string>
+    <string name="pebble_notify_times">Enable Out-of-Match Pebble Vibration</string>
+    <string name="pebble_notify_times_desc">Always vibrate Pebble when a team status changes, even when a match is not playing</string>
+
+    <string name="field_settings_title">Field Settings</string>
+    <string name="fms_settings_title">FMS Settings</string>
+    <string name="app_settings_title">Application Settings</string>
 
     <!-- Field Monitor Strings -->
     <string name="ds_ethernet">DS-ETH</string>

@@ -15,6 +15,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     private String m_fmsKey;
     private String m_defaultKey;
+    private String m_bwuKey;
 
     public SettingsFragment() {
     }
@@ -25,12 +26,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
         m_fmsKey = getString(R.string.fms_ip_addr_key);
         m_defaultKey = getString(R.string.on_field_key);
+        m_bwuKey = getString(R.string.bandwidth_key);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         updatePref(m_fmsKey);
+        updatePref(m_bwuKey);
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -43,7 +46,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(m_fmsKey)) {
+        if (key.equals(m_fmsKey) || key.equals(m_bwuKey)) {
             updatePref(key);
         } else if (key.equals(m_defaultKey)) {
             boolean defaultUrl = sharedPreferences.getBoolean(key, true);
