@@ -1,6 +1,5 @@
 package com.fsilberberg.ftamonitor.view.testing;
 
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
@@ -71,6 +70,7 @@ public class TestingFieldStatus extends Fragment {
                 }
 
                 FieldMonitorFactory.getInstance().getFieldStatus().setMatchStatus(status);
+                FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
             }
         });
 
@@ -81,7 +81,10 @@ public class TestingFieldStatus extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                FieldMonitorFactory.getInstance().getFieldStatus().setMatchNumber(s.toString());
+                if (s.length() != 0 && count != 0) {
+                    FieldMonitorFactory.getInstance().getFieldStatus().setMatchNumber(s.toString());
+                    FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
+                }
             }
 
             @Override

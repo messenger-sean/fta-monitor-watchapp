@@ -1,5 +1,6 @@
 package com.fsilberberg.ftamonitor.services;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -54,12 +56,12 @@ public class FieldProblemNotificationService implements ForegroundService {
         m_alwaysNotify = m_sharedPreferences.getBoolean(m_notifyAlwaysKey, false);
 
         // Register an observer for each team
-        m_observers.add(new ProblemObserver(1, BLUE, m_blue1));
-        m_observers.add(new ProblemObserver(2, BLUE, m_blue2));
-        m_observers.add(new ProblemObserver(3, BLUE, m_blue3));
         m_observers.add(new ProblemObserver(1, RED, m_red1));
         m_observers.add(new ProblemObserver(2, RED, m_red2));
         m_observers.add(new ProblemObserver(3, RED, m_red3));
+        m_observers.add(new ProblemObserver(1, BLUE, m_blue1));
+        m_observers.add(new ProblemObserver(2, BLUE, m_blue2));
+        m_observers.add(new ProblemObserver(3, BLUE, m_blue3));
     }
 
     @Override
@@ -88,6 +90,7 @@ public class FieldProblemNotificationService implements ForegroundService {
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (ProblemObserver observer : m_observers) {
+            Log.d(FieldProblemNotificationService.class.getName(), observer.toString());
             if (observer.shouldDisplay()) {
                 notifications++;
                 if (first) {
@@ -101,7 +104,9 @@ public class FieldProblemNotificationService implements ForegroundService {
             }
         }
 
+        NotificationManager manager = (NotificationManager) m_context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notifications == 0) {
+            manager.cancel(ID);
             return;
         }
 
@@ -113,9 +118,9 @@ public class FieldProblemNotificationService implements ForegroundService {
                 .setContentText(sb.toString())
                 .setContentIntent(pi)
                 .setStyle(inboxStyle)
-                .setPriority(NotificationCompat.PRIORITY_MAX);
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
-        NotificationManager manager = (NotificationManager) m_context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(ID, builder.build());
     }
 
@@ -147,6 +152,7 @@ public class FieldProblemNotificationService implements ForegroundService {
 
         @Override
         public void update(UpdateType updateType) {
+            Log.d(FieldProblemNotificationService.class.getName(), "Updating " + m_alliance + " " + m_team);
             // We only care about the states in which there could be an error
             switch (updateType) {
                 case TEAM:
@@ -187,15 +193,15 @@ public class FieldProblemNotificationService implements ForegroundService {
             } else if (m_team.isBypassed()) {
                 // If the team is bypassed, we're done here
                 m_display = false;
-            } else if (m_team.isDsEth()) {
+            } else if (!m_team.isDsEth()) {
                 setError(R.string.ds_ethernet_error);
-            } else if (m_team.isDs()) {
+            } else if (!m_team.isDs()) {
                 setError(R.string.ds_error);
-            } else if (m_team.isRadio()) {
+            } else if (!m_team.isRadio()) {
                 setError(R.string.radio_error);
-            } else if (m_team.isRobot()) {
+            } else if (!m_team.isRobot()) {
                 setError(R.string.robot_error);
-            } else if (m_team.isCode()) {
+            } else if (!m_team.isCode()) {
                 setError(R.string.code_error);
             } else {
                 m_display = false;
@@ -219,6 +225,17 @@ public class FieldProblemNotificationService implements ForegroundService {
                     m_stationNumber,
                     m_team.getTeamNumber(),
                     errorText);
+        }
+
+        @Override
+        public String toString() {
+            return "ProblemObserver{" +
+                    "m_stationNumber=" + m_stationNumber +
+                    ", m_alliance=" + m_alliance +
+                    ", m_team=" + m_team +
+                    ", m_display=" + m_display +
+                    ", m_errorString='" + m_errorString + '\'' +
+                    '}';
         }
     }
 }

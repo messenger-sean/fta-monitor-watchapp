@@ -59,10 +59,10 @@ public class TestingTeamStatus extends Fragment {
                 m_status = field.getBlue1();
                 break;
             case 5:
-                m_status = field.getBlue1();
+                m_status = field.getBlue2();
                 break;
             case 6:
-                m_status = field.getBlue1();
+                m_status = field.getBlue3();
                 break;
             default:
                 throw new RuntimeException("Given invalid team number " + team);
@@ -132,6 +132,7 @@ public class TestingTeamStatus extends Fragment {
                         m_status.setEstop(false);
                         break;
                 }
+                m_status.updateObservers();
             }
         });
 
@@ -146,6 +147,7 @@ public class TestingTeamStatus extends Fragment {
                 if (s.length() != 0) {
                     int teamNum = Integer.parseInt(s.toString());
                     m_status.setTeamNumber(teamNum);
+                    m_status.updateObservers();
                 }
             }
 
@@ -170,9 +172,10 @@ public class TestingTeamStatus extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s.length() != 0) {
+                        if (s.length() != 0 && count != 0) {
                             float battery = Float.parseFloat(s.toString());
                             m_status.setBattery(battery);
+                            m_status.updateObservers();
                         }
                     }
 
@@ -190,9 +193,10 @@ public class TestingTeamStatus extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s.length() != 0) {
+                        if (s.length() != 0 && count != 0) {
                             float dataRate = Float.parseFloat(s.toString());
                             m_status.setDataRate(dataRate);
+                            m_status.updateObservers();
                         }
                     }
 
@@ -210,9 +214,10 @@ public class TestingTeamStatus extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s.length() != 0) {
+                        if (s.length() != 0 && count != 0) {
                             int missedPackets = Integer.parseInt(s.toString());
                             m_status.setDroppedPackets(missedPackets);
+                            m_status.updateObservers();
                         }
                     }
 
@@ -230,9 +235,10 @@ public class TestingTeamStatus extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s.length() != 0) {
+                        if (s.length() != 0 && count != 0) {
                             int rtt = Integer.parseInt(s.toString());
                             m_status.setRoundTrip(rtt);
+                            m_status.updateObservers();
                         }
                     }
 
@@ -250,9 +256,10 @@ public class TestingTeamStatus extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s.length() != 0) {
+                        if (s.length() != 0 && count != 0) {
                             float sq = Float.parseFloat(s.toString());
                             m_status.setSignalQuality(sq);
+                            m_status.updateObservers();
                         }
                     }
 
@@ -270,9 +277,10 @@ public class TestingTeamStatus extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (s.length() != 0) {
+                        if (s.length() != 0 && count != 0) {
                             float ss = Float.parseFloat(s.toString());
                             m_status.setSignalStrength(ss);
+                            m_status.updateObservers();
                         }
                     }
 
