@@ -1,0 +1,115 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.fsilberberg.ftamonitor.view.testing.TestingFieldStatus">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/table_margin"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/table_margin"
+            android:text="Match Number"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/field_match_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Q1"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/table_margin"
+        android:text="Field Status"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioGroup
+            android:id="@+id/field_status_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RadioButton
+                android:id="@+id/field_testing_not_started"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Not Started"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_timeout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Timeout"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_ready_prestart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Ready to Prestart"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_prestart_init"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Prestart Initiated"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_prestart_comp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Prestart Completed"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_match_ready"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Match Ready"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Auto"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_teleop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Teleop"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_over"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Over"/>
+
+            <RadioButton
+                android:id="@+id/field_testing_aborted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/table_margin"
+                android:text="Aborted"/>
+        </RadioGroup>
+    </ScrollView>
+</LinearLayout>

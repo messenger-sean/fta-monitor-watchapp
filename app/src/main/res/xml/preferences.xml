@@ -4,44 +4,63 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:disableDependentsState="true"
-            android:key="on_field"
+            android:key="@string/on_field_key"
             android:summary="@string/on_field_sum"
-            android:title="@string/on_field" />
+            android:title="@string/on_field"/>
         <EditTextPreference
             android:defaultValue="10.0.100.5"
             android:dependency="on_field"
             android:key="@string/fms_ip_addr_key"
-            android:title="@string/fms_ip_addr" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:disableDependentsState="false"
-            android:key="@string/notification_key"
-            android:summary="@string/notification_desc"
-            android:title="@string/notification" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="@string/notification_key"
-            android:key="@string/notify_always_key"
-            android:summary="@string/notify_always_desc"
-            android:title="@string/notify_always" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/field_settings_title">
+            android:title="@string/fms_ip_addr"/>
         <EditTextPreference
-            android:defaultValue="10"
-            android:key="@string/auto_time_key"
-            android:numeric="integer"
-            android:title="@string/auto_time" />
-        <EditTextPreference
-            android:defaultValue="140"
-            android:key="@string/teleop_time_key"
-            android:numeric="integer"
-            android:title="@string/teleop_time" />
+            android:defaultValue="7"
+            android:inputType="numberDecimal"
+            android:key="@string/bandwidth_key"
+            android:title="@string/bandwidth"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_settings_title">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/lock_screen_display_key"
             android:summary="@string/lock_screen_display_desc"
-            android:title="@string/lock_screen_display" />
+            android:title="@string/lock_screen_display"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/notification_key"
+            android:summary="@string/notification_desc"
+            android:title="@string/notification"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/notification_key"
+            android:key="@string/notify_always_key"
+            android:summary="@string/notify_always_desc"
+            android:title="@string/notify_always"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/pebble_key"
+            android:summary="@string/pebble_desc"
+            android:title="@string/pebble"/>
+        <EditTextPreference
+            android:defaultValue="10"
+            android:dependency="@string/pebble_key"
+            android:inputType="number"
+            android:key="@string/pebble_vibe_interval_key"
+            android:summary="@string/pebble_vibe_interval_desc"
+            android:title="@string/pebble_vibe_interval"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="@string/pebble_key"
+            android:key="@string/pebble_notify_times_key"
+            android:summary="@string/pebble_notify_times_desc"
+            android:title="@string/pebble_notify_times"/>
+        <Preference
+            android:summary="Click to download and install the Pebble Watchapp companion for the FTA Monitor"
+            android:title="Install Pebble Watchapp">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/333fred/fta-monitor-watchapp/releases/tag/v1.0"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

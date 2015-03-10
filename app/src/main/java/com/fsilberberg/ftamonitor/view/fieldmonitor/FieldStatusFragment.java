@@ -1,6 +1,5 @@
 package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,14 +11,13 @@ import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.FieldUpdateType;
+import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FieldStatusFragment extends Fragment implements Observer<FieldUpdateType> {
+public class FieldStatusFragment extends Fragment implements Observer<UpdateType> {
 
-    private TextView m_matchNumberView;
     private TextView m_fieldStatusView;
 
     public FieldStatusFragment() {
@@ -31,7 +29,6 @@ public class FieldStatusFragment extends Fragment implements Observer<FieldUpdat
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View fragView = inflater.inflate(R.layout.fragment_field_status, container, false);
-        m_matchNumberView = (TextView) fragView.findViewById(R.id.field_status_match_number);
         m_fieldStatusView = (TextView) fragView.findViewById(R.id.field_status_text);
         return fragView;
     }
@@ -41,7 +38,7 @@ public class FieldStatusFragment extends Fragment implements Observer<FieldUpdat
         super.onResume();
 
         // Update all of the field elements on resume of the application
-        updateFieldElement(FieldUpdateType.values());
+        updateField();
         FieldMonitorFactory.getInstance().getFieldStatus().registerObserver(this);
     }
 
@@ -52,38 +49,22 @@ public class FieldStatusFragment extends Fragment implements Observer<FieldUpdat
     }
 
     @Override
-    public void update(final FieldUpdateType updateType) {
-        getView().post(new Runnable() {
-            @Override
-            public void run() {
-                updateFieldElement(updateType);
-            }
-        });
+    public void update(final UpdateType updateType) {
+        if (updateType == UpdateType.TEAM)
+            getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    updateField();
+                }
+            });
     }
 
     /**
-     * Updates one of the display elements based on the given type. It will fetch the current value
-     * from the field status
-     *
-     * @param types The field elements to update
+     * Updates the display elements. It will fetch the current value from the field status
      */
-    private void updateFieldElement(FieldUpdateType... types) {
+    private void updateField() {
         FieldStatus fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
-        for (FieldUpdateType type : types) {
-            switch (type) {
-                case MATCH_NUMBER:
-                    m_matchNumberView.setText(fieldStatus.getMatchNumber());
-                    break;
-                case MATCH_STATUS:
-                    MatchStatus matchStatus = fieldStatus.getMatchStatus();
-                    m_fieldStatusView.setText(matchStatus.toString());
-                    break;
-                case TELEOP_TIME:
-                case AUTO_TIME:
-                    // These are ignored here. They are caught in the main Field Status, and the defaults
-                    // are updated. The defaults are loaded later when we want to start the timer
-                    break;
-            }
-        }
+        MatchStatus matchStatus = fieldStatus.getMatchStatus();
+        m_fieldStatusView.setText(matchStatus.toString());
     }
 }

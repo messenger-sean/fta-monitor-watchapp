@@ -1,14 +1,9 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
-import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.common.Card;
 import com.fsilberberg.ftamonitor.common.Observer;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static com.fsilberberg.ftamonitor.common.Card.NONE;
-import static com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType.*;
 
 /**
  * Encapsulates the current status of one of the alliance team members. There are however many of these
@@ -31,35 +26,18 @@ public class TeamStatus {
     private Float m_signalQuality = 0.0f;
     private Boolean m_enabled = false;
     private Boolean m_bypassed = false;
-    private Card m_card = NONE;
 
-    private final int m_stationNum;
-    private final Alliance m_alliance;
-
-    public TeamStatus(int m_stationNum, Alliance m_alliance) {
-        this.m_stationNum = m_stationNum;
-        this.m_alliance = m_alliance;
+    public TeamStatus() {
     }
 
-    private final Collection<Observer<TeamUpdateType>> m_observers = new ArrayList<>();
+    private final Collection<Observer<UpdateType>> m_observers = new ArrayList<>();
 
     public synchronized int getTeamNumber() {
         return m_teamNumber;
     }
 
     public void setTeamNumber(int teamNumber) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_teamNumber.equals(teamNumber)) {
-                m_teamNumber = teamNumber;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(TEAM_NUMBER);
-        }
+        m_teamNumber = teamNumber;
     }
 
     public synchronized int getDroppedPackets() {
@@ -67,18 +45,7 @@ public class TeamStatus {
     }
 
     public void setDroppedPackets(int droppedPackets) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_droppedPackets.equals(droppedPackets)) {
-                m_droppedPackets = droppedPackets;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(DROPPED_PACKETS);
-        }
+        m_droppedPackets = droppedPackets;
     }
 
     public synchronized int getRoundTrip() {
@@ -86,18 +53,7 @@ public class TeamStatus {
     }
 
     public void setRoundTrip(int roundTrip) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_roundTrip.equals(roundTrip)) {
-                m_roundTrip = roundTrip;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(ROUND_TRIP);
-        }
+        m_roundTrip = roundTrip;
     }
 
     public synchronized boolean isDsEth() {
@@ -105,18 +61,7 @@ public class TeamStatus {
     }
 
     public void setDsEth(boolean dsEth) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_dsEth.equals(dsEth)) {
-                m_dsEth = dsEth;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(DS_ETH);
-        }
+        m_dsEth = dsEth;
     }
 
     public synchronized boolean isDs() {
@@ -124,18 +69,7 @@ public class TeamStatus {
     }
 
     public void setDs(boolean ds) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_ds.equals(ds)) {
-                m_ds = ds;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(DS);
-        }
+        m_ds = ds;
     }
 
     public synchronized boolean isRadio() {
@@ -143,18 +77,7 @@ public class TeamStatus {
     }
 
     public void setRadio(boolean radio) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_radio.equals(radio)) {
-                m_radio = radio;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(RADIO);
-        }
+        m_radio = radio;
     }
 
     public synchronized boolean isRobot() {
@@ -162,18 +85,7 @@ public class TeamStatus {
     }
 
     public void setRobot(boolean robot) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_robot.equals(robot)) {
-                m_robot = robot;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(ROBOT);
-        }
+        m_robot = robot;
     }
 
     public synchronized boolean isEstop() {
@@ -181,18 +93,7 @@ public class TeamStatus {
     }
 
     public void setEstop(boolean estop) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_estop.equals(estop)) {
-                m_enabled = estop;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(ESTOP);
-        }
+        m_estop = estop;
     }
 
     public synchronized boolean isCode() {
@@ -200,18 +101,7 @@ public class TeamStatus {
     }
 
     public void setCode(boolean code) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_code.equals(code)) {
-                m_code = code;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(CODE);
-        }
+        m_code = code;
     }
 
     public synchronized float getBattery() {
@@ -219,18 +109,7 @@ public class TeamStatus {
     }
 
     public void setBattery(float battery) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_battery.equals(battery)) {
-                m_battery = battery;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(BATTERY);
-        }
+        m_battery = battery;
     }
 
     public synchronized float getDataRate() {
@@ -238,18 +117,7 @@ public class TeamStatus {
     }
 
     public void setDataRate(float dataRate) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_dataRate.equals(dataRate)) {
-                m_dataRate = dataRate;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(DATA_RATE);
-        }
+        m_dataRate = dataRate;
     }
 
     public synchronized float getSignalStrength() {
@@ -257,18 +125,7 @@ public class TeamStatus {
     }
 
     public void setSignalStrength(float signalStrength) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_signalStrength.equals(signalStrength)) {
-                m_signalStrength = signalStrength;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(SIGNAL_STRENGTH);
-        }
+        m_signalStrength = signalStrength;
     }
 
     public synchronized float getSignalQuality() {
@@ -276,18 +133,7 @@ public class TeamStatus {
     }
 
     public void setSignalQuality(float signalQuality) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_signalQuality.equals(signalQuality)) {
-                m_signalQuality = signalQuality;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(SIGNAL_QUALITY);
-        }
+        m_signalQuality = signalQuality;
     }
 
     public synchronized boolean isEnabled() {
@@ -295,18 +141,7 @@ public class TeamStatus {
     }
 
     public void setEnabled(boolean enabled) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_enabled.equals(enabled)) {
-                m_enabled = enabled;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(ENABLED);
-        }
+        m_enabled = enabled;
     }
 
     public synchronized boolean isBypassed() {
@@ -314,50 +149,20 @@ public class TeamStatus {
     }
 
     public void setBypassed(boolean bypassed) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_bypassed.equals(bypassed)) {
-                m_bypassed = bypassed;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(BYPASSED);
-        }
+        m_bypassed = bypassed;
     }
 
-    public synchronized Card getCard() {
-        return m_card;
-    }
-
-    public void setCard(Card card) {
-        boolean set = false;
-
-        synchronized (this) {
-            if (!m_card.equals(card)) {
-                m_card = card;
-                set = true;
-            }
-        }
-
-        if (set) {
-            updateObservers(CARD);
-        }
-    }
-
-    public void registerObserver(Observer<TeamUpdateType> observer) {
+    public void registerObserver(Observer<UpdateType> observer) {
         m_observers.add(observer);
     }
 
-    public void deregisterObserver(Observer<TeamUpdateType> observer) {
+    public void deregisterObserver(Observer<UpdateType> observer) {
         m_observers.remove(observer);
     }
 
-    public void updateObservers(TeamUpdateType updateType) {
-        for (Observer<TeamUpdateType> observer : m_observers) {
-            observer.update(updateType);
+    public void updateObservers() {
+        for (Observer<UpdateType> observer : m_observers) {
+            observer.update(UpdateType.TEAM);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -16,7 +17,7 @@ import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.TeamUpdateType;
+import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 
 import java.text.DecimalFormat;
 
@@ -25,7 +26,7 @@ import java.text.DecimalFormat;
  * Use the {@link TeamStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateType> {
+public class TeamStatusFragment extends Fragment implements Observer<UpdateType> {
     // Bundle parameters
     private static final String STATION_NUMBER = "station_number";
     private static final String ALLIANCE_COLOR = "alliance_color";
@@ -36,9 +37,6 @@ public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateT
     private TeamStatus m_teamStatus;
     private FieldStatus m_fieldStatus;
 
-    // Views
-    // Always visible views
-    private TextView m_stationNumberView;
     private TextView m_teamNumberView;
     private TextView m_voltageView;
     private TextView m_enabledView;
@@ -118,9 +116,7 @@ public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateT
         m_teamStatus.registerObserver(this);
 
         // Update all fields
-        for (TeamUpdateType type : TeamUpdateType.values()) {
-            update(type);
-        }
+        update(UpdateType.TEAM);
     }
 
     @Override
@@ -134,7 +130,7 @@ public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateT
                              Bundle savedInstanceState) {
         View fragView = inflater.inflate(R.layout.fragment_team_status, container, false);
         // Find and set all of the view elements
-        m_stationNumberView = (TextView) fragView.findViewById(R.id.team_status_table_station_number);
+        TextView m_stationNumberView = (TextView) fragView.findViewById(R.id.team_status_table_station_number);
         m_teamNumberView = (TextView) fragView.findViewById(R.id.team_status_number);
         m_voltageView = (TextView) fragView.findViewById(R.id.team_status_voltage);
         m_enabledView = (TextView) fragView.findViewById(R.id.team_status_enable_status);
@@ -158,6 +154,7 @@ public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateT
         setText(m_teamNumberView, String.valueOf(m_stationNumber), textColor);
 
         fragView.post(new Runnable() {
+            @SuppressLint("RtlHardcoded")
             @Override
             public void run() {
                 // Set the error layout params. There are 4 columns with equal width, so we can
@@ -176,48 +173,24 @@ public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateT
 
 
     @Override
-    public void update(TeamUpdateType updateType) {
-        switch (updateType) {
-            case BYPASSED:
-            case ESTOP:
-            case ENABLED:
-                updateTeamEnableStatus();
-                break;
-            case BATTERY:
-                float batteryVoltage = m_teamStatus.getBattery();
-                setText(m_voltageView, batteryVoltage);
-                break;
-            case TEAM_NUMBER:
-                int teamNumber = m_teamStatus.getTeamNumber();
-                setText(m_teamNumberView, teamNumber);
-                break;
-            case DATA_RATE:
-                float bandwidth = m_teamStatus.getDataRate();
-                setText(m_bandwidthView, bandwidth);
-                break;
-            case DROPPED_PACKETS:
-                int droppedPackets = m_teamStatus.getDroppedPackets();
-                setText(m_missedPacketsView, droppedPackets);
-                break;
-            case SIGNAL_QUALITY:
-                float sq = m_teamStatus.getSignalQuality();
-                setText(m_signalQualityView, sq);
-                break;
-            case SIGNAL_STRENGTH:
-                float ss = m_teamStatus.getSignalStrength();
-                setText(m_signalStrengthView, ss);
-                break;
-            case ROUND_TRIP:
-                int rtt = m_teamStatus.getRoundTrip();
-                setText(m_roundTripView, rtt);
-                break;
-            case DS_ETH:
-            case DS:
-            case RADIO:
-            case ROBOT:
-            case CODE:
-                updateTeamStatus();
-                break;
+    public void update(UpdateType updateType) {
+        if (updateType == UpdateType.TEAM) {
+            updateTeamEnableStatus();
+            float batteryVoltage = m_teamStatus.getBattery();
+            setText(m_voltageView, batteryVoltage);
+            int teamNumber = m_teamStatus.getTeamNumber();
+            setText(m_teamNumberView, teamNumber);
+            float bandwidth = m_teamStatus.getDataRate();
+            setText(m_bandwidthView, bandwidth);
+            int droppedPackets = m_teamStatus.getDroppedPackets();
+            setText(m_missedPacketsView, droppedPackets);
+            float sq = m_teamStatus.getSignalQuality();
+            setText(m_signalQualityView, sq);
+            float ss = m_teamStatus.getSignalStrength();
+            setText(m_signalStrengthView, ss);
+            int rtt = m_teamStatus.getRoundTrip();
+            setText(m_roundTripView, rtt);
+            updateTeamStatus();
         }
     }
 
@@ -305,21 +278,15 @@ public class TeamStatusFragment extends Fragment implements Observer<TeamUpdateT
     private void setEnabledText() {
         MatchStatus status = m_fieldStatus.getMatchStatus();
         switch (status) {
-            case TELEOP_PAUSED:
             case TELEOP:
                 setText(m_enabledView, "T", whiteText);
                 break;
             case AUTO:
-            case AUTO_END:
-            case AUTO_PAUSED:
                 setText(m_enabledView, "A", whiteText);
                 break;
-            case OVER:
-            case READY_TO_PRESTART:
-            case PRESTART_INITIATED:
-            case PRESTART_COMPLETED:
-            case MATCH_READY:
+            default:
                 setText(m_enabledView, "", whiteText);
+                break;
         }
     }
 

@@ -1,11 +1,12 @@
 package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
-
 import android.app.Fragment;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,6 @@ import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
-import com.fsilberberg.ftamonitor.services.MainForegroundService;
 import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
@@ -36,9 +36,37 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
     private LinearLayout m_mainFieldView;
     private FrameLayout m_fieldView;
     private FrameLayout m_teamView;
+    private FieldConnectionService m_service;
+    private boolean m_isBound = false;
 
-    public FieldMonitorFragment() {
-        // Required empty public constructor
+    private ServiceConnection m_connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            FieldConnectionService.FCSBinder binder = (FieldConnectionService.FCSBinder) service;
+            m_service = binder.getService();
+            m_isBound = true;
+            m_service.registerObserver(FieldMonitorFragment.this);
+            update(m_service.getState());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            m_isBound = false;
+            m_service.deregisterObserver(FieldMonitorFragment.this);
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent fcsIntent = new Intent(getActivity(), FieldConnectionService.class);
+        getActivity().bindService(fcsIntent, m_connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().unbindService(m_connection);
     }
 
     @Override
@@ -47,8 +75,7 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragView = inflater.inflate(R.layout.fragment_field_monitor, container, false);
         m_connectionView = (TextView) fragView.findViewById(R.id.con_status_text);
         m_mainFieldView = (LinearLayout) fragView.findViewById(R.id.field_monitor_fragment);
@@ -64,15 +91,20 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
     @Override
     public void onResume() {
         super.onResume();
-        update(FieldConnectionService.getState());
-        FieldConnectionService.registerConnectionObserver(this);
-        setupLockscreen();
+        if (m_service != null) {
+            m_service.registerObserver(this);
+            update(m_service.getState());
+        }
+        setupLockScreen();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_field_monitor));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        FieldConnectionService.deregisterConnectionObserver(this);
+        if (m_service != null) {
+            m_service.deregisterObserver(this);
+        }
     }
 
     /**
@@ -139,16 +171,17 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
 
     @Override
     public void update(final ConnectionState updateType) {
+        Log.d(FieldMonitorFragment.class.getName(), "Updated ConnectionState with " + updateType);
         getView().post(new Runnable() {
             @SuppressWarnings("ConstantConditions")
             @Override
             public void run() {
                 updateView(updateType);
                 if (updateType == ConnectionState.Connected) {
-                    setupLockscreen();
+                    setupLockScreen();
                     m_conButton.setVisibility(View.INVISIBLE);
                 } else {
-                    removeLockscreen();
+                    removeLockScreen();
                 }
             }
         });
@@ -156,25 +189,24 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
 
     @Override
     public void onClick(View view) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String url = preferences.getString(getString(R.string.fms_ip_addr_key), "10.0.100.5");
-        Intent serviceIntent = new Intent(getActivity(), MainForegroundService.class);
-        serviceIntent.putExtra(FieldConnectionService.URL_INTENT_EXTRA, url);
-        getActivity().startService(serviceIntent);
+        FieldConnectionService.FCSSharedPrefs prefs = new FieldConnectionService.FCSSharedPrefs();
+        prefs.updateService();
     }
 
-    private void setupLockscreen() {
+    private void setupLockScreen() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String lockKey = getString(R.string.lock_screen_display_key);
-        if (prefs.getBoolean(lockKey, false) && FieldConnectionService.getState().equals(ConnectionState.Connected)) {
+        if (prefs.getBoolean(lockKey, false)
+                && m_isBound
+                && m_service.getState().equals(ConnectionState.Connected)) {
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         } else {
             // Make absolutely sure not to display in these cases
-            removeLockscreen();
+            removeLockScreen();
         }
     }
 
-    private void removeLockscreen() {
+    private void removeLockScreen() {
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 }
