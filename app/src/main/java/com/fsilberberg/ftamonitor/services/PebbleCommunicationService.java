@@ -23,6 +23,7 @@ public class PebbleCommunicationService implements ForegroundService {
 
     // Constants for the team types
     private static final byte VIBE = 7;
+    private static final byte UPDATE = 8;
 
     // Constants for the different statuses
     private static final byte ETH = 0;
@@ -101,6 +102,8 @@ public class PebbleCommunicationService implements ForegroundService {
                 }
             }
         });
+
+        PebbleKit.registerReceivedDataHandler(m_context, new UpdateReceiver());
 
         m_updaters.add(new PebbleTeamUpdater(1, Alliance.RED, m_red1));
         m_updaters.add(new PebbleTeamUpdater(2, Alliance.RED, m_red2));
@@ -241,7 +244,11 @@ public class PebbleCommunicationService implements ForegroundService {
 
         @Override
         public void receiveData(Context context, int i, PebbleDictionary pebbleDictionary) {
-
+            if (pebbleDictionary.contains(UPDATE)) {
+                for (PebbleTeamUpdater updater : m_updaters) {
+                    updater.update(UpdateType.TEAM);
+                }
+            }
         }
     }
 }
