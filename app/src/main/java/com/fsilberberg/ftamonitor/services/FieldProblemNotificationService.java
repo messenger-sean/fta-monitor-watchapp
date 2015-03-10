@@ -141,7 +141,7 @@ public class FieldProblemNotificationService implements ForegroundService {
         private Alliance m_alliance;
         private TeamStatus m_team;
         private boolean m_display = false;
-        private String m_errorString;
+        private String m_errorString = "";
 
         private ProblemObserver(int stationNumber, Alliance alliance, TeamStatus team) {
             m_stationNumber = stationNumber;
@@ -188,6 +188,8 @@ public class FieldProblemNotificationService implements ForegroundService {
          * display variable
          */
         private void updateErrorText() {
+            String prevText = m_errorString;
+            boolean prevDisplay = m_display;
             if (m_team.isEstop()) {
                 setError(R.string.estop_error);
             } else if (m_team.isBypassed()) {
@@ -207,7 +209,10 @@ public class FieldProblemNotificationService implements ForegroundService {
                 m_display = false;
             }
 
-            updateNotification();
+            // If any of the factors affecting the notification have changed, update. Otherwise, don't
+            if (!m_errorString.equals(prevText) || m_display != prevDisplay) {
+                updateNotification();
+            }
         }
 
         /**

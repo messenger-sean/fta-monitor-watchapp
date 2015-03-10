@@ -112,7 +112,7 @@ public class PebbleCommunicationService implements ForegroundService {
         m_updaters.add(new PebbleTeamUpdater(2, Alliance.BLUE, m_blue2));
         m_updaters.add(new PebbleTeamUpdater(3, Alliance.BLUE, m_blue3));
         for (PebbleTeamUpdater updater : m_updaters) {
-            updater.update(UpdateType.TEAM);
+            updater.update(true);
         }
     }
 
@@ -178,6 +178,7 @@ public class PebbleCommunicationService implements ForegroundService {
         private final TeamStatus m_team;
         private final Alliance m_alliance;
         private DateTime m_lastVibeTime = DateTime.now().minusSeconds(m_timeInterval);
+        private byte m_curStatus = ETH;
 
         private PebbleTeamUpdater(int station, Alliance alliance, TeamStatus team) {
             m_team = team;
@@ -196,29 +197,39 @@ public class PebbleCommunicationService implements ForegroundService {
 
         @Override
         public void update(UpdateType updateType) {
+            if (updateType == UpdateType.TEAM) {
+                update(false);
+            }
+        }
+
+        public void update(boolean force) {
             // If this is a team update
             byte status = 0;
-            if (updateType == UpdateType.TEAM) {
-                if (m_team.isEstop()) {
-                    status = ESTOP;
-                } else if (m_team.isBypassed()) {
-                    status = BYP;
-                } else if (!m_team.isDsEth()) {
-                    status = ETH;
-                } else if (!m_team.isDs()) {
-                    status = DS;
-                } else if (!m_team.isRadio()) {
-                    status = RADIO;
-                } else if (!m_team.isRobot()) {
-                    status = RIO;
-                } else if (!m_team.isCode()) {
-                    status = CODE;
-                } else if (m_team.getDataRate() > m_maxBandwidth) {
-                    status = BWU;
-                } else {
-                    status = GOOD;
-                }
+            if (m_team.isEstop()) {
+                status = ESTOP;
+            } else if (m_team.isBypassed()) {
+                status = BYP;
+            } else if (!m_team.isDsEth()) {
+                status = ETH;
+            } else if (!m_team.isDs()) {
+                status = DS;
+            } else if (!m_team.isRadio()) {
+                status = RADIO;
+            } else if (!m_team.isRobot()) {
+                status = RIO;
+            } else if (!m_team.isCode()) {
+                status = CODE;
+            } else if (m_team.getDataRate() > m_maxBandwidth) {
+                status = BWU;
+            } else {
+                status = GOOD;
             }
+
+            // If we're not forcing an update the and the current status is unchanged, then don't update
+            if (!force && status == m_curStatus) {
+                return;
+            }
+
             PebbleDictionary dict = new PebbleDictionary();
             dict.addUint8(getKey(), status);
 
@@ -229,8 +240,8 @@ public class PebbleCommunicationService implements ForegroundService {
             }
 
             sendMessage(dict);
+            m_curStatus = status;
         }
-
     }
 
     /**
@@ -246,7 +257,7 @@ public class PebbleCommunicationService implements ForegroundService {
         public void receiveData(Context context, int i, PebbleDictionary pebbleDictionary) {
             if (pebbleDictionary.contains(UPDATE)) {
                 for (PebbleTeamUpdater updater : m_updaters) {
-                    updater.update(UpdateType.TEAM);
+                    updater.update(true);
                 }
             }
         }
