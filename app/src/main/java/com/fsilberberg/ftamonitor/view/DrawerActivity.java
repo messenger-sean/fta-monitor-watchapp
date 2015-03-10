@@ -82,6 +82,7 @@ public class DrawerActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
         getFragmentManager().beginTransaction().replace(R.id.frame_container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName()).commit();
     }
 

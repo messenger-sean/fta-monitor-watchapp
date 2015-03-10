@@ -25,13 +25,13 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         addPreferencesFromResource(R.xml.preferences);
         m_fmsKey = getString(R.string.fms_ip_addr_key);
         m_defaultKey = getString(R.string.on_field_key);
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
     }
 
     @Override
     public void onResume() {
         super.onResume();
         updatePref(m_fmsKey);
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

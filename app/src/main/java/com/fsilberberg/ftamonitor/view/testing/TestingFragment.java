@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,12 @@ public class TestingFragment extends Fragment {
         m_tabStrip.setTabIndicatorColorResource(R.color.FRC_DARK_GREY);
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_testing));
     }
 
     private class TestingPagerAdapter extends FragmentPagerAdapter {

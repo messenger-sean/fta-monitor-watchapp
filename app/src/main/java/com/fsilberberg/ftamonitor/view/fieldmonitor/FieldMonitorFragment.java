@@ -5,6 +5,7 @@ import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,6 +96,7 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
             update(m_service.getState());
         }
         setupLockScreen();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_field_monitor));
     }
 
     @Override
