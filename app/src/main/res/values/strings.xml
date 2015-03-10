@@ -60,6 +60,7 @@
     <string name="robot_error">no roboRio</string>
     <string name="code_error">no code</string>
     <string name="estop_error">estopped</string>
+    <string name="bandwidth_error">exceeded max bandwidth</string>
 
     <string-array name="drawer_tabs">
         <item>Field Monitor</item>

@@ -43,6 +43,7 @@ public class FieldProblemNotificationService implements ForegroundService {
     private final TeamStatus m_red1 = m_field.getRed1();
     private final TeamStatus m_red2 = m_field.getRed2();
     private final TeamStatus m_red3 = m_field.getRed3();
+    private int m_maxBandwith;
 
     private Context m_context;
     private boolean m_alwaysNotify = false;
@@ -52,8 +53,10 @@ public class FieldProblemNotificationService implements ForegroundService {
     public void startService(Context context) {
         m_context = context;
         SharedPreferences m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String m_notifyAlwaysKey = context.getString(R.string.notify_always_key);
-        m_alwaysNotify = m_sharedPreferences.getBoolean(m_notifyAlwaysKey, false);
+        String notifyAlwaysKey = context.getString(R.string.notify_always_key);
+        String bandwidthKey = m_context.getResources().getString(R.string.bandwidth_key);
+        m_alwaysNotify = m_sharedPreferences.getBoolean(notifyAlwaysKey, false);
+        m_maxBandwith = Integer.parseInt(m_sharedPreferences.getString(bandwidthKey, "10"));
 
         // Register an observer for each team
         m_observers.add(new ProblemObserver(1, RED, m_red1));
@@ -205,6 +208,8 @@ public class FieldProblemNotificationService implements ForegroundService {
                 setError(R.string.robot_error);
             } else if (!m_team.isCode()) {
                 setError(R.string.code_error);
+            } else if (m_team.getDataRate() > m_maxBandwith) {
+                setError(R.string.bandwidth_error);
             } else {
                 m_display = false;
             }
