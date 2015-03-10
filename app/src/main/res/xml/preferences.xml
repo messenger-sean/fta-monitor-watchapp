@@ -55,6 +55,12 @@
             android:key="@string/pebble_notify_times_key"
             android:summary="@string/pebble_notify_times_desc"
             android:title="@string/pebble_notify_times"/>
-
+        <Preference
+            android:summary="Click to download and install the Pebble Watchapp companion for the FTA Monitor"
+            android:title="Install Pebble Watchapp">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/333fred/fta-monitor-watchapp/releases/tag/v1.0"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
