@@ -196,8 +196,8 @@ static void main_window_load(Window *window) {
   layer_set_update_proc(s_grid_layer, canvas_update_proc);
   
   // Draw the Red and Blue text for the alliance headers
-  s_red_header = text_layer_create(GRect(0, 0, 74, 20));
-  s_blue_header = text_layer_create(GRect(74, 0, 74, 20));
+  s_red_header = text_layer_create(GRect(74, 0, 74, 20));
+  s_blue_header = text_layer_create(GRect(0, 0, 74, 20));
   text_layer_set_background_color(s_red_header, GColorClear);
   text_layer_set_background_color(s_blue_header, GColorClear);
   text_layer_set_text_color(s_red_header, GColorBlack);
@@ -212,18 +212,19 @@ static void main_window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(s_blue_header));
   
   // Create the layers for the different alliance statuses
-  setup_alliance_textlayer(&s_red1, window_layer, 0, 20);
-  setup_alliance_textlayer(&s_red2, window_layer, 0, 66);
-  setup_alliance_textlayer(&s_red3, window_layer, 0, 112);
-  setup_alliance_textlayer(&s_blue1, window_layer, 74, 20);
-  setup_alliance_textlayer(&s_blue2, window_layer, 74, 66);
-  setup_alliance_textlayer(&s_blue3, window_layer, 74, 112);
+  
+  setup_alliance_textlayer(&s_red1, window_layer, 74, 112);
+  setup_alliance_textlayer(&s_red2, window_layer, 74, 66);
+  setup_alliance_textlayer(&s_red3, window_layer, 74, 20);
+  setup_alliance_textlayer(&s_blue1, window_layer, 0, 20);
+  setup_alliance_textlayer(&s_blue2, window_layer, 0, 66);
+  setup_alliance_textlayer(&s_blue3, window_layer, 0, 112);
   set_alliance_status(ETH, 1, 1);
-  set_alliance_status(DS, 1, 2);
-  set_alliance_status(RADIO, 1, 3);
-  set_alliance_status(RIO, 2, 1);
-  set_alliance_status(BWU, 2, 2);
-  set_alliance_status(GOOD, 2, 3);
+  set_alliance_status(ETH, 1, 2);
+  set_alliance_status(ETH, 1, 3);
+  set_alliance_status(ETH, 2, 1);
+  set_alliance_status(ETH, 2, 2);
+  set_alliance_status(ETH, 2, 3);
 }
 
 static void main_window_unload(Window *window) {
