@@ -253,12 +253,18 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
      * @param visible Which state to set
      */
     private void setDataInfoVisible(boolean visible) {
-        int visibility = visible ? View.VISIBLE : View.INVISIBLE;
-        m_bandwidthView.setVisibility(visibility);
-        m_missedPacketsView.setVisibility(visibility);
-        m_roundTripView.setVisibility(visibility);
-        m_signalQualityView.setVisibility(visibility);
-        m_signalStrengthView.setVisibility(visibility);
+        final int visibility = visible ? View.VISIBLE : View.INVISIBLE;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                m_bandwidthView.setVisibility(visibility);
+                m_missedPacketsView.setVisibility(visibility);
+                m_roundTripView.setVisibility(visibility);
+                m_signalQualityView.setVisibility(visibility);
+                m_signalStrengthView.setVisibility(visibility);
+            }
+        });
+
     }
 
     /**
@@ -267,8 +273,13 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
      * @param visible Which state to set
      */
     private void setTeamStatusVisible(boolean visible) {
-        int visibility = visible ? View.VISIBLE : View.INVISIBLE;
-        m_errorTextView.setVisibility(visibility);
+        final int visibility = visible ? View.VISIBLE : View.INVISIBLE;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                m_errorTextView.setVisibility(visibility);
+            }
+        });
     }
 
     /**

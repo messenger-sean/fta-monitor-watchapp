@@ -1,0 +1,4 @@
+[submodule "java-client"]
+	path = java-client
+	url = git@github.com:SignalR/java-client.git
+	branch = master

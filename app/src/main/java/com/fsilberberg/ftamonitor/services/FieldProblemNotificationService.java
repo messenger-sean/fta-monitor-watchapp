@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -93,7 +92,6 @@ public class FieldProblemNotificationService implements ForegroundService {
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (ProblemObserver observer : m_observers) {
-            Log.d(FieldProblemNotificationService.class.getName(), observer.toString());
             if (observer.shouldDisplay()) {
                 notifications++;
                 if (first) {
@@ -155,7 +153,6 @@ public class FieldProblemNotificationService implements ForegroundService {
 
         @Override
         public void update(UpdateType updateType) {
-            Log.d(FieldProblemNotificationService.class.getName(), "Updating " + m_alliance + " " + m_team);
             // We only care about the states in which there could be an error
             switch (updateType) {
                 case TEAM:

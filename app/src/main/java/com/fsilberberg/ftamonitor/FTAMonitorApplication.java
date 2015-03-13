@@ -15,7 +15,7 @@ import com.fsilberberg.ftamonitor.services.FieldServiceManager;
 public class FTAMonitorApplication extends Application {
 
     private static Context _context;
-    public static final String DEFAULT_IP = "10.0.100.5";
+    public static final String DEFAULT_IP = "10.0.100.5:8189";
 
     public static Context getContext() {
         return _context;
