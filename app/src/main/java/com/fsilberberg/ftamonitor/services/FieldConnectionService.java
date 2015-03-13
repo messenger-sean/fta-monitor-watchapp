@@ -19,11 +19,11 @@ import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.MatchStateProxyHand
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
 import com.fsilberberg.ftamonitor.view.DrawerActivity;
 import com.google.gson.JsonArray;
-import microsoft.aspnet.signalr.client.ConnectionState;
-import microsoft.aspnet.signalr.client.ErrorCallback;
-import microsoft.aspnet.signalr.client.StateChangedCallback;
+import microsoft.aspnet.signalr.client.*;
+import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;
+import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +50,10 @@ public class FieldConnectionService extends Service {
     private static final String HUB_NAME = "messageservicehub";
     private static final String FIELD_MONITOR = "fieldMonitorDataChanged";
     private static final String MATCH_STATE_CHANGED = "matchStateChanged";
+
+    static {
+        Platform.loadPlatformComponent(new AndroidPlatformComponent());
+    }
 
     private final Object m_lock = new Object();
     private final FCSBinder m_binder = new FCSBinder();
@@ -89,7 +93,7 @@ public class FieldConnectionService extends Service {
                             stopSelf();
                             return;
                         } else {
-                            m_url = intent.getStringExtra(URL_INTENT_EXTRA);
+                            m_url = "http://" + intent.getStringExtra(URL_INTENT_EXTRA);
                         }
                     }
                 }
@@ -139,7 +143,7 @@ public class FieldConnectionService extends Service {
 
             m_fieldConnection.stateChanged(m_statusObservable);
             try {
-                m_fieldConnection.start().get();
+                m_fieldConnection.start(new ServerSentEventsTransport(new NullLogger())).get();
             } catch (InterruptedException | ExecutionException e) {
                 Log.w(FieldConnectionService.class.getName(), "Could not start the signalr connection", e);
             }

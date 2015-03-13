@@ -39,8 +39,6 @@ public abstract class ProxyHandlerBase {
     protected static final int STATION_1 = 1;
     protected static final int STATION_2 = 2;
     protected static final int STATION_3 = 3;
-    protected static final String ALLIANCE_ELEMENT = "Alliance";
-    protected static final String STATION_ELEMENT = "Station";
 
     protected final Gson m_gson;
 

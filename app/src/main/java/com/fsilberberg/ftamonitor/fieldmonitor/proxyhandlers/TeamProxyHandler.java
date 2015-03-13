@@ -25,9 +25,9 @@ public class TeamProxyHandler extends ProxyHandlerBase implements SubscriptionHa
     public void run(JsonArray jsonElements) {
         for (JsonElement element : jsonElements) {
             JsonObject object = element.getAsJsonObject();
-            switch (object.get(ALLIANCE_ELEMENT).getAsInt()) {
+            switch (object.get(ALLIANCE_FIELD).getAsInt()) {
                 case 1:
-                    switch (object.get(STATION_ELEMENT).getAsInt()) {
+                    switch (object.get(STATION_FIELD).getAsInt()) {
                         case 1:
                             updateTeam(m_red1, object);
                             break;
@@ -40,7 +40,7 @@ public class TeamProxyHandler extends ProxyHandlerBase implements SubscriptionHa
                     }
                     break;
                 case 2:
-                    switch (object.get(STATION_ELEMENT).getAsInt()) {
+                    switch (object.get(STATION_FIELD).getAsInt()) {
                         case 1:
                             updateTeam(m_blue1, object);
                             break;
@@ -58,7 +58,7 @@ public class TeamProxyHandler extends ProxyHandlerBase implements SubscriptionHa
     public void updateTeam(TeamStatus status, JsonObject newStatus) {
         status.setTeamNumber(newStatus.get(TEAM_NUM_FIELD).getAsInt());
         status.setDsEth(newStatus.get(CONNECTION_FIELD).getAsBoolean());
-        status.setCode(!newStatus.get(LINK_ACT_FIELD).getAsBoolean());
+        status.setCode(newStatus.get(LINK_ACT_FIELD).getAsBoolean());
         status.setDs(newStatus.get(DS_LINK_ACT_FIELD).getAsBoolean());
         status.setRadio(newStatus.get(RADIO_FIELD).getAsBoolean());
         status.setDataRate(newStatus.get(DATA_RATE_FIELD).getAsFloat());
@@ -69,7 +69,7 @@ public class TeamProxyHandler extends ProxyHandlerBase implements SubscriptionHa
         status.setDroppedPackets(newStatus.get(LOST_PACK_FIELD).getAsInt());
         status.setRobot(newStatus.get(RIO_FIELD).getAsBoolean());
         status.setBypassed(newStatus.get(BYPASSED_FIELD).getAsBoolean());
-        switch (newStatus.get(ENABLED_FIELD).getAsInt()) {
+        switch (newStatus.get(MONITOR_FIELD).getAsInt()) {
             case 1: // Estop
                 status.setEstop(true);
                 status.setEnabled(false);

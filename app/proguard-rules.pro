@@ -14,4 +14,6 @@
 # class:
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
-#}
+#
+-dontwarn org.java_websocket.client.WebSocketClient
+-dontwarn microsoft.aspnet.signalr.client.transport.WebsocketTransport

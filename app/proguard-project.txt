@@ -3,6 +3,8 @@
 -dontwarn sun.misc.Unsafe
 -dontwarn org.joda.convert.ToString
 -dontwarn org.joda.convert.FromString
+-dontwarn org.java_websocket.client.WebSocketClient
+-dontwarn microsoft.aspnet.signalr.client.transport.WebsocketTransport
 
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
