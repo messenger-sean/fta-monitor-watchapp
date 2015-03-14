@@ -83,6 +83,17 @@ void request_update() {
   app_message_outbox_send();
 }
 
+// Single click callback
+void select_single_click_handler(ClickRecognizerRef recognizer, void *context) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "In single click handler");
+  request_update();
+}
+
+// ClickConfigProvider for the refresh button
+void config_provider(Window *window) {
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
+}
+
 static void message_dropped_callback(AppMessageResult reason, void *ctx) {
   APP_LOG(APP_LOG_LEVEL_WARNING, "Message Dropped: %s", translate_error(reason));
 }
@@ -256,6 +267,7 @@ static void init() {
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   request_update();
+  window_set_click_config_provider(s_main_window, (ClickConfigProvider) config_provider);
 }
 
 static void deinit() {
