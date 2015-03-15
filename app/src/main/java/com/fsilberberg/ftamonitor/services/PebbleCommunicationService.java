@@ -2,6 +2,7 @@ package com.fsilberberg.ftamonitor.services;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -14,7 +15,9 @@ import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 import org.joda.time.DateTime;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
 
 /**
  * Communicates with the pebble watchapp
@@ -57,8 +60,7 @@ public class PebbleCommunicationService implements ForegroundService {
 
     // Pebble message components for ensuring reliable delivery
     private final Object m_sendLock = new Object();
-    private final Map<Integer, PebbleDictionary> m_transactions = new HashMap<>();
-    private int m_curTransactionId;
+    private Thread m_resendThread = null;
 
     public void startService(Context context) {
         m_context = context;
@@ -79,25 +81,31 @@ public class PebbleCommunicationService implements ForegroundService {
                 )
         );
 
-        PebbleKit.registerReceivedAckHandler(m_context, new PebbleKit.PebbleAckReceiver(PEBBLE_UUID) {
-            @Override
-            public void receiveAck(Context context, int transId) {
-                // On success, remove the transaction from the record
-                synchronized (m_sendLock) {
-                    if (m_transactions.containsKey(transId)) {
-                        m_transactions.remove(transId);
-                    }
-                }
-            }
-        });
-
         PebbleKit.registerReceivedNackHandler(m_context, new PebbleKit.PebbleNackReceiver(PEBBLE_UUID) {
             @Override
             public void receiveNack(Context context, int i) {
                 // On failure, resend the message
                 synchronized (m_sendLock) {
-                    if (m_transactions.containsKey(i)) {
-                        PebbleKit.sendDataToPebbleWithTransactionId(m_context, PEBBLE_UUID, m_transactions.get(i), i);
+                    if (m_resendThread == null) {
+                        m_resendThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(100);
+                                    for (PebbleTeamUpdater updater : m_updaters) {
+                                        updater.update(true);
+                                    }
+                                    synchronized (m_sendLock) {
+                                        m_resendThread = null;
+                                    }
+                                } catch (InterruptedException e) {
+                                    Log.w(PebbleCommunicationService.class.getName(),
+                                            "Interrupted while waiting to retransmit statuses",
+                                            e);
+                                }
+
+                            }
+                        });
                     }
                 }
             }
@@ -133,12 +141,7 @@ public class PebbleCommunicationService implements ForegroundService {
         // pebble is connected and that we're all set
         if ((m_outOfMatch || isMatchPlaying()) && checkAndOpen()) {
             synchronized (m_sendLock) {
-                int id = m_curTransactionId++;
-                if (m_curTransactionId == Integer.MAX_VALUE) {
-                    m_curTransactionId = 0;
-                }
-                PebbleKit.sendDataToPebbleWithTransactionId(m_context, PEBBLE_UUID, message, id);
-                m_transactions.put(id, message);
+                PebbleKit.sendDataToPebble(m_context, PEBBLE_UUID, message);
             }
         }
     }

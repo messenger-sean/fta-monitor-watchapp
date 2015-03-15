@@ -261,8 +261,10 @@ public class FieldConnectionService extends Service {
             Log.d(FieldConnectionService.class.getName(), "Connection state changed to " + newState);
             if (!m_connectionState.equals(newState)) {
                 m_connectionState = newState;
-                for (Observer<ConnectionState> observer : m_observers) {
-                    observer.update(newState);
+                synchronized (this) {
+                    for (Observer<ConnectionState> observer : m_observers) {
+                        observer.update(newState);
+                    }
                 }
             }
         }
@@ -273,14 +275,18 @@ public class FieldConnectionService extends Service {
 
         @Override
         public void registerObserver(Observer<ConnectionState> observer) {
-            if (!m_observers.contains(observer)) {
-                m_observers.add(observer);
+            synchronized (this) {
+                if (!m_observers.contains(observer)) {
+                    m_observers.add(observer);
+                }
             }
         }
 
         @Override
         public void deregisterObserver(Observer<ConnectionState> observer) {
-            m_observers.remove(observer);
+            synchronized (this) {
+                m_observers.remove(observer);
+            }
         }
 
         @Override
