@@ -1,6 +1,8 @@
 sudo: false
 language: android
 jdk: oraclejdk7
+git:
+  submodules: false
 android:
   components:
     # The BuildTools version used by your project
