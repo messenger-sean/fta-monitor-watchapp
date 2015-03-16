@@ -6,7 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
-import com.fsilberberg.ftamonitor.services.FieldServiceManager;
+import com.fsilberberg.ftamonitor.services.FieldProblemNotificationService;
+import com.fsilberberg.ftamonitor.services.PebbleCommunicationService;
 
 /**
  * This is the main entry point of the application. On startup, it will create the main foreground
@@ -31,15 +32,26 @@ public class FTAMonitorApplication extends Application {
         FieldMonitorFactory.initialize();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String fmEnabledKey = getString(R.string.field_monitor_enabled_key);
+        String pebbleEnabledKey = getString(R.string.pebble_key);
+        String notificationKey = getString(R.string.notification_key);
+        boolean fmEnabled = preferences.getBoolean(fmEnabledKey, true);
 
-        // Start the FMS Service
-        FieldConnectionService.FCSSharedPrefs fcsPrefObserver = new FieldConnectionService.FCSSharedPrefs();
-        preferences.registerOnSharedPreferenceChangeListener(fcsPrefObserver);
-        fcsPrefObserver.updateService();
+        // If the field monitor is enabled, start the connection service
+        if (fmEnabled) {
+            FieldConnectionService.start();
 
-        // Start the notification service
-        FieldServiceManager serviceObserver = FieldServiceManager.getInstance();
-        preferences.registerOnSharedPreferenceChangeListener(serviceObserver);
-        serviceObserver.updateServices(preferences);
+            // If the Pebble service is also enabled, start that
+            boolean pebbleEnabled = preferences.getBoolean(pebbleEnabledKey, false);
+            if (pebbleEnabled) {
+                PebbleCommunicationService.start();
+            }
+
+            // If the notification service is also enabled start that
+            boolean notificationEnabled = preferences.getBoolean(notificationKey, false);
+            if (notificationEnabled) {
+                FieldProblemNotificationService.start();
+            }
+        }
     }
 }

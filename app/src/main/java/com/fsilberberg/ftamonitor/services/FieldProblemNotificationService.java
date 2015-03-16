@@ -28,11 +28,13 @@ import static com.fsilberberg.ftamonitor.common.Alliance.RED;
  * This class is responsible for watching the field for problems with robots and notifying the user
  * when an error occurs during a match
  */
-public class FieldProblemNotificationService implements ForegroundService {
-
+public class FieldProblemNotificationService {
     // Notification ID. Again no significance, other than 3 is my favorite number, and 3x3 is 9
     private static final int ID = 9;
     private static final int MAIN_ACTIVITY_ID = 4;
+
+    public static void start() {
+    }
 
     // References to the teams
     private final FieldStatus m_field = FieldMonitorFactory.getInstance().getFieldStatus();
@@ -48,7 +50,6 @@ public class FieldProblemNotificationService implements ForegroundService {
     private boolean m_alwaysNotify = false;
     private final Collection<ProblemObserver> m_observers = new ArrayList<>();
 
-    @Override
     public void startService(Context context) {
         m_context = context;
         SharedPreferences m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -66,7 +67,6 @@ public class FieldProblemNotificationService implements ForegroundService {
         m_observers.add(new ProblemObserver(3, BLUE, m_blue3));
     }
 
-    @Override
     public void stopService() {
         // Deregister from all observation
         for (ProblemObserver observer : m_observers) {

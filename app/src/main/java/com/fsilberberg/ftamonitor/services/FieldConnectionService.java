@@ -55,6 +55,12 @@ public class FieldConnectionService extends Service {
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
     }
 
+    /**
+     * Starts the service with the default arguments
+     */
+    public static void start() {
+    }
+
     private final Object m_lock = new Object();
     private final FCSBinder m_binder = new FCSBinder();
     private final ConnectionStateObservable m_statusObservable = new ConnectionStateObservable();

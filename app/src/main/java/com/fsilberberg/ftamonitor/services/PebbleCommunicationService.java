@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * Communicates with the pebble watchapp
  */
-public class PebbleCommunicationService implements ForegroundService {
+public class PebbleCommunicationService {
 
     // Constants for the team types
     private static final byte VIBE = 7;
@@ -41,6 +41,9 @@ public class PebbleCommunicationService implements ForegroundService {
 
     // The app UID
     private static final UUID PEBBLE_UUID = UUID.fromString("5b742e45-2918-4f69-a510-7c0457d9df16");
+
+    public static void start() {
+    }
 
     // References to all teams and the field status
     private final FieldStatus m_field = FieldMonitorFactory.getInstance().getFieldStatus();
@@ -124,7 +127,6 @@ public class PebbleCommunicationService implements ForegroundService {
         }
     }
 
-    @Override
     public void stopService() {
         for (PebbleTeamUpdater updater : m_updaters) {
             updater.deregister();
