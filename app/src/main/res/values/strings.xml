@@ -69,9 +69,8 @@
     <string name="estop_error">estopped</string>
     <string name="bandwidth_error">exceeded max bandwidth</string>
 
-    <string-array name="drawer_tabs">
-        <item>Field Monitor</item>
-        <item>Testing</item>
-        <item>Settings</item>
-    </string-array>
+    <!-- Drawer Entry Names -->
+    <string name="field_monitor_drawer">Field Monitor</string>
+    <string name="testing_drawer">Testing</string>
+    <string name="settings_drawer">Settings</string>
 </resources>
