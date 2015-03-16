@@ -48,7 +48,7 @@ public class DrawerActivity extends ActionBarActivity {
             items.add(new PrimaryDrawerItem().withName(R.string.field_monitor_drawer));
             // Only add testing if the field monitor is enabled in the first place
             if (testing) {
-                items.add(new PrimaryDrawerItem().withName(R.string.settings_drawer));
+                items.add(new PrimaryDrawerItem().withName(R.string.testing_drawer));
             }
         }
         items.add(new PrimaryDrawerItem().withName(R.string.settings_drawer));
