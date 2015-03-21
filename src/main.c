@@ -30,49 +30,44 @@ static TextLayer *s_blue2;
 static TextLayer *s_blue3;
 static GFont *s_source_code_pro;
 
+// App sync statics
+static AppSync s_app_sync;
+static uint8_t *s_sync_buf;
+
 typedef enum {
   ETH=0, DS=1, RADIO=2, RIO=3, CODE=4, ESTOP=5, GOOD=6, BWU=7, BYP = 8
 } status_type;
 
-void set_alliance_status(status_type status, uint8_t alliance, uint8_t team);
+void set_alliance_text(status_type type, TextLayer *layer);
 
-// Callback for receiving a message
-static void inbox_received_callback(DictionaryIterator *iter, void *ctx) {
-  Tuple *t = dict_read_first(iter);
-  while (t != NULL) {
-    if (t->type != TUPLE_UINT && t->length != 1) {
-        APP_LOG(APP_LOG_LEVEL_ERROR, "Received nonuint type %d", (int) t->type);
-        t = dict_read_next(iter);
-        continue;
-    }
-    uint8_t status = t->value->uint8;
-    switch (t->key) {
-      case RED1:
-      set_alliance_status((status_type) status, 1, 1);
-      break;
-      case RED2:
-      set_alliance_status((status_type) status, 1, 2);
-      break;
-      case RED3:
-      set_alliance_status((status_type) status, 1, 3);
-      break;
-      case BLUE1:
-      set_alliance_status((status_type) status, 2, 1);
-      break;
-      case BLUE2:
-      set_alliance_status((status_type) status, 2, 2);
-      break;
-      case BLUE3:
-      set_alliance_status((status_type) status, 2, 3);
-      break;
-      case VIBE:
-      APP_LOG(APP_LOG_LEVEL_INFO, "Vibrating");
-      vibes_short_pulse();
-      break;
-    }
-    
-    t = dict_read_next(iter);
-  }
+static void sync_changed_handler(const uint32_t key, const Tuple *old_value, const Tuple *new_value, void *context) {
+ switch (key) {
+   case RED1:
+   set_alliance_text((status_type) (new_value->value), s_red1);
+   break;
+   case RED2:
+   set_alliance_text((status_type) (new_value->value), s_red2);
+   break;
+   case RED3:
+   set_alliance_text((status_type) (new_value->value), s_red3);
+   break;
+   case BLUE1:
+   set_alliance_text((status_type) (new_value->value), s_blue1);
+   break;
+   case BLUE2:
+   set_alliance_text((status_type) (new_value->value), s_blue2);
+   break;
+   case BLUE3:
+   set_alliance_text((status_type) (new_value->value), s_blue3);
+   break;
+   case VIBE:
+   vibes_short_pulse();
+   break;
+ } 
+}
+
+static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
+  APP_LOG(APP_LOG_LEVEL_ERROR, "AppSync Error! %s", translate_error(app_message_error));
 }
 
 // Requests an update from the companion app, if it's available
@@ -94,18 +89,6 @@ void config_provider(Window *window) {
   window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
 }
 
-static void message_dropped_callback(AppMessageResult reason, void *ctx) {
-  APP_LOG(APP_LOG_LEVEL_WARNING, "Message Dropped: %s", translate_error(reason));
-}
-
-static void outbox_failed_callback(DictionaryIterator *iter, AppMessageResult reason, void *ctx) {
-  APP_LOG(APP_LOG_LEVEL_WARNING, "Outbox Send Failed: %s", translate_error(reason));
-}
-
-static void outbox_send_callback(DictionaryIterator *iter, void *ctx) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox Send Success!");
-}
-
 static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   // Draw a line down the middle of the screen
   graphics_draw_line(ctx, GPoint(74, 0), GPoint(74, 168));
@@ -118,72 +101,51 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   graphics_draw_line(ctx, GPoint(0, 112), GPoint(144, 112));
 }
 
-void set_alliance_text(const char *text, bool hi_contrast, uint8_t alliance, uint8_t team) {
-  uint16_t switch_mult = (alliance << 8) | team;
-  TextLayer *team_layer;
-  switch (switch_mult) {
-    case 0x0101:
-    team_layer = s_red1;
-    break;
-    case 0x0102:
-    team_layer = s_red2;
-    break;
-    case 0x0103:
-    team_layer = s_red3;
-    break;
-    case 0x0201:
-    team_layer = s_blue1;
-    break;
-    case 0x0202:
-    team_layer = s_blue2;
-    break;
-    case 0x0203:
-    team_layer = s_blue3;
-    break;
-    default:
-    return;
-  }
- 
-  text_layer_set_text(team_layer, text);
+void set_layer_text(const char *text, bool hi_contrast, TextLayer *layer) {
+   text_layer_set_text(layer, text);
   if (hi_contrast) {
-    text_layer_set_background_color(team_layer, GColorBlack);
-    text_layer_set_text_color(team_layer, GColorWhite);
+    text_layer_set_background_color(layer, GColorBlack);
+    text_layer_set_text_color(layer, GColorWhite);
   } else {
-    text_layer_set_background_color(team_layer, GColorWhite);
-    text_layer_set_text_color(team_layer, GColorBlack);
+    text_layer_set_background_color(layer, GColorWhite);
+    text_layer_set_text_color(layer, GColorBlack);
   }
+  layer_mark_dirty(text_layer_get_layer(layer)); 
 }
 
 // Sets the status of an alliance based on the given status type
-void set_alliance_status(status_type status, uint8_t alliance, uint8_t team) {
+void set_alliance_text(status_type status, TextLayer *layer) {
   // If the app has told us to vibrate, then vibrate
   switch (status) {
     case ETH:
-    set_alliance_text(eth, true, alliance, team);
+    set_layer_text(eth, true, layer);
     break;
     case DS:
-    set_alliance_text(ds, true, alliance, team);
+    set_layer_text(ds, true, layer);
     break;
     case RADIO:
-    set_alliance_text(radio, true, alliance, team);
+    set_layer_text(radio, true, layer);
     break;
     case RIO:
-    set_alliance_text(rio, true, alliance, team);
+    set_layer_text(rio, true, layer);
     break;
     case CODE:
-    set_alliance_text(code, true, alliance, team);
+    set_layer_text(code, true, layer);
     break;
     case ESTOP:
-    set_alliance_text(estop, true, alliance, team);
+    set_layer_text(estop, true, layer);
     break;
     case GOOD:
-    set_alliance_text(good, false, alliance, team);
+    set_layer_text(good, false, layer);
     break;
     case BWU:
-    set_alliance_text(bwu, true, alliance, team);
+    set_layer_text(bwu, true, layer);
     break;
     case BYP:
-    set_alliance_text(byp, false, alliance, team);
+    set_layer_text(byp, false, layer);
+    break;
+    default:
+    APP_LOG(APP_LOG_LEVEL_WARNING, "Non-type status given, %d", status);
     break;
   }
 }
@@ -230,12 +192,12 @@ static void main_window_load(Window *window) {
   setup_alliance_textlayer(&s_blue1, window_layer, 0, 20);
   setup_alliance_textlayer(&s_blue2, window_layer, 0, 66);
   setup_alliance_textlayer(&s_blue3, window_layer, 0, 112);
-  set_alliance_status(ETH, 1, 1);
-  set_alliance_status(ETH, 1, 2);
-  set_alliance_status(ETH, 1, 3);
-  set_alliance_status(ETH, 2, 1);
-  set_alliance_status(ETH, 2, 2);
-  set_alliance_status(ETH, 2, 3);
+  set_alliance_text(ETH, s_red1);
+  set_alliance_text(ETH, s_red2);
+  set_alliance_text(ETH, s_red3);
+  set_alliance_text(ETH, s_blue1);
+  set_alliance_text(ETH, s_blue2);
+  set_alliance_text(ETH, s_blue3);
 }
 
 static void main_window_unload(Window *window) {
@@ -261,18 +223,38 @@ static void init() {
   window_stack_push(s_main_window, true);
   
   // Set up AppMessage so we are ready to receive data from the phone
-  app_message_register_inbox_received(inbox_received_callback);
-  app_message_register_inbox_dropped(message_dropped_callback);
-  app_message_register_outbox_sent(outbox_send_callback);
-  app_message_register_outbox_failed(outbox_failed_callback);
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-  request_update();
+  
+  // Set up the AppSync framework
+  Tuplet initial_values[] = {
+    TupletInteger(RED1, 0),
+    TupletInteger(RED2, 0),
+    TupletInteger(RED3, 0),
+    TupletInteger(BLUE1, 0),
+    TupletInteger(BLUE2, 0),
+    TupletInteger(BLUE3, 0),
+    TupletInteger(UPDATE, 0)
+  };
+  
+  // Malloc a buffer with room for 32 tuplets
+  int buf_length = dict_calc_buffer_size_from_tuplets(initial_values, 32);
+  s_sync_buf = malloc(buf_length);
+  
+  app_sync_init(&s_app_sync, 
+                s_sync_buf, sizeof(s_sync_buf), 
+                initial_values, ARRAY_LENGTH(initial_values), 
+                sync_changed_handler, 
+                sync_error_handler, 
+                NULL);
+  
   window_set_click_config_provider(s_main_window, (ClickConfigProvider) config_provider);
 }
 
 static void deinit() {
   window_destroy(s_main_window);
   fonts_unload_custom_font(s_source_code_pro);
+  app_sync_deinit(&s_app_sync);
+  free(s_sync_buf);
   app_message_deregister_callbacks();
 }
 
