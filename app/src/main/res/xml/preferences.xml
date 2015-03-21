@@ -72,7 +72,7 @@
                 android:title="Install Pebble Watchapp">
                 <intent
                     android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/333fred/fta-monitor-watchapp/releases/tag/v1.0"/>
+                    android:data="https://github.com/333fred/fta-monitor-watchapp/releases/"/>
             </Preference>
         </PreferenceScreen>
         <CheckBoxPreference
