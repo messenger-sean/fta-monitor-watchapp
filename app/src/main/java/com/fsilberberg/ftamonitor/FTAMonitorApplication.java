@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
-import com.fsilberberg.ftamonitor.services.FieldConnectionService;
-import com.fsilberberg.ftamonitor.services.FieldServiceManager;
+import com.fsilberberg.ftamonitor.services.ServicePreferenceListener;
 
 /**
  * This is the main entry point of the application. On startup, it will create the main foreground
@@ -30,16 +29,10 @@ public class FTAMonitorApplication extends Application {
         // Initialize the field monitor factory
         FieldMonitorFactory.initialize();
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        // Start the FMS Service
-        FieldConnectionService.FCSSharedPrefs fcsPrefObserver = new FieldConnectionService.FCSSharedPrefs();
-        preferences.registerOnSharedPreferenceChangeListener(fcsPrefObserver);
-        fcsPrefObserver.updateService();
-
-        // Start the notification service
-        FieldServiceManager serviceObserver = FieldServiceManager.getInstance();
-        preferences.registerOnSharedPreferenceChangeListener(serviceObserver);
-        serviceObserver.updateServices(preferences);
+        // Register the global shared preference listener and update all services
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
+        ServicePreferenceListener listener = new ServicePreferenceListener(_context);
+        prefs.registerOnSharedPreferenceChangeListener(listener);
+        listener.updateAllServices();
     }
 }

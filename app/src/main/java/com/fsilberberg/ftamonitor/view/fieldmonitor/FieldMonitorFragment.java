@@ -189,8 +189,7 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
 
     @Override
     public void onClick(View view) {
-        FieldConnectionService.FCSSharedPrefs prefs = new FieldConnectionService.FCSSharedPrefs();
-        prefs.updateService();
+        FieldConnectionService.start();
     }
 
     private void setupLockScreen() {

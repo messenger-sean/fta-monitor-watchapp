@@ -45,7 +45,7 @@ public class FieldStatusFragment extends Fragment implements Observer<UpdateType
     @Override
     public void onPause() {
         super.onPause();
-        FieldMonitorFactory.getInstance().getFieldStatus().deregisterObserver(this);
+        FieldMonitorFactory.getInstance().getFieldStatus().unregisterObserver(this);
     }
 
     @Override

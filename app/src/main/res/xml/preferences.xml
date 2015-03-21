@@ -18,49 +18,68 @@
             android:key="@string/bandwidth_key"
             android:title="@string/bandwidth"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/app_settings_title">
+    <PreferenceCategory android:title="@string/field_settings_title">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/field_monitor_enabled_key"
+            android:summary="@string/field_monitor_enabled_desc"
+            android:title="@string/field_monitor_enabled"/>
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="@string/field_monitor_enabled_key"
             android:key="@string/lock_screen_display_key"
             android:summary="@string/lock_screen_display_desc"
             android:title="@string/lock_screen_display"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:disableDependentsState="false"
-            android:key="@string/notification_key"
-            android:summary="@string/notification_desc"
-            android:title="@string/notification"/>
+        <PreferenceScreen android:title="@string/notification_screen_title">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/field_monitor_enabled_key"
+                android:disableDependentsState="false"
+                android:key="@string/notification_key"
+                android:summary="@string/notification_desc"
+                android:title="@string/notification"/>
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="@string/notification_key"
+                android:key="@string/notify_always_key"
+                android:summary="@string/notify_always_desc"
+                android:title="@string/notify_always"/>
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/pebble_screen_title">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/field_monitor_enabled_key"
+                android:disableDependentsState="false"
+                android:key="@string/pebble_key"
+                android:summary="@string/pebble_desc"
+                android:title="@string/pebble"/>
+            <EditTextPreference
+                android:defaultValue="10"
+                android:dependency="@string/pebble_key"
+                android:inputType="number"
+                android:key="@string/pebble_vibe_interval_key"
+                android:summary="@string/pebble_vibe_interval_desc"
+                android:title="@string/pebble_vibe_interval"/>
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/pebble_key"
+                android:key="@string/pebble_notify_times_key"
+                android:summary="@string/pebble_notify_times_desc"
+                android:title="@string/pebble_notify_times"/>
+            <Preference
+                android:summary="Click to download and install the Pebble Watchapp companion for the FTA Monitor"
+                android:title="Install Pebble Watchapp">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/333fred/fta-monitor-watchapp/releases/tag/v1.0"/>
+            </Preference>
+        </PreferenceScreen>
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="@string/notification_key"
-            android:key="@string/notify_always_key"
-            android:summary="@string/notify_always_desc"
-            android:title="@string/notify_always"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:disableDependentsState="false"
-            android:key="@string/pebble_key"
-            android:summary="@string/pebble_desc"
-            android:title="@string/pebble"/>
-        <EditTextPreference
-            android:defaultValue="10"
-            android:dependency="@string/pebble_key"
-            android:inputType="number"
-            android:key="@string/pebble_vibe_interval_key"
-            android:summary="@string/pebble_vibe_interval_desc"
-            android:title="@string/pebble_vibe_interval"/>
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="@string/pebble_key"
-            android:key="@string/pebble_notify_times_key"
-            android:summary="@string/pebble_notify_times_desc"
-            android:title="@string/pebble_notify_times"/>
-        <Preference
-            android:summary="Click to download and install the Pebble Watchapp companion for the FTA Monitor"
-            android:title="Install Pebble Watchapp">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/333fred/fta-monitor-watchapp/releases/tag/v1.0"/>
-        </Preference>
+            android:dependency="@string/field_monitor_enabled_key"
+            android:key="@string/testing_enabled_key"
+            android:summary="@string/testing_enabled_desc"
+            android:title="@string/testing_enabled"/>
     </PreferenceCategory>
 </PreferenceScreen>

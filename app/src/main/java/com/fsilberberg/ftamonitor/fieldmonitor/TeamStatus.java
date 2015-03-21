@@ -156,7 +156,7 @@ public class TeamStatus {
         m_observers.add(observer);
     }
 
-    public void deregisterObserver(Observer<UpdateType> observer) {
+    public void unregisterObserver(Observer<UpdateType> observer) {
         m_observers.remove(observer);
     }
 

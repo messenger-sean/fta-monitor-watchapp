@@ -8,10 +8,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
@@ -29,16 +29,33 @@ public class TestingConnectionStatus extends Fragment {
         public void onServiceConnected(ComponentName name, IBinder service) {
             m_isBound = true;
             m_service = ((FieldConnectionService.FCSBinder) service).getService();
-            Log.i(TestingConnectionStatus.class.getName(), "Connected to the field connection service");
+            switch (m_service.getState()) {
+                case Disconnected:
+                    m_disconnected.setChecked(true);
+                    break;
+                case Connecting:
+                    m_connecting.setChecked(true);
+                    break;
+                case Reconnecting:
+                    m_reconnecting.setChecked(true);
+                    break;
+                case Connected:
+                    m_connected.setChecked(true);
+                    break;
+            }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             m_isBound = false;
             m_service = null;
-            Log.i(TestingConnectionStatus.class.getName(), "Disconnected from the field connection service");
         }
     };
+
+    private RadioButton m_disconnected;
+    private RadioButton m_connecting;
+    private RadioButton m_reconnecting;
+    private RadioButton m_connected;
 
     public TestingConnectionStatus() {
         // Required empty public constructor
@@ -70,6 +87,11 @@ public class TestingConnectionStatus extends Fragment {
                 }
             }
         });
+
+        m_disconnected = (RadioButton) mainView.findViewById(R.id.disconnected_button);
+        m_connecting = (RadioButton) mainView.findViewById(R.id.connecting_button);
+        m_reconnecting = (RadioButton) mainView.findViewById(R.id.reconnecting_button);
+        m_connected = (RadioButton) mainView.findViewById(R.id.connected_button);
         return mainView;
     }
 

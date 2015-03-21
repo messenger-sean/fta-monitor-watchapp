@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -28,11 +29,21 @@ import static com.fsilberberg.ftamonitor.common.Alliance.RED;
  * This class is responsible for watching the field for problems with robots and notifying the user
  * when an error occurs during a match
  */
-public class FieldProblemNotificationService implements ForegroundService {
-
+public class FieldProblemNotificationService {
     // Notification ID. Again no significance, other than 3 is my favorite number, and 3x3 is 9
     private static final int ID = 9;
     private static final int MAIN_ACTIVITY_ID = 4;
+    private static FieldProblemNotificationService instance;
+
+    public static void start() {
+        if (instance != null) {
+            instance.stopService();
+            instance = null;
+        }
+
+        instance = new FieldProblemNotificationService();
+        instance.startService(FTAMonitorApplication.getContext());
+    }
 
     // References to the teams
     private final FieldStatus m_field = FieldMonitorFactory.getInstance().getFieldStatus();
@@ -42,20 +53,19 @@ public class FieldProblemNotificationService implements ForegroundService {
     private final TeamStatus m_red1 = m_field.getRed1();
     private final TeamStatus m_red2 = m_field.getRed2();
     private final TeamStatus m_red3 = m_field.getRed3();
-    private int m_maxBandwith;
+    private int m_maxBandwidth;
 
     private Context m_context;
     private boolean m_alwaysNotify = false;
     private final Collection<ProblemObserver> m_observers = new ArrayList<>();
 
-    @Override
     public void startService(Context context) {
         m_context = context;
         SharedPreferences m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String notifyAlwaysKey = context.getString(R.string.notify_always_key);
         String bandwidthKey = m_context.getResources().getString(R.string.bandwidth_key);
         m_alwaysNotify = m_sharedPreferences.getBoolean(notifyAlwaysKey, false);
-        m_maxBandwith = Integer.parseInt(m_sharedPreferences.getString(bandwidthKey, "10"));
+        m_maxBandwidth = Integer.parseInt(m_sharedPreferences.getString(bandwidthKey, "10"));
 
         // Register an observer for each team
         m_observers.add(new ProblemObserver(1, RED, m_red1));
@@ -66,7 +76,6 @@ public class FieldProblemNotificationService implements ForegroundService {
         m_observers.add(new ProblemObserver(3, BLUE, m_blue3));
     }
 
-    @Override
     public void stopService() {
         // Deregister from all observation
         for (ProblemObserver observer : m_observers) {
@@ -164,7 +173,7 @@ public class FieldProblemNotificationService implements ForegroundService {
         }
 
         public void deregister() {
-            m_team.deregisterObserver(this);
+            m_team.unregisterObserver(this);
         }
 
         public boolean shouldDisplay() {
@@ -205,7 +214,7 @@ public class FieldProblemNotificationService implements ForegroundService {
                 setError(R.string.robot_error);
             } else if (!m_team.isCode()) {
                 setError(R.string.code_error);
-            } else if (m_team.getDataRate() > m_maxBandwith) {
+            } else if (m_team.getDataRate() > m_maxBandwidth) {
                 setError(R.string.bandwidth_error);
             } else {
                 m_display = false;
