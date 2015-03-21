@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment">
 
     <LinearLayout
         android:id="@+id/con_status_layout"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="@dimen/large_text_size"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/con_status_button"
@@ -28,7 +28,7 @@
             android:paddingRight="15dp"
             android:text="Retry"
             android:textSize="@dimen/large_text_size"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
     </LinearLayout>
 
     <LinearLayout
@@ -42,12 +42,12 @@
             android:id="@+id/field_status_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="2dp" />
+            android:elevation="2dp"/>
 
         <FrameLayout
             android:id="@+id/team_status_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="0dp" />
+            android:elevation="0dp"/>
     </LinearLayout>
 </FrameLayout>
