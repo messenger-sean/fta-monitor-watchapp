@@ -1,10 +1,7 @@
 package com.fsilberberg.ftamonitor.services;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -18,6 +15,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
+import microsoft.aspnet.signalr.client.ConnectionState;
 import org.joda.time.DateTime;
 
 import java.util.*;
@@ -98,6 +96,26 @@ public class PebbleCommunicationService extends Service {
     // The registered team problem observers
     private Collection<TeamProblemObserver> m_observers = new ArrayList<>();
 
+    // The service connection to the field status service.
+    private ServiceConnection m_connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            m_fieldConnectionService = ((FieldConnectionService.FCSBinder) service).getService();
+            m_isBound = true;
+            m_fieldConnectionService.registerObserver(m_connectionObserver);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            m_fieldConnectionService.deregisterObserver(m_connectionObserver);
+            m_isBound = false;
+            m_fieldConnectionService = null;
+        }
+    };
+    private boolean m_isBound = false;
+    private FieldConnectionService m_fieldConnectionService;
+    private final ConnectionObserver m_connectionObserver = new ConnectionObserver();
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // If the intent is null, then stop the service
@@ -161,6 +179,9 @@ public class PebbleCommunicationService extends Service {
             m_sendThread.interrupt();
         }
         unregisterReceiver(m_dataReceiver);
+        if (m_isBound) {
+            unbindService(m_connection);
+        }
         super.onDestroy();
     }
 
@@ -310,10 +331,14 @@ public class PebbleCommunicationService extends Service {
                 }
 
                 if (!checkConnection()) {
-                    m_curState = State.DISCONNECTED;
                     m_sendThread.interrupt();
                 } else if (m_receivedNack) {
-                    sendNext();
+                    // When we've already received a nack for this, set the status to disconnected and then clear
+                    // all incoming messages. We won't attempt another send until the watch is reopened
+                    synchronized (m_lock) {
+                        m_curState = State.DISCONNECTED;
+                        m_queue.clear();
+                    }
                 } else {
                     m_curState = State.RETRY;
                     m_receivedNack = true;
@@ -429,6 +454,20 @@ public class PebbleCommunicationService extends Service {
 
         private void unregister() {
             m_teamStatus.unregisterObserver(this);
+        }
+    }
+
+    /**
+     * Watches the field connection service and updates all statuses when the field connects
+     */
+    private final class ConnectionObserver implements Observer<ConnectionState> {
+        @Override
+        public void update(ConnectionState updateType) {
+            if (updateType == ConnectionState.Connected) {
+                for (TeamProblemObserver observer : m_observers) {
+                    observer.updateTeamStatus(true);
+                }
+            }
         }
     }
 
