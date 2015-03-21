@@ -291,7 +291,6 @@ public class FieldConnectionService extends Service {
         private ConnectionState m_connectionState = Disconnected;
 
         public void setConnectionState(ConnectionState newState) {
-            Log.d(FieldConnectionService.class.getName(), "Connection state changed to " + newState);
             if (!m_connectionState.equals(newState)) {
                 m_connectionState = newState;
                 synchronized (this) {
