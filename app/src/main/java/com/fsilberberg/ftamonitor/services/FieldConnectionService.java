@@ -123,7 +123,7 @@ public class FieldConnectionService extends Service {
     }
 
     public void deregisterObserver(Observer<ConnectionState> observer) {
-        m_statusObservable.deregisterObserver(observer);
+        m_statusObservable.unregisterObserver(observer);
     }
 
     public ConnectionState getState() {
@@ -316,7 +316,7 @@ public class FieldConnectionService extends Service {
         }
 
         @Override
-        public void deregisterObserver(Observer<ConnectionState> observer) {
+        public void unregisterObserver(Observer<ConnectionState> observer) {
             synchronized (this) {
                 m_observers.remove(observer);
             }

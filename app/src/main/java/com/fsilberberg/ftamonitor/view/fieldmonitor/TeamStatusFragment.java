@@ -3,6 +3,7 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -122,7 +123,7 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
     @Override
     public void onPause() {
         super.onPause();
-        m_teamStatus.deregisterObserver(this);
+        m_teamStatus.unregisterObserver(this);
     }
 
     @Override
@@ -307,11 +308,17 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
      * @param target The element to update
      * @param resId  The id of the background to update to
      */
+    @SuppressLint({"Deprecation", "NewApi"})
     private void setBackground(final View target, final int resId) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                target.setBackground(getResources().getDrawable(resId));
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    //noinspection deprecation
+                    target.setBackground(getResources().getDrawable(resId));
+                } else {
+                    target.setBackground(getResources().getDrawable(resId, null));
+                }
             }
         });
     }

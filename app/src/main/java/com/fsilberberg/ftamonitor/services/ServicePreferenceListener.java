@@ -56,7 +56,7 @@ public class ServicePreferenceListener implements SharedPreferences.OnSharedPref
     }
 
     private void updatePebbleConnection() {
-        PebbleCommunicationService.start();
+        PebbleCommunicationServiceOld.start();
     }
 
     private void updateNotification() {

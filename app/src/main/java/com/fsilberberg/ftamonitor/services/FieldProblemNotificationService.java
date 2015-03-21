@@ -164,7 +164,7 @@ public class FieldProblemNotificationService {
         }
 
         public void deregister() {
-            m_team.deregisterObserver(this);
+            m_team.unregisterObserver(this);
         }
 
         public boolean shouldDisplay() {
