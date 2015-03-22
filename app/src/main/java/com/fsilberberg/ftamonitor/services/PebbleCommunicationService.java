@@ -272,11 +272,11 @@ public class PebbleCommunicationService extends Service {
 
                     // Next, remove the first element of the queue and send it
                     m_lastPacket = m_queue.pollFirst();
-                    PebbleKit.sendDataToPebbleWithTransactionId(PebbleCommunicationService.this,
-                            PEBBLE_UUID,
-                            m_lastPacket,
-                            m_transId);
                 }
+                PebbleKit.sendDataToPebbleWithTransactionId(PebbleCommunicationService.this,
+                        PEBBLE_UUID,
+                        m_lastPacket,
+                        m_transId);
             }
         }
 
@@ -340,8 +340,10 @@ public class PebbleCommunicationService extends Service {
                         m_queue.clear();
                     }
                 } else {
-                    m_curState = State.RETRY;
-                    m_receivedNack = true;
+                    synchronized (m_lock) {
+                        m_curState = State.RETRY;
+                        m_receivedNack = true;
+                    }
                     incrementTransId();
                     PebbleKit.sendDataToPebbleWithTransactionId(PebbleCommunicationService.this,
                             PEBBLE_UUID,
