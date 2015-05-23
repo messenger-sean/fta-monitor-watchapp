@@ -19,6 +19,9 @@ import microsoft.aspnet.signalr.client.ConnectionState;
 import org.joda.time.DateTime;
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This service is responsible for sending data to the pebble
@@ -85,9 +88,13 @@ public class PebbleCommunicationService extends Service {
 
     // Class lock and notifier for accessing the queue and making changes to the state, as well as letting
     // the communications thread know to send new data
-    private final Object m_lock = new Object();
-    private final Deque<PebbleDictionary> m_queue = new ArrayDeque<>();
-    private State m_curState = State.DISCONNECTED;
+
+    private final Semaphore m_sendSem = new Semaphore(1);
+    private final int[] m_statusArr = new int[6];
+    // Note that while this is a rwlock, I'm not actually using it as a strictly read-write style lock. In this case,
+    // the "readers" are the update listeners for each team, which can all modify the status array concurrently,
+    // and the send thread is the writer, which must have exclusive access to the entire array
+    private final ReadWriteLock m_rlock = new ReentrantReadWriteLock(true);
     private Thread m_sendThread;
 
     // The receiver for messages from the pebble
@@ -139,8 +146,6 @@ public class PebbleCommunicationService extends Service {
         // Unregister any existing observers
         unregisterObservers();
 
-        // First, check to see if we're connected.
-
         // Register all of the observers and set up the send thread
         setup(vibeInterval, outOfMatch, bandwidth);
 
@@ -149,12 +154,12 @@ public class PebbleCommunicationService extends Service {
 
     private void setup(int vibeInterval, boolean outOfMatch, float bandwidth) {
         FieldStatus fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), vibeInterval, outOfMatch, bandwidth, BLUE1));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), vibeInterval, outOfMatch, bandwidth, BLUE2));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), vibeInterval, outOfMatch, bandwidth, BLUE3));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), vibeInterval, outOfMatch, bandwidth, RED1));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), vibeInterval, outOfMatch, bandwidth, RED2));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), vibeInterval, outOfMatch, bandwidth, RED3));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidth, BLUE1));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidth, BLUE2));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidth, BLUE3));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidth, RED1));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidth, RED2));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidth, RED3));
 
         m_sendThread = new Thread(new PebbleSendThread());
         m_sendThread.setName("Pebble Send Thread");
@@ -178,45 +183,11 @@ public class PebbleCommunicationService extends Service {
         if (m_sendThread != null) {
             m_sendThread.interrupt();
         }
-        unregisterReceiver(m_dataReceiver);
+//        unregisterReceiver(m_dataReceiver);
         if (m_isBound) {
             unbindService(m_connection);
         }
         super.onDestroy();
-    }
-
-    private boolean checkConnection() {
-        boolean pebbleConnection = PebbleKit.isWatchConnected(this);
-        if (!pebbleConnection) {
-            synchronized (m_lock) {
-                m_curState = State.DISCONNECTED;
-            }
-            PebbleKit.registerPebbleConnectedReceiver(this, new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    unregisterReceiver(this);
-                    start();
-                }
-            });
-
-            // When we are disconnected, unregister all observers
-            unregisterObservers();
-        } else {
-            // Register a receiver for when the pebble is disconnected. If it's disconnected, then we remove the
-            // receiver, update the current state to disconnected, and register a connection receiver
-            PebbleKit.registerPebbleDisconnectedReceiver(this, new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    unregisterReceiver(this);
-                    synchronized (m_lock) {
-                        m_curState = State.DISCONNECTED;
-                    }
-                    checkConnection();
-                }
-            });
-        }
-
-        return pebbleConnection;
     }
 
     /**
@@ -231,127 +202,40 @@ public class PebbleCommunicationService extends Service {
 
     private final class PebbleSendThread implements Runnable {
 
-        // Retains the last sent packet to the pebble, for resending if necessary. Access should be blocked by
-        // the lock
-        private PebbleDictionary m_lastPacket;
-        private int m_transId = 0;
-        private final AckReceiver m_ack = new AckReceiver();
-        private final NackReceiver m_nack = new NackReceiver();
-        private boolean m_receivedNack = false;
-
         @Override
         public void run() {
-            // Register the ACK receiver
-            PebbleKit.registerReceivedAckHandler(PebbleCommunicationService.this, m_ack);
-            PebbleKit.registerReceivedNackHandler(PebbleCommunicationService.this, m_nack);
-
-            synchronized (m_lock) {
-                m_curState = State.NOT_SENDING;
-            }
-
             while (true) {
-                synchronized (m_lock) {
-                    // First, wait for the queue to have an element in it and for us to be not sending
-                    while (m_queue.isEmpty() || m_curState != State.NOT_SENDING) {
-                        try {
-                            m_lock.wait();
-                        } catch (InterruptedException e) {
-                            Log.d(PebbleCommunicationService.class.getName(),
-                                    "Error while waiting for message to send to pebble",
-                                    e);
-                            unregisterReceiver(m_ack);
-                            unregisterReceiver(m_nack);
-                            return;
-                        }
-                    }
-
-                    // Increment the transaction id, keep in a 255 ring
-                    incrementTransId();
-
-                    m_curState = State.SENDING;
-
-                    // Next, remove the first element of the queue and send it
-                    m_lastPacket = m_queue.pollFirst();
+                try {
+                    // Attempt to acquire the send semaphore. When there is an update, it will be acquired
+                    m_sendSem.acquire();
+                } catch (InterruptedException e) {
+                    Log.e(PebbleCommunicationService.class.getName(), "Could not acquire the send semaphore!", e);
+                    break;
                 }
-                PebbleKit.sendDataToPebbleWithTransactionId(PebbleCommunicationService.this,
-                        PEBBLE_UUID,
-                        m_lastPacket,
-                        m_transId);
-            }
-        }
 
-        private void sendNext() {
-            synchronized (m_lock) {
-                m_lastPacket = null;
-                m_receivedNack = false;
-                m_curState = State.NOT_SENDING;
-                m_lock.notifyAll();
-            }
-        }
+                // Acquire the write lock, copy the array, and release
+                m_rlock.writeLock().lock();
+                int[] statusArr = m_statusArr;
+                m_rlock.writeLock().unlock();
 
-        private void incrementTransId() {
-            synchronized (m_lock) {
-                m_transId = (++m_transId) % 255;
-            }
-        }
+                PebbleDictionary dict = new PebbleDictionary();
+                for (int i = 0; i < 6; i++) {
+                    dict.addUint8(i + 1, (byte) statusArr[i]);
+                }
 
-        private class AckReceiver extends PebbleKit.PebbleAckReceiver {
-            protected AckReceiver() {
-                super(PEBBLE_UUID);
-            }
+                PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
 
-            @Override
-            public void receiveAck(Context context, int transId) {
-                // In the case of a received ack, then update the current status and notify the main thread
-                synchronized (m_lock) {
-                    if (m_transId != transId || m_lastPacket == null) {
-                        Log.w(AckReceiver.class.getName(), "Received invalid ack");
-                        return;
-                    }
-
-                    sendNext();
+                // We don't send data any faster than once every 50 ms, in order to prevent congestion when lots
+                // of teams update at once
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
+                    break;
                 }
             }
         }
 
-        private class NackReceiver extends PebbleKit.PebbleNackReceiver {
-
-            public NackReceiver() {
-                super(PEBBLE_UUID);
-            }
-
-            @Override
-            public void receiveNack(Context context, int transId) {
-                // In the case of a nack, first check communication. If we are still connected to the pebble, then check
-                // to see if this is the second nack. If it is, then the app is likely closed, so silently discard
-                // the packet and continue
-                if (m_transId != transId || m_lastPacket == null) {
-                    Log.w(NackReceiver.class.getName(), "Received invalid nack");
-                    return;
-                }
-
-                if (!checkConnection()) {
-                    m_sendThread.interrupt();
-                } else if (m_receivedNack) {
-                    // When we've already received a nack for this, set the status to disconnected and then clear
-                    // all incoming messages. We won't attempt another send until the watch is reopened
-                    synchronized (m_lock) {
-                        m_curState = State.DISCONNECTED;
-                        m_queue.clear();
-                    }
-                } else {
-                    synchronized (m_lock) {
-                        m_curState = State.RETRY;
-                        m_receivedNack = true;
-                    }
-                    incrementTransId();
-                    PebbleKit.sendDataToPebbleWithTransactionId(PebbleCommunicationService.this,
-                            PEBBLE_UUID,
-                            m_lastPacket,
-                            m_transId);
-                }
-            }
-        }
     }
 
     private final class TeamProblemObserver implements Observer<UpdateType> {
@@ -372,22 +256,14 @@ public class PebbleCommunicationService extends Service {
         // This is not a valid state, but it's the state I start off in to make sure to send the first status
         private static final byte INVALID = (byte) 255;
 
-        private final FieldStatus m_fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
         private final TeamStatus m_teamStatus;
-        private final int m_vibeInterval;
-        private final boolean m_outOfMatchNotify;
         private final float m_maxBandwidth;
-        private final int m_pebbleDictKey;
-        private byte m_curStatus = INVALID;
-        private DateTime m_lastVibeTime;
+        private final int m_teamNum;
 
-        private TeamProblemObserver(TeamStatus teamStatus, int vibeInterval, boolean outOfMatchNotify, float maxBandwidth, int pebbleDictKey) {
+        private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamNum) {
             m_teamStatus = teamStatus;
-            m_vibeInterval = vibeInterval;
-            m_outOfMatchNotify = outOfMatchNotify;
             m_maxBandwidth = maxBandwidth;
-            m_pebbleDictKey = pebbleDictKey;
-            m_lastVibeTime = DateTime.now().minusSeconds(m_vibeInterval);
+            m_teamNum = teamNum;
             m_teamStatus.registerObserver(this);
         }
 
@@ -425,32 +301,14 @@ public class PebbleCommunicationService extends Service {
                 status = GOOD;
             }
 
-            // If we're not forcing an update the and the current status is unchanged, then don't update
-            if (!force && status == m_curStatus) {
-                return;
-            }
-
-            PebbleDictionary dict = new PebbleDictionary();
-            dict.addUint8(m_pebbleDictKey, status);
-
-            // If we don't do out of match notify, and the current status is not either teleop or autonomous, then
-            // don't include the vibrate
-            boolean shouldVibe = m_outOfMatchNotify ||
-                    (m_fieldStatus.getMatchStatus() == MatchStatus.TELEOP
-                            || m_fieldStatus.getMatchStatus() == MatchStatus.AUTO);
-
-            // Check to see if this update should vibrate
-            if (m_lastVibeTime.plusSeconds(m_vibeInterval).isBeforeNow() && shouldVibe) {
-                m_lastVibeTime = DateTime.now();
-                dict.addUint8(VIBE, (byte) 1);
-            }
-
-            synchronized (m_lock) {
-                // If we're not disconnected, then add to the queue. Otherwise, silently discard
-                if (m_curState != State.DISCONNECTED) {
-                    m_queue.addLast(dict);
-                    m_lock.notifyAll();
+            m_rlock.readLock().lock();
+            try {
+                if (m_statusArr[m_teamNum - 1] != status || force) {
+                    m_statusArr[m_teamNum - 1] = status;
+                    m_sendSem.release();
                 }
+            } finally {
+                m_rlock.readLock().unlock();
             }
         }
 
@@ -485,13 +343,6 @@ public class PebbleCommunicationService extends Service {
         public void receiveData(Context context, int transId, PebbleDictionary pebbleDictionary) {
             PebbleKit.sendAckToPebble(context, transId);
             if (pebbleDictionary.contains(UPDATE)) {
-                synchronized (m_lock) {
-                    // If we previously thought the app was closed, then set the state to not sending
-                    if (m_curState == State.DISCONNECTED) {
-                        m_curState = State.NOT_SENDING;
-                    }
-                }
-
                 // Force all team statuses to be updated
                 for (TeamProblemObserver observer : m_observers) {
                     observer.updateTeamStatus(true);
