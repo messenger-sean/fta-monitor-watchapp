@@ -46,6 +46,7 @@ public class PebbleCommunicationService extends Service {
     private static final int BLUE1 = 4;
     private static final int BLUE2 = 5;
     private static final int BLUE3 = 6;
+    private static final int VIBE = 7;
 
     /**
      * Checks the current status of the pebble service, and starts/stops as necessary
@@ -91,6 +92,7 @@ public class PebbleCommunicationService extends Service {
 
     private final Semaphore m_sendSem = new Semaphore(1);
     private final int[] m_statusArr = new int[6];
+    private boolean m_vibrate = false;
     // Note that while this is a rwlock, I'm not actually using it as a strictly read-write style lock. In this case,
     // the "readers" are the update listeners for each team, which can all modify the status array concurrently,
     // and the send thread is the writer, which must have exclusive access to the entire array
@@ -99,6 +101,7 @@ public class PebbleCommunicationService extends Service {
 
     // The receiver for messages from the pebble
     private final UpdateReceiver m_dataReceiver = new UpdateReceiver();
+    private boolean m_dataReceiverRegistered = false;
 
     // The registered team problem observers
     private Collection<TeamProblemObserver> m_observers = new ArrayList<>();
@@ -154,18 +157,19 @@ public class PebbleCommunicationService extends Service {
 
     private void setup(int vibeInterval, boolean outOfMatch, float bandwidth) {
         FieldStatus fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidth, BLUE1));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidth, BLUE2));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidth, BLUE3));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidth, RED1));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidth, RED2));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidth, RED3));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidth, BLUE1, vibeInterval));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidth, BLUE2, vibeInterval));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidth, BLUE3, vibeInterval));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidth, RED1, vibeInterval));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidth, RED2, vibeInterval));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidth, RED3, vibeInterval));
 
         m_sendThread = new Thread(new PebbleSendThread());
         m_sendThread.setName("Pebble Send Thread");
         m_sendThread.start();
 
         PebbleKit.registerReceivedDataHandler(this, m_dataReceiver);
+        m_dataReceiverRegistered = true;
 
         // Start the watchapp
         PebbleKit.startAppOnPebble(this, PEBBLE_UUID);
@@ -183,7 +187,10 @@ public class PebbleCommunicationService extends Service {
         if (m_sendThread != null) {
             m_sendThread.interrupt();
         }
-//        unregisterReceiver(m_dataReceiver);
+        if (m_dataReceiverRegistered) {
+            unregisterReceiver(m_dataReceiver);
+            m_dataReceiverRegistered = false;
+        }
         if (m_isBound) {
             unbindService(m_connection);
         }
@@ -216,11 +223,17 @@ public class PebbleCommunicationService extends Service {
                 // Acquire the write lock, copy the array, and release
                 m_rlock.writeLock().lock();
                 int[] statusArr = m_statusArr;
+                boolean vibrate = m_vibrate;
+                m_vibrate = false;
                 m_rlock.writeLock().unlock();
 
                 PebbleDictionary dict = new PebbleDictionary();
                 for (int i = 0; i < 6; i++) {
                     dict.addUint8(i + 1, (byte) statusArr[i]);
+                }
+
+                if (vibrate) {
+                    dict.addUint8(VIBE, (byte) 1);
                 }
 
                 PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
@@ -259,12 +272,16 @@ public class PebbleCommunicationService extends Service {
         private final TeamStatus m_teamStatus;
         private final float m_maxBandwidth;
         private final int m_teamNum;
+        private final int m_vibeInterval;
+        private byte m_lastStatus = ETH;
+        private DateTime m_lastVibeTime = DateTime.now();
 
-        private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamNum) {
+        private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamNum, int vibeInterval) {
             m_teamStatus = teamStatus;
             m_maxBandwidth = maxBandwidth;
             m_teamNum = teamNum;
             m_teamStatus.registerObserver(this);
+            m_vibeInterval = vibeInterval;
         }
 
         @Override
@@ -301,14 +318,24 @@ public class PebbleCommunicationService extends Service {
                 status = GOOD;
             }
 
-            m_rlock.readLock().lock();
-            try {
-                if (m_statusArr[m_teamNum - 1] != status || force) {
-                    m_statusArr[m_teamNum - 1] = status;
-                    m_sendSem.release();
+            if (status != m_lastStatus) {
+                boolean vibrate = false;
+                if (m_lastVibeTime.plusSeconds(m_vibeInterval).isBeforeNow()) {
+                    vibrate = true;
+                    m_lastVibeTime = DateTime.now();
                 }
-            } finally {
-                m_rlock.readLock().unlock();
+
+                m_rlock.readLock().lock();
+                try {
+                    m_statusArr[m_teamNum - 1] = status;
+                    if (vibrate) {
+                        m_vibrate = true;
+                    }
+                    m_sendSem.release();
+                } finally {
+                    m_rlock.readLock().unlock();
+                    m_lastStatus = status;
+                }
             }
         }
 
