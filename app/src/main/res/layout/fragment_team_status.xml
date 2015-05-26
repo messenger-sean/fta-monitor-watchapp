@@ -2,7 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.fsilberberg.ftamonitor.view.old.fieldmonitor.TeamStatusFragment">
+             tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">
 
     <TableLayout
         android:layout_width="match_parent"

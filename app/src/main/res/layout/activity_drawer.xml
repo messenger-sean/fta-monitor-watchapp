@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context="com.fsilberberg.ftamonitor.view.old.DrawerActivity">
+    tools:context="com.fsilberberg.ftamonitor.view.DrawerActivity">
 
     <FrameLayout
         android:id="@+id/frame_container"

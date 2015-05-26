@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view.old;
+package com.fsilberberg.ftamonitor.view;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
-import com.fsilberberg.ftamonitor.view.old.fieldmonitor.FieldMonitorFragment;
-import com.fsilberberg.ftamonitor.view.old.testing.TestingFragment;
+import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
+import com.fsilberberg.ftamonitor.view.testing.TestingFragment;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fsilberberg.ftamonitor.view.old.testing.TestingFragment">
+    tools:context="com.fsilberberg.ftamonitor.view.testing.TestingFragment">
 
     <android.support.v4.view.PagerTabStrip
         android:id="@+id/testing_pager_tab_strip"

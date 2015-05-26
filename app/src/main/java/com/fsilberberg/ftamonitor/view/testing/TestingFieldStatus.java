@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view.old.testing;
+package com.fsilberberg.ftamonitor.view.testing;
 
 import android.app.Fragment;
 import android.os.Bundle;

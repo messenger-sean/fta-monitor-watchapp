@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view.old.fieldmonitor;
+package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 
 import android.app.Fragment;

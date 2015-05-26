@@ -4,7 +4,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:id="@+id/connection_radio_group"
-            tools:context="com.fsilberberg.ftamonitor.view.old.testing.TestingConnectionStatus">
+            tools:context="com.fsilberberg.ftamonitor.view.testing.TestingConnectionStatus">
 
     <RadioButton
         android:id="@+id/disconnected_button"

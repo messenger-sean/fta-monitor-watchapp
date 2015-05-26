@@ -17,7 +17,7 @@ import com.fsilberberg.ftamonitor.common.Observable;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.MatchStateProxyHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
-import com.fsilberberg.ftamonitor.view.old.DrawerActivity;
+import com.fsilberberg.ftamonitor.view.DrawerActivity;
 import com.google.gson.JsonArray;
 import microsoft.aspnet.signalr.client.*;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
