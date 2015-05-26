@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -15,20 +15,21 @@ import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorFragment;
 import com.fsilberberg.ftamonitor.view.testing.TestingFragment;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
 import java.util.ArrayList;
 
-public class DrawerActivity extends ActionBarActivity {
+public class DrawerActivity extends AppCompatActivity {
 
     public static final String START_FRAGMENT = "start_fragment";
     public static final int FIELD_MONITOR = 0;
     public static final int TESTING = 1;
     public static final int SETTINGS = 2;
 
-    private Drawer.Result m_drawer = null;
+    private Drawer m_drawer = null;
     private boolean m_backButtonPressed = false;
     private int m_curPos = 0;
 
@@ -53,7 +54,7 @@ public class DrawerActivity extends ActionBarActivity {
         }
         items.add(new PrimaryDrawerItem().withName(R.string.settings_drawer));
 
-        m_drawer = new Drawer()
+        m_drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withActionBarDrawerToggle(true)
                 .withTranslucentStatusBar(false)
@@ -61,7 +62,7 @@ public class DrawerActivity extends ActionBarActivity {
                 .withDrawerItems(items)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                    public boolean onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
                         if (drawerItem instanceof Nameable) {
                             if (m_curPos != position) {
                                 FragmentTransaction trans = getFragmentManager().beginTransaction();
@@ -101,12 +102,14 @@ public class DrawerActivity extends ActionBarActivity {
                                                 SettingsFragment.class.getName());
                                         break;
                                     default:
-                                        return;
+                                        return false;
                                 }
                                 trans.commit();
                                 m_curPos = position;
+                                return true;
                             }
                         }
+                        return false;
                     }
                 }).build();
 

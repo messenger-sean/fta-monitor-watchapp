@@ -34,6 +34,8 @@
     public static final *** NULL;
 }
 
+-keep class microsoft.*
+
 -keepnames @com.google.android.gms.common.annotation.KeepName class *
 -keepclassmembernames class * {
     @com.google.android.gms.common.annotation.KeepName *;
