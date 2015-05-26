@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view;
+package com.fsilberberg.ftamonitor.view.old;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view.fieldmonitor;
+package com.fsilberberg.ftamonitor.view.old.fieldmonitor;
 
 
 import android.annotation.SuppressLint;

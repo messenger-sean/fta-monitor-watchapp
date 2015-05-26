@@ -17,7 +17,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
-import com.fsilberberg.ftamonitor.view.DrawerActivity;
+import com.fsilberberg.ftamonitor.view.old.DrawerActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
