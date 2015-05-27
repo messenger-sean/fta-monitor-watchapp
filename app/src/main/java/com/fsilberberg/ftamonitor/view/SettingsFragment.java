@@ -1,13 +1,14 @@
-package com.fsilberberg.ftamonitor.view.old;
+package com.fsilberberg.ftamonitor.view;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.view.old.DrawerActivity;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -39,7 +40,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onResume();
         updatePref(m_fmsKey);
         updatePref(m_bwuKey);
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

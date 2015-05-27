@@ -5,10 +5,12 @@ import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.view.old.fieldmonitor.FieldMonitorFragment;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerCallbacks {
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
     protected Toolbar m_toolbar;
     @InjectView(R.id.drawer)
     protected DrawerLayout m_drawerLayout;
+    @InjectView(R.id.container)
+    protected FrameLayout m_mainFragView;
 
     private boolean m_backPressed = false;
 
@@ -35,12 +39,25 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
 
         // Set up the drawer.
         m_navigationDrawerFragment.setup(R.id.fragment_drawer, m_drawerLayout, m_toolbar);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, new FieldMonitorFragment(), SettingsFragment.class.getName())
+                .commit();
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        Toast.makeText(this, "Menu item selected -> " + position, Toast.LENGTH_SHORT).show();
+        switch (position) {
+            case 0:
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName())
+                        .commit();
+                break;
+            case 1:
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new SettingsFragment(), SettingsFragment.class.getName())
+                        .commit();
+                break;
+        }
     }
 
 

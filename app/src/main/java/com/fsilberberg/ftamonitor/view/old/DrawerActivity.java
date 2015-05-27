@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.view.SettingsFragment;
 import com.fsilberberg.ftamonitor.view.old.fieldmonitor.FieldMonitorFragment;
 import com.fsilberberg.ftamonitor.view.old.testing.TestingFragment;
 import com.mikepenz.materialdrawer.Drawer;

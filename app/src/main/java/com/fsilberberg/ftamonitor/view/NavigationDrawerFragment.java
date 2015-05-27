@@ -102,9 +102,8 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
 
     public List<NavigationItem> getMenu() {
         List<NavigationItem> items = new ArrayList<>();
-        items.add(new NavigationItem("item 1", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_menu_check, null)));
-        items.add(new NavigationItem("item 2", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_menu_check, null)));
-        items.add(new NavigationItem("item 3", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_menu_check, null)));
+        items.add(new NavigationItem("Field Monitor", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_dvr_grey600_24dp, null)));
+        items.add(new NavigationItem("Settings", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_settings_grey600_24dp, null)));
         return items;
     }
 
@@ -162,14 +161,16 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
     }
 
     private void selectItem(int position) {
-        m_currentSelectedPosition = position;
         if (m_drawerLayout != null) {
             m_drawerLayout.closeDrawer(m_fragmentContainerView);
         }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+        if (m_currentSelectedPosition != position) {
+            m_currentSelectedPosition = position;
+            if (mCallbacks != null) {
+                mCallbacks.onNavigationDrawerItemSelected(position);
+            }
+            ((NavigationDrawerAdapter) m_drawerList.getAdapter()).selectPosition(position);
         }
-        ((NavigationDrawerAdapter) m_drawerList.getAdapter()).selectPosition(position);
     }
 
     public void closeDrawer() {
