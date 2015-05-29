@@ -103,6 +103,7 @@ public class NavigationDrawerFragment extends Fragment implements NavigationDraw
     public List<NavigationItem> getMenu() {
         List<NavigationItem> items = new ArrayList<>();
         items.add(new NavigationItem("Field Monitor", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_dvr_grey600_24dp, null)));
+        items.add(new NavigationItem("Testing", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_assignment_grey600_24dp, null)));
         items.add(new NavigationItem("Settings", ResourcesCompat.getDrawable(getResources(), R.drawable.ic_settings_grey600_24dp, null)));
         return items;
     }

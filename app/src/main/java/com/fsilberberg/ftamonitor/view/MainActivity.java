@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.old.fieldmonitor.FieldMonitorFragment;
+import com.fsilberberg.ftamonitor.view.testing.TestingRootFragment;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerCallbacks {
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
                         .commit();
                 break;
             case 1:
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new TestingRootFragment(), TestingRootFragment.class.getName())
+                        .commit();
+                break;
+            case 2:
                 getFragmentManager().beginTransaction()
                         .replace(R.id.container, new SettingsFragment(), SettingsFragment.class.getName())
                         .commit();

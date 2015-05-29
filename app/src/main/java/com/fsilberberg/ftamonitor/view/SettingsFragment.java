@@ -8,7 +8,6 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.view.old.DrawerActivity;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -79,8 +78,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             pref.setSummary(newUrl);
             Log.d(SettingsFragment.class.getName(), "Text is " + pref.getSummary());
         } else if (key.equals(m_fmEnabledKey) || key.equals(m_testingEnabledKey)) {
-            Intent mainIntent = new Intent(getActivity(), DrawerActivity.class);
-            mainIntent.putExtra(DrawerActivity.START_FRAGMENT, DrawerActivity.SETTINGS);
+            Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+            // TODO: Fix me
+//            mainIntent.putExtra(DrawerActivity.START_FRAGMENT, DrawerActivity.SETTINGS);
             getActivity().finish();
             getActivity().startActivity(mainIntent);
         }

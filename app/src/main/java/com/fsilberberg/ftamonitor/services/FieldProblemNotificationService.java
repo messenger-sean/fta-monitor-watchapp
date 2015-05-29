@@ -17,7 +17,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
-import com.fsilberberg.ftamonitor.view.old.DrawerActivity;
+import com.fsilberberg.ftamonitor.view.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,7 +120,7 @@ public class FieldProblemNotificationService {
             return;
         }
 
-        Intent mainIntent = new Intent(m_context, DrawerActivity.class);
+        Intent mainIntent = new Intent(m_context, MainActivity.class);
         PendingIntent pi = PendingIntent.getActivity(m_context, MAIN_ACTIVITY_ID, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         builder.setSmallIcon(R.drawable.ic_launcher)
