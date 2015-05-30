@@ -73,12 +73,19 @@
     <string name="field_monitor_drawer">Field Monitor</string>
     <string name="testing_drawer">Testing</string>
     <string name="settings_drawer">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">FTA Monitor</string>
+
+    <!-- Testing Fragment Resources -->
+    <string name="randomize_enable">Enable Randomization</string>
+    <string name="randomize_field_con">Randomize Field Connection Status</string>
+    <string name="randomize_robot_con">Randomize Robot Connection Status</string>
+    <string name="randomize_robot_vals">Randomize Robot Values</string>
+    <string name="randomize_enable_key">random_enable</string>
+    <string name="randomize_field_con_key">random_field_con</string>
+    <string name="randomize_robot_con_key">random_robot_con</string>
+    <string name="randomize_robot_vals_key">random_robot_vals</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="drawer_open">Menu opened</string>
     <string name="drawer_close">Menu closed</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
