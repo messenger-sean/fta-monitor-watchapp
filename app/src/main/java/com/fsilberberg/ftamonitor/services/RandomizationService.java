@@ -11,13 +11,30 @@ import android.os.IBinder;
 public class RandomizationService extends Service {
 
     private final RandomizationBinder m_binder = new RandomizationBinder();
+    private boolean m_isStarted;
 
     public RandomizationService() {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        m_isStarted = true;
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        m_isStarted = false;
+        super.onDestroy();
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return m_binder;
+    }
+
+    public boolean isStarted() {
+        return m_isStarted;
     }
 
     public class RandomizationBinder extends Binder {

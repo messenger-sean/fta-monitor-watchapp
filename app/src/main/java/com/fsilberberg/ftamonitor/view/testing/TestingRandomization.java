@@ -2,8 +2,9 @@ package com.fsilberberg.ftamonitor.view.testing;
 
 
 import android.app.Fragment;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.services.RandomizationService;
 
 /**
  * Contains the settings for the randomization service
@@ -35,11 +37,27 @@ public class TestingRandomization extends Fragment {
     private String m_robotConKey;
     private String m_robotValsKey;
 
+    private final ServiceConnection m_connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            RandomizationService.RandomizationBinder binder = (RandomizationService.RandomizationBinder) service;
+            m_random = binder.getService();
+            m_isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            m_isBound = false;
+            m_random = null;
+        }
+    };
+
+    private boolean m_isBound = false;
+    private RandomizationService m_random;
 
     public TestingRandomization() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,5 +104,19 @@ public class TestingRandomization extends Fragment {
         return v;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().bindService(new Intent(getActivity(), RandomizationService.class),
+                m_connection,
+                Context.BIND_AUTO_CREATE);
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (m_isBound) {
+            getActivity().unbindService(m_connection);
+        }
+    }
 }
