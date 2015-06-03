@@ -32,7 +32,6 @@ public class TestingRandomization extends Fragment {
     protected CheckBox m_robotVals;
 
     private SharedPreferences m_prefs;
-    private String m_enableKey;
     private String m_fieldKey;
     private String m_robotConKey;
     private String m_robotValsKey;
@@ -43,6 +42,12 @@ public class TestingRandomization extends Fragment {
             RandomizationService.RandomizationBinder binder = (RandomizationService.RandomizationBinder) service;
             m_random = binder.getService();
             m_isBound = true;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    m_enableRandom.setChecked(m_random.isStarted());
+                }
+            });
         }
 
         @Override
@@ -66,7 +71,6 @@ public class TestingRandomization extends Fragment {
         ButterKnife.inject(this, v);
 
         m_prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        m_enableKey = getString(R.string.randomize_enable_key);
         m_fieldKey = getString(R.string.randomize_field_con_key);
         m_robotConKey = getString(R.string.randomize_robot_con_key);
         m_robotValsKey = getString(R.string.randomize_robot_vals_key);
@@ -81,22 +85,24 @@ public class TestingRandomization extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Toast.makeText(getActivity(), "Field: " + isChecked, Toast.LENGTH_SHORT).show();
+                m_prefs.edit().putBoolean(m_fieldKey, isChecked).apply();
             }
         });
         m_robotCon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Toast.makeText(getActivity(), "Robot Con: " + isChecked, Toast.LENGTH_SHORT).show();
+                m_prefs.edit().putBoolean(m_robotConKey, isChecked).apply();
             }
         });
         m_robotVals.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Toast.makeText(getActivity(), "Robot Val: " + isChecked, Toast.LENGTH_SHORT).show();
+                m_prefs.edit().putBoolean(m_robotValsKey, isChecked).apply();
             }
         });
 
-        m_enableRandom.setChecked(m_prefs.getBoolean(m_enableKey, false));
         m_fieldCon.setChecked(m_prefs.getBoolean(m_fieldKey, false));
         m_robotCon.setChecked(m_prefs.getBoolean(m_robotConKey, false));
         m_robotVals.setChecked(m_prefs.getBoolean(m_robotValsKey, false));

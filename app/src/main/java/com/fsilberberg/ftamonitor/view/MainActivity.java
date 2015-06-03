@@ -1,33 +1,38 @@
 package com.fsilberberg.ftamonitor.view;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.FrameLayout;
+import android.view.MenuItem;
 import android.widget.Toast;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
+
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.old.fieldmonitor.FieldMonitorFragment;
 import com.fsilberberg.ftamonitor.view.testing.TestingRootFragment;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
-public class MainActivity extends AppCompatActivity implements NavigationDrawerCallbacks {
+
+public class MainActivity extends AppCompatActivity {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private NavigationDrawerFragment m_navigationDrawerFragment;
+    @InjectView(R.id.drawer_layout)
+    protected NavigationView m_navigationView;
     @InjectView(R.id.toolbar_actionbar)
     protected Toolbar m_toolbar;
     @InjectView(R.id.drawer)
-    protected DrawerLayout m_drawerLayout;
-    @InjectView(R.id.container)
-    protected FrameLayout m_mainFragView;
+    protected DrawerLayout m_drawer;
 
     private boolean m_backPressed = false;
+    private char m_curDrawerEl = 'f';
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,42 +40,61 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerC
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
         setSupportActionBar(m_toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        m_navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.fragment_drawer);
+        // If we've enabled testing mode, then set the nav bar to be the testing menu. Otherwise,
+        // use the regular menu
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean testEnabled = sp.getBoolean(getString(R.string.testing_enabled_key), false);
+        if (testEnabled) {
+            m_navigationView.inflateMenu(R.menu.main_drawer_testing);
+        } else {
+            m_navigationView.inflateMenu(R.menu.main_drawer);
+        }
 
-        // Set up the drawer.
-        m_navigationDrawerFragment.setup(R.id.fragment_drawer, m_drawerLayout, m_toolbar);
+        m_navigationView.getMenu().getItem(0).setChecked(true);
+
+        m_navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if (menuItem.getAlphabeticShortcut() != m_curDrawerEl) {
+                    switch (menuItem.getAlphabeticShortcut()) {
+                        case 'f':
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.container, new FieldMonitorFragment())
+                                    .commit();
+                            break;
+                        case 's':
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.container, new SettingsFragment())
+                                    .commit();
+                            break;
+                        case 't':
+                            getFragmentManager().beginTransaction()
+                                    .replace(R.id.container, new TestingRootFragment())
+                                    .commit();
+                            break;
+                    }
+                    m_curDrawerEl = menuItem.getAlphabeticShortcut();
+                }
+                menuItem.setChecked(true);
+                m_drawer.closeDrawers();
+                return true;
+            }
+        });
+
         getFragmentManager().beginTransaction()
-                .replace(R.id.container, new FieldMonitorFragment(), SettingsFragment.class.getName())
+                .replace(R.id.container, new FieldMonitorFragment())
                 .commit();
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        switch (position) {
-            case 0:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, new FieldMonitorFragment(), FieldMonitorFragment.class.getName())
-                        .commit();
-                break;
-            case 1:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, new TestingRootFragment(), TestingRootFragment.class.getName())
-                        .commit();
-                break;
-            case 2:
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, new SettingsFragment(), SettingsFragment.class.getName())
-                        .commit();
-                break;
-        }
-    }
-
-
-    @Override
     public void onBackPressed() {
-        if (m_navigationDrawerFragment.isDrawerOpen()) {
-            m_navigationDrawerFragment.closeDrawer();
+        if (m_drawer.isDrawerOpen(m_navigationView)) {
+            m_drawer.closeDrawers();
             m_backPressed = false;
         } else if (m_backPressed) {
             super.onBackPressed();

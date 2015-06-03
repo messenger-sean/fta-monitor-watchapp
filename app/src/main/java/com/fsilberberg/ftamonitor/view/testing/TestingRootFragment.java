@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.view.old.fieldmonitor.BlankFragment;
 
 /**
  * The root of all testing fragments, manages the current active fragment
@@ -59,7 +60,12 @@ public class TestingRootFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new TestingRandomization();
+            switch (position) {
+                case 0:
+                    return new TestingRandomization();
+                default:
+                    return new BlankFragment();
+            }
         }
 
         @Override

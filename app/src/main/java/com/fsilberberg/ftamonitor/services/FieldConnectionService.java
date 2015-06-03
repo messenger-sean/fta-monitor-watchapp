@@ -258,7 +258,7 @@ public class FieldConnectionService extends Service {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(FieldConnectionService.this)
                     .setContentTitle("Field Monitor")
                     .setContentText(contentText)
-                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_stat_big_logo)
                     .setContentIntent(PendingIntent.getActivity(FieldConnectionService.this,
                             MAIN_ACTIVITY_INTENT_ID,
                             mainIntent,

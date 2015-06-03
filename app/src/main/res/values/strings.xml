@@ -88,4 +88,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="drawer_open">Menu opened</string>
     <string name="drawer_close">Menu closed</string>
+    <string name="drawer_header_content_assist">Navigation Drawer Header</string>
 </resources>
