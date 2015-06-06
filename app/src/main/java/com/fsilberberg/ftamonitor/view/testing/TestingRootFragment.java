@@ -14,6 +14,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.old.fieldmonitor.BlankFragment;
+import com.fsilberberg.ftamonitor.view.old.testing.TestingConnectionStatus;
 
 /**
  * The root of all testing fragments, manages the current active fragment
@@ -61,6 +62,8 @@ public class TestingRootFragment extends Fragment {
             switch (position) {
                 case 0:
                     return new TestingRandomization();
+                case 1:
+                    return new TestingConnectionStatus();
                 default:
                     return new BlankFragment();
             }

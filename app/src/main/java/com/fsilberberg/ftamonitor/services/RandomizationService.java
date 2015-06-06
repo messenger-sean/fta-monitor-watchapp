@@ -6,6 +6,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import microsoft.aspnet.signalr.client.ConnectionState;
 
 import java.util.Random;
@@ -93,13 +95,14 @@ public class RandomizationService extends Service {
             // already running
             synchronized (this) {
                 if (!m_isStarted) {
-                    context.startService(new Intent(context, RandomizationService.class));
+                    startService(new Intent(context, RandomizationService.class));
                 }
             }
         } else {
             synchronized (this) {
-                if (!m_isStarted) {
-                    context.stopService(new Intent(context, RandomizationService.class));
+                if (m_isStarted) {
+                    m_isStarted = false;
+                    stopService(new Intent(context, RandomizationService.class));
                 }
             }
         }
@@ -120,6 +123,14 @@ public class RandomizationService extends Service {
 
         private final SharedPreferences m_prefs = PreferenceManager.getDefaultSharedPreferences(RandomizationService.this);
         private final Random m_random = new Random();
+        private final TeamStatus[] m_robots = new TeamStatus[]{
+                FieldMonitorFactory.getInstance().getFieldStatus().getBlue1(),
+                FieldMonitorFactory.getInstance().getFieldStatus().getBlue2(),
+                FieldMonitorFactory.getInstance().getFieldStatus().getBlue3(),
+                FieldMonitorFactory.getInstance().getFieldStatus().getRed1(),
+                FieldMonitorFactory.getInstance().getFieldStatus().getRed2(),
+                FieldMonitorFactory.getInstance().getFieldStatus().getRed3()
+        };
         private boolean m_fieldConRandom;
         private boolean m_robotConRandom;
         private boolean m_robotValRandom;
@@ -142,7 +153,7 @@ public class RandomizationService extends Service {
 
         @Override
         public void run() {
-            while (!Thread.interrupted()) {
+            while (!Thread.interrupted() && m_isStarted) {
                 if (m_shouldUpdate) {
                     update();
                     synchronized (RandomizationService.this) {
@@ -155,12 +166,62 @@ public class RandomizationService extends Service {
                     m_stateObservable.setConnectionState(ConnectionState.values()[newState]);
                 }
 
+                if (m_robotConRandom) {
+                    for (TeamStatus robot : m_robots) {
+                        int newState = m_random.nextInt(RobotEnableStatus.values().length);
+                        RobotEnableStatus.values()[newState].setRobot(robot);
+                        robot.updateObservers();
+                    }
+                }
+
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Represents the different states a robot can be in. Used for random state generation
+     */
+    private enum RobotEnableStatus {
+        ETH(false, false, false, false, false, false, false),
+        DS(true, false, false, false, false, false, false),
+        RADIO(true, true, false, false, false, false, false),
+        RIO(true, true, true, false, false, false, false),
+        CODE(true, true, true, true, false, false, false),
+        GOOD(true, true, true, true, true, false, false),
+        BYPASS(true, true, true, true, true, true, false),
+        ESTOP(true, true, true, true, true, true, true);
+
+        private final boolean eth;
+        private final boolean ds;
+        private final boolean radio;
+        private final boolean rio;
+        private final boolean code;
+        private final boolean bypass;
+        private final boolean estop;
+
+        RobotEnableStatus(boolean eth, boolean ds, boolean radio, boolean rio, boolean code, boolean bypass, boolean estop) {
+            this.eth = eth;
+            this.ds = ds;
+            this.radio = radio;
+            this.rio = rio;
+            this.code = code;
+            this.bypass = bypass;
+            this.estop = estop;
+        }
+
+        public void setRobot(TeamStatus robot) {
+            robot.setDsEth(eth);
+            robot.setDs(ds);
+            robot.setRadio(radio);
+            robot.setRobot(rio);
+            robot.setCode(code);
+            robot.setBypassed(bypass);
+            robot.setEstop(estop);
         }
     }
 
