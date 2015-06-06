@@ -10,6 +10,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import microsoft.aspnet.signalr.client.ConnectionState;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 /**
@@ -174,12 +175,55 @@ public class RandomizationService extends Service {
                     }
                 }
 
+                if (m_robotValRandom) {
+                    for (TeamStatus robot : m_robots) {
+                        updateRobotValues(robot);
+                    }
+                }
+
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     break;
                 }
             }
+        }
+
+        private void updateRobotValues(TeamStatus robot) {
+            // Team number goes between 1 and 9999
+            int team = m_random.nextInt(9998) + 1;
+            robot.setTeamNumber(team);
+
+            // Battery voltage goes between 6.0V and 13.5V
+            float voltage = generateRoundedFloat(6.0f, 13.5f, 2);
+            robot.setBattery(voltage);
+
+            // Bandwidth goes between 0.125 Mbps to 22.0 Mbps
+            float bw = generateRoundedFloat(.125f, 22.0f, 3);
+            robot.setDataRate(bw);
+
+            // Round trip times go between 1 ms to 999 ms
+            int roundTrip = m_random.nextInt(998) + 1;
+            robot.setRoundTrip(roundTrip);
+
+            // Missed packets go between 0 and 999
+            int mp = m_random.nextInt(999);
+            robot.setDroppedPackets(mp);
+
+            // Signal quality goes from 0% to 100%
+            int sq = m_random.nextInt(100);
+            robot.setSignalQuality(sq);
+
+            // Signal strength goes from -100 db to -5db
+            int ss = (m_random.nextInt(95) + 5) * -1;
+            robot.setSignalStrength(ss);
+        }
+
+        private float generateRoundedFloat(float min, float max, int places) {
+            float unrounded = (m_random.nextFloat() * (max - min)) + min;
+            BigDecimal bd = new BigDecimal(Float.toString(unrounded));
+            bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
+            return bd.floatValue();
         }
     }
 
