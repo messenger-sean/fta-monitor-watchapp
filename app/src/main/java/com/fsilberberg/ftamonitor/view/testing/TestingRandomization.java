@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
@@ -78,27 +77,23 @@ public class TestingRandomization extends Fragment {
         m_enableRandom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(getActivity(), "Enable: " + isChecked, Toast.LENGTH_SHORT).show();
             }
         });
         m_fieldCon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(getActivity(), "Field: " + isChecked, Toast.LENGTH_SHORT).show();
                 m_prefs.edit().putBoolean(m_fieldKey, isChecked).apply();
             }
         });
         m_robotCon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(getActivity(), "Robot Con: " + isChecked, Toast.LENGTH_SHORT).show();
                 m_prefs.edit().putBoolean(m_robotConKey, isChecked).apply();
             }
         });
         m_robotVals.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(getActivity(), "Robot Val: " + isChecked, Toast.LENGTH_SHORT).show();
                 m_prefs.edit().putBoolean(m_robotValsKey, isChecked).apply();
             }
         });

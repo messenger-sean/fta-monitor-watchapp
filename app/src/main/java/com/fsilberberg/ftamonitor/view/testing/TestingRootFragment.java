@@ -4,8 +4,8 @@ package com.fsilberberg.ftamonitor.view.testing;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerTabStrip;
+import android.support.design.widget.TabLayout;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +22,8 @@ public class TestingRootFragment extends Fragment {
 
     @InjectView(R.id.testing_pager)
     protected ViewPager m_pager;
-    @InjectView(R.id.testing_pager_tab_strip)
-    protected PagerTabStrip m_tabStrip;
-    protected PagerAdapter m_adapter;
+    @InjectView(R.id.testing_tab_layout)
+    protected TabLayout m_layout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,16 +31,15 @@ public class TestingRootFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_testing_root, container, false);
         ButterKnife.inject(this, v);
-        m_adapter = new PagerAdapter(getFragmentManager());
 
-        m_pager.setAdapter(m_adapter);
-        m_tabStrip.setTextColor(getResources().getColor(R.color.FRC_DARK_GREY));
-        m_tabStrip.setTabIndicatorColorResource(R.color.FRC_DARK_GREY);
+        m_pager.setAdapter(new PagerAdapter(getFragmentManager()));
+        m_layout.setupWithViewPager(m_pager);
+        m_layout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         return v;
     }
 
-    private class PagerAdapter extends FragmentPagerAdapter {
+    private class PagerAdapter extends FragmentStatePagerAdapter {
 
         String[] m_names = new String[]{
                 "Randomization", "Field Connection", "Field Status",
