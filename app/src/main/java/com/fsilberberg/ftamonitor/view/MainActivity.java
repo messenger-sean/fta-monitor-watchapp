@@ -1,11 +1,13 @@
 package com.fsilberberg.ftamonitor.view;
 
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected Toolbar m_toolbar;
     @InjectView(R.id.drawer)
     protected DrawerLayout m_drawer;
+    private ActionBarDrawerToggle m_toggle;
 
     private boolean m_backPressed = false;
     private char m_curDrawerEl = 'f';
@@ -39,6 +42,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+
+        m_toggle = new ActionBarDrawerToggle(
+                this,
+                m_drawer,
+                m_toolbar,
+                R.string.drawer_open,
+                R.string.drawer_close
+        );
+        m_drawer.setDrawerListener(m_toggle);
+
         setSupportActionBar(m_toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -109,4 +122,25 @@ public class MainActivity extends AppCompatActivity {
             }, 2000);
         }
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        m_toggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        m_toggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        return m_toggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
 }
