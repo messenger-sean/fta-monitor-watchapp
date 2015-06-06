@@ -14,7 +14,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.old.fieldmonitor.BlankFragment;
-import com.fsilberberg.ftamonitor.view.old.testing.TestingConnectionStatus;
 
 /**
  * The root of all testing fragments, manages the current active fragment

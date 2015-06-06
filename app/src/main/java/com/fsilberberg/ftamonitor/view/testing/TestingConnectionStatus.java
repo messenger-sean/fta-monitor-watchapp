@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view.old.testing;
+package com.fsilberberg.ftamonitor.view.testing;
 
 
 import android.app.Fragment;
@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 import microsoft.aspnet.signalr.client.ConnectionState;
@@ -52,9 +54,15 @@ public class TestingConnectionStatus extends Fragment {
         }
     };
 
+    @InjectView(R.id.connection_radio_group)
+    protected RadioGroup m_radioGroup;
+    @InjectView(R.id.disconnected_button)
     private RadioButton m_disconnected;
+    @InjectView(R.id.connecting_button)
     private RadioButton m_connecting;
+    @InjectView(R.id.reconnecting_button)
     private RadioButton m_reconnecting;
+    @InjectView(R.id.connected_button)
     private RadioButton m_connected;
 
     public TestingConnectionStatus() {
@@ -65,8 +73,8 @@ public class TestingConnectionStatus extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.fragment_testing_connection_status, container, false);
-        RadioGroup radioGroup = (RadioGroup) mainView.findViewById(R.id.connection_radio_group);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        ButterKnife.inject(this, mainView);
+        m_radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (m_isBound) {
@@ -88,10 +96,6 @@ public class TestingConnectionStatus extends Fragment {
             }
         });
 
-        m_disconnected = (RadioButton) mainView.findViewById(R.id.disconnected_button);
-        m_connecting = (RadioButton) mainView.findViewById(R.id.connecting_button);
-        m_reconnecting = (RadioButton) mainView.findViewById(R.id.reconnecting_button);
-        m_connected = (RadioButton) mainView.findViewById(R.id.connected_button);
         return mainView;
     }
 
