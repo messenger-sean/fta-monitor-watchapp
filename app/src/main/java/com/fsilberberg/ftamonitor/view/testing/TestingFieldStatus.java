@@ -1,4 +1,4 @@
-package com.fsilberberg.ftamonitor.view.old.testing;
+package com.fsilberberg.ftamonitor.view.testing;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -8,10 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,15 +28,73 @@ public class TestingFieldStatus extends Fragment {
         // Required empty public constructor
     }
 
+    @InjectView(R.id.field_status_radio_group)
+    protected RadioGroup m_group;
+    @InjectView(R.id.field_match_number)
+    protected EditText m_matchTextBox;
+    @InjectView(R.id.field_testing_not_started)
+    protected RadioButton m_notReady;
+    @InjectView(R.id.field_testing_timeout)
+    protected RadioButton m_timeout;
+    @InjectView(R.id.field_testing_ready_prestart)
+    protected RadioButton m_readyPrestart;
+    @InjectView(R.id.field_testing_prestart_init)
+    protected RadioButton m_prestartInit;
+    @InjectView(R.id.field_testing_prestart_comp)
+    protected RadioButton m_prestartComp;
+    @InjectView(R.id.field_testing_match_ready)
+    protected RadioButton m_ready;
+    @InjectView(R.id.field_testing_auto)
+    protected RadioButton m_auto;
+    @InjectView(R.id.field_testing_teleop)
+    protected RadioButton m_teleop;
+    @InjectView(R.id.field_testing_over)
+    protected RadioButton m_over;
+    @InjectView(R.id.field_testing_aborted)
+    protected RadioButton m_aborted;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_testing_field_status, container, false);
+        ButterKnife.inject(this, rootView);
 
-        final RadioGroup group = (RadioGroup) rootView.findViewById(R.id.field_status_radio_group);
-        final EditText matchTextBox = (EditText) rootView.findViewById(R.id.field_match_number);
+        FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
+        m_matchTextBox.setText(field.getMatchNumber());
+        switch (field.getMatchStatus()) {
+            case NOT_READY:
+                m_notReady.setChecked(true);
+                break;
+            case TIMEOUT:
+                m_timeout.setChecked(true);
+                break;
+            case READY_TO_PRESTART:
+                m_readyPrestart.setChecked(true);
+                break;
+            case PRESTART_INITIATED:
+                m_prestartInit.setChecked(true);
+                break;
+            case PRESTART_COMPLETED:
+                m_prestartComp.setChecked(true);
+                break;
+            case MATCH_READY:
+                m_ready.setChecked(true);
+                break;
+            case AUTO:
+                m_auto.setChecked(true);
+                break;
+            case TELEOP:
+                m_teleop.setChecked(true);
+                break;
+            case OVER:
+                m_over.setChecked(true);
+                break;
+            case ABORTED:
+                m_aborted.setChecked(true);
+                break;
+        }
 
-        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        m_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 MatchStatus status;
@@ -74,7 +138,7 @@ public class TestingFieldStatus extends Fragment {
             }
         });
 
-        matchTextBox.addTextChangedListener(new TextWatcher() {
+        m_matchTextBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }

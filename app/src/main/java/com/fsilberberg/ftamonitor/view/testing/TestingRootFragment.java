@@ -63,6 +63,8 @@ public class TestingRootFragment extends Fragment {
                     return new TestingRandomization();
                 case 1:
                     return new TestingConnectionStatus();
+                case 2:
+                    return new TestingFieldStatus();
                 default:
                     return new BlankFragment();
             }
