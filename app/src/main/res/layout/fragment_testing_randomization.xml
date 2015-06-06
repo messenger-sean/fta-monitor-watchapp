@@ -6,28 +6,37 @@
     android:orientation="vertical"
     tools:context="com.fsilberberg.ftamonitor.view.testing.TestingRandomization">
 
-    <CheckBox
-        android:layout_width="wrap_content"
+    <Switch
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="end"
+        android:padding="5dp"
         android:text="@string/randomize_enable"
         android:id="@+id/randomize_enable" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
+    <Switch
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="end"
+        android:padding="5dp"
         android:text="@string/randomize_field_con"
         android:id="@+id/randomize_field_con" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
+    <Switch
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="end"
+        android:padding="5dp"
         android:text="@string/randomize_robot_con"
         android:id="@+id/randomize_robot_con" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
+    <Switch
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="end"
+        android:padding="5dp"
         android:text="@string/randomize_robot_vals"
         android:id="@+id/randomize_robot_vals" />
+
 </LinearLayout>
 

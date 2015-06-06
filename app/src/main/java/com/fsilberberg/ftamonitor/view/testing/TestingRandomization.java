@@ -9,8 +9,8 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.fsilberberg.ftamonitor.R;
@@ -22,13 +22,13 @@ import com.fsilberberg.ftamonitor.services.RandomizationService;
 public class TestingRandomization extends Fragment {
 
     @InjectView(R.id.randomize_enable)
-    protected CheckBox m_enableRandom;
+    protected Switch m_enableRandom;
     @InjectView(R.id.randomize_field_con)
-    protected CheckBox m_fieldCon;
+    protected Switch m_fieldCon;
     @InjectView(R.id.randomize_robot_con)
-    protected CheckBox m_robotCon;
+    protected Switch m_robotCon;
     @InjectView(R.id.randomize_robot_vals)
-    protected CheckBox m_robotVals;
+    protected Switch m_robotVals;
 
     private SharedPreferences m_prefs;
     private String m_fieldKey;
