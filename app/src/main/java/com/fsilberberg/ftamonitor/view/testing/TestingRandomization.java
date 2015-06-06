@@ -41,12 +41,16 @@ public class TestingRandomization extends Fragment {
             RandomizationService.RandomizationBinder binder = (RandomizationService.RandomizationBinder) service;
             m_random = binder.getService();
             m_isBound = true;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    m_enableRandom.setChecked(m_random.isStarted());
-                }
-            });
+            if (m_enableRandom.isChecked()) {
+                m_random.setEnabled(true, getActivity());
+            } else {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        m_enableRandom.setChecked(m_random.isStarted());
+                    }
+                });
+            }
         }
 
         @Override
@@ -77,23 +81,35 @@ public class TestingRandomization extends Fragment {
         m_enableRandom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (m_isBound) {
+                    m_random.setEnabled(isChecked, getActivity());
+                }
             }
         });
         m_fieldCon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (m_isBound) {
+                    m_random.update();
+                }
                 m_prefs.edit().putBoolean(m_fieldKey, isChecked).apply();
             }
         });
         m_robotCon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (m_isBound) {
+                    m_random.update();
+                }
                 m_prefs.edit().putBoolean(m_robotConKey, isChecked).apply();
             }
         });
         m_robotVals.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (m_isBound) {
+                    m_random.update();
+                }
                 m_prefs.edit().putBoolean(m_robotValsKey, isChecked).apply();
             }
         });
