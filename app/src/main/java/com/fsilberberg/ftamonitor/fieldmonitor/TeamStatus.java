@@ -17,7 +17,7 @@ public class TeamStatus {
     private Boolean m_dsEth = false;
     private Boolean m_ds = false;
     private Boolean m_radio = false;
-    private Boolean m_robot = false;
+    private Boolean m_rio = false;
     private Boolean m_estop = false;
     private Boolean m_code = false;
     private Float m_battery = 0.0f;
@@ -80,12 +80,12 @@ public class TeamStatus {
         m_radio = radio;
     }
 
-    public synchronized boolean isRobot() {
-        return m_robot;
+    public synchronized boolean isRio() {
+        return m_rio;
     }
 
     public void setRobot(boolean robot) {
-        m_robot = robot;
+        m_rio = robot;
     }
 
     public synchronized boolean isEstop() {

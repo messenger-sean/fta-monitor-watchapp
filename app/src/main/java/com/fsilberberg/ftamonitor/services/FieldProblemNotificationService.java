@@ -210,7 +210,7 @@ public class FieldProblemNotificationService {
                 setError(R.string.ds_error);
             } else if (!m_team.isRadio()) {
                 setError(R.string.radio_error);
-            } else if (!m_team.isRobot()) {
+            } else if (!m_team.isRio()) {
                 setError(R.string.robot_error);
             } else if (!m_team.isCode()) {
                 setError(R.string.code_error);

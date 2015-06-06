@@ -3,7 +3,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context="com.fsilberberg.ftamonitor.view.old.testing.TestingTeamStatus">
+            tools:context="com.fsilberberg.ftamonitor.view.testing.TestingTeamStatus">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,6 +73,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Code"/>
+
+            <RadioButton
+                android:id="@+id/team_testing_byp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bypassed"/>
+
 
             <RadioButton
                 android:id="@+id/team_testing_estop"

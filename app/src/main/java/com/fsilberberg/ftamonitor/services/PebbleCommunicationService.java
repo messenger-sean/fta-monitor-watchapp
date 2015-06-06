@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
@@ -308,7 +307,7 @@ public class PebbleCommunicationService extends Service {
                 status = DS;
             } else if (!m_teamStatus.isRadio()) {
                 status = RADIO;
-            } else if (!m_teamStatus.isRobot()) {
+            } else if (!m_teamStatus.isRio()) {
                 status = RIO;
             } else if (!m_teamStatus.isCode()) {
                 status = CODE;

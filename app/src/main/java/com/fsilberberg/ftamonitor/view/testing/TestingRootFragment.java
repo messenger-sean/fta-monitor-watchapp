@@ -10,10 +10,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.fsilberberg.ftamonitor.R;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.view.old.fieldmonitor.BlankFragment;
 
 /**
  * The root of all testing fragments, manages the current active fragment
@@ -43,8 +44,8 @@ public class TestingRootFragment extends Fragment {
 
         String[] m_names = new String[]{
                 "Randomization", "Field Connection", "Field Status",
-                "Red 1", "Red 2", "Red 3",
-                "Blue 1", "Blue 2", "Blue 3"
+                "Blue 1", "Blue 2", "Blue 3",
+                "Red 1", "Red 2", "Red 3"
         };
 
         public PagerAdapter(FragmentManager fm) {
@@ -66,7 +67,7 @@ public class TestingRootFragment extends Fragment {
                 case 2:
                     return new TestingFieldStatus();
                 default:
-                    return new BlankFragment();
+                    return TestingTeamStatus.makeInstance(position - 2);
             }
         }
 

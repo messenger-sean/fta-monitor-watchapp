@@ -234,7 +234,7 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
             setDataInfoVisible(false);
             setTeamStatusVisible(true);
             setText(m_errorTextView, getString(R.string.radio));
-        } else if (!m_teamStatus.isRobot()) {
+        } else if (!m_teamStatus.isRio()) {
             setDataInfoVisible(false);
             setTeamStatusVisible(true);
             setText(m_errorTextView, getString(R.string.rio));
