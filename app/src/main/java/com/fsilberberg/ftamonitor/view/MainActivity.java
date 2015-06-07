@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.view.old.fieldmonitor.FieldMonitorFragment;
+import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorRootFragment;
 import com.fsilberberg.ftamonitor.view.testing.TestingRootFragment;
 
 import butterknife.ButterKnife;
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     switch (menuItem.getAlphabeticShortcut()) {
                         case 'f':
                             getFragmentManager().beginTransaction()
-                                    .replace(R.id.container, new FieldMonitorFragment())
+                                    .replace(R.id.container, new FieldMonitorRootFragment())
                                     .commit();
                             break;
                         case 's':
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.container, new FieldMonitorFragment())
+                .replace(R.id.container, new FieldMonitorRootFragment())
                 .commit();
     }
 

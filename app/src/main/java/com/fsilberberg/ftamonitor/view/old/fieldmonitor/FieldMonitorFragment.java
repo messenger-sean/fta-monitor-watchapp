@@ -1,7 +1,11 @@
 package com.fsilberberg.ftamonitor.view.old.fieldmonitor;
 
 import android.app.Fragment;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -15,9 +19,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+
 import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
@@ -96,7 +102,7 @@ public class FieldMonitorFragment extends Fragment implements Observer<Connectio
             update(m_service.getState());
         }
         setupLockScreen();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_field_monitor));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.field_monitor_drawer));
     }
 
     @Override

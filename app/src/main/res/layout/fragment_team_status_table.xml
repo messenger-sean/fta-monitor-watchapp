@@ -26,7 +26,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/grey_with_border"
                     android:gravity="center"
-                    android:padding="@dimen/table_margin"
+                    android:padding="@dimen/standard_padding"
                     android:text="#"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/medium_text_size"/>
@@ -38,7 +38,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/grey_with_border"
                     android:gravity="center"
-                    android:padding="@dimen/table_margin"
+                    android:padding="@dimen/standard_padding"
                     android:text="Team"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/medium_text_size"/>
@@ -57,7 +57,7 @@
                         android:background="@drawable/grey_with_border"
                         android:contentDescription="Robot battery voltage"
                         android:gravity="center"
-                        android:padding="@dimen/table_margin"
+                        android:padding="@dimen/standard_padding"
                         android:text="Volt"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/medium_text_size"/>
@@ -71,7 +71,7 @@
                         android:background="@drawable/grey_with_border"
                         android:contentDescription="Robot Enabled Status"
                         android:gravity="center"
-                        android:padding="@dimen/table_margin"
+                        android:padding="@dimen/standard_padding"
                         android:text="En"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/medium_text_size"/>
@@ -87,7 +87,7 @@
                     android:background="@drawable/grey_with_border"
                     android:contentDescription="Bandwidth Usage"
                     android:gravity="center"
-                    android:padding="@dimen/table_margin"
+                    android:padding="@dimen/standard_padding"
                     android:text="BW"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/medium_text_size"/>
@@ -100,7 +100,7 @@
                     android:background="@drawable/grey_with_border"
                     android:contentDescription="Missed Packets"
                     android:gravity="center"
-                    android:padding="@dimen/table_margin"
+                    android:padding="@dimen/standard_padding"
                     android:text="MP"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/medium_text_size"/>
@@ -113,7 +113,7 @@
                     android:background="@drawable/grey_with_border"
                     android:contentDescription="Round Trip"
                     android:gravity="center"
-                    android:padding="@dimen/table_margin"
+                    android:padding="@dimen/standard_padding"
                     android:text="RT"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/medium_text_size"/>
@@ -132,7 +132,7 @@
                         android:background="@drawable/grey_with_border"
                         android:contentDescription="Bandwidth Usage"
                         android:gravity="center_horizontal"
-                        android:padding="@dimen/table_margin"
+                        android:padding="@dimen/standard_padding"
                         android:text="SQ"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/medium_text_size"/>
@@ -145,7 +145,7 @@
                         android:background="@drawable/grey_with_border"
                         android:contentDescription="Missed Packets"
                         android:gravity="center_horizontal"
-                        android:padding="@dimen/table_margin"
+                        android:padding="@dimen/standard_padding"
                         android:text="SS"
                         android:textColor="@android:color/black"
                         android:textSize="@dimen/medium_text_size"/>

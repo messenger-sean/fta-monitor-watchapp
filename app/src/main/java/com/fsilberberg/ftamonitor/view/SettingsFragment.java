@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
 import com.fsilberberg.ftamonitor.R;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -39,7 +41,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onResume();
         updatePref(m_fmsKey);
         updatePref(m_bwuKey);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
+        ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.setTitle(getString(R.string.settings_drawer));
+        }
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 

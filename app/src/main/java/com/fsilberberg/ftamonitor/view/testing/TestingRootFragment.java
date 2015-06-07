@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,15 @@ public class TestingRootFragment extends Fragment {
         m_layout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.setTitle(getString(R.string.testing_drawer));
+        }
     }
 
     private class PagerAdapter extends FragmentStatePagerAdapter {
