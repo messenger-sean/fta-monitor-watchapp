@@ -6,8 +6,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.transition.Fade;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +62,10 @@ public class FieldMonitorRootFragment extends Fragment {
     protected Button m_retryButton;
     @InjectView(R.id.field_monitor_signalr_layout)
     protected LinearLayout m_signalrLayout;
+    @InjectView(R.id.field_monitor_fragment)
+    protected View m_fieldMonitorFragment;
+    @InjectView(R.id.field_monitor_root_view)
+    protected ViewGroup m_root;
 
     public FieldMonitorRootFragment() {
         // Required empty public constructor
@@ -78,6 +85,9 @@ public class FieldMonitorRootFragment extends Fragment {
                 FieldConnectionService.start(true);
             }
         });
+        getFragmentManager().beginTransaction()
+                .replace(R.id.field_monitor_fragment, new FieldMonitorStatusFragment())
+                .commit();
         return view;
     }
 
@@ -132,10 +142,11 @@ public class FieldMonitorRootFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    TransitionManager.beginDelayedTransition(m_root, new Fade());
+                                }
                                 m_signalrLayout.setVisibility(View.VISIBLE);
-                                getFragmentManager().beginTransaction()
-                                        .replace(R.id.field_monitor_fragment, new BlankFragment())
-                                        .commit();
+                                m_fieldMonitorFragment.setVisibility(View.INVISIBLE);
                             }
                         });
                         break;
@@ -145,15 +156,23 @@ public class FieldMonitorRootFragment extends Fragment {
                             v.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        TransitionManager.beginDelayedTransition(m_root, new Fade());
+                                    }
                                     m_signalrLayout.setVisibility(View.INVISIBLE);
-                                    getFragmentManager().beginTransaction()
-                                            .replace(R.id.field_monitor_fragment, new FieldMonitorStatusFragment())
-                                            .commit();
+                                    m_fieldMonitorFragment.setVisibility(View.VISIBLE);
                                 }
                             }, 500);
                         }
                         break;
                 }
+            }
+        }
+
+        private void toggleVisibility(View... views) {
+            for (View v : views) {
+                boolean visible = v.getVisibility() == View.VISIBLE;
+                v.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
             }
         }
     }
