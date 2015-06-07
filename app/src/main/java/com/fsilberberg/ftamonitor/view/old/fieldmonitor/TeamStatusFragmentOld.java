@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -24,10 +25,10 @@ import java.text.DecimalFormat;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link TeamStatusFragment#newInstance} factory method to
+ * Use the {@link TeamStatusFragmentOld#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TeamStatusFragment extends Fragment implements Observer<UpdateType> {
+public class TeamStatusFragmentOld extends Fragment implements Observer<UpdateType> {
     // Bundle parameters
     private static final String STATION_NUMBER = "station_number";
     private static final String ALLIANCE_COLOR = "alliance_color";
@@ -58,10 +59,10 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
      *
      * @param color      The alliance color of this row.
      * @param teamNumber The team number of this row.
-     * @return A new instance of fragment TeamStatusFragment.
+     * @return A new instance of fragment TeamStatusFragmentOld.
      */
-    public static TeamStatusFragment newInstance(int teamNumber, Alliance color) {
-        TeamStatusFragment fragment = new TeamStatusFragment();
+    public static TeamStatusFragmentOld newInstance(int teamNumber, Alliance color) {
+        TeamStatusFragmentOld fragment = new TeamStatusFragmentOld();
         Bundle args = new Bundle();
         args.putInt(STATION_NUMBER, teamNumber);
         args.putInt(ALLIANCE_COLOR, color.ordinal());
@@ -69,7 +70,7 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
         return fragment;
     }
 
-    public TeamStatusFragment() {
+    public TeamStatusFragmentOld() {
         // Required empty public constructor
     }
 
@@ -129,7 +130,7 @@ public class TeamStatusFragment extends Fragment implements Observer<UpdateType>
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fragView = inflater.inflate(R.layout.fragment_team_status, container, false);
+        View fragView = inflater.inflate(R.layout.fragment_team_status_old, container, false);
         // Find and set all of the view elements
         TextView m_stationNumberView = (TextView) fragView.findViewById(R.id.team_status_table_station_number);
         m_teamNumberView = (TextView) fragView.findViewById(R.id.team_status_number);

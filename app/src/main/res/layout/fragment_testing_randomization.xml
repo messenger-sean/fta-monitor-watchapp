@@ -27,6 +27,14 @@
         android:layout_width="match_parent"
         android:layout_gravity="end"
         android:padding="5dp"
+        android:text="@string/randomize_match_status"
+        android:id="@+id/randomize_match_status" />
+
+    <Switch
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="end"
+        android:padding="5dp"
         android:text="@string/randomize_robot_con"
         android:id="@+id/randomize_robot_con" />
 

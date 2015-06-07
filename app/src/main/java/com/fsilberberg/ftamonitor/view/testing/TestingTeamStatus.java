@@ -134,7 +134,7 @@ public class TestingTeamStatus extends Fragment {
                 m_status.setDsEth(eth);
                 m_status.setDs(ds);
                 m_status.setRadio(radio);
-                m_status.setRobot(robot);
+                m_status.setRio(robot);
                 m_status.setCode(code);
                 m_status.setBypassed(bypassed);
                 m_status.setEstop(estop);

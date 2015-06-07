@@ -79,6 +79,8 @@
     <string name="randomize_field_con_key">random_field_con</string>
     <string name="randomize_robot_con_key">random_robot_con</string>
     <string name="randomize_robot_vals_key">random_robot_vals</string>
+    <string name="randomize_match_status">Randomize Match Status</string>
+    <string name="randomize_match_status_key">randomize_match_status</string>
 
     <string name="drawer_open">Menu opened</string>
     <string name="drawer_close">Menu closed</string>
@@ -87,4 +89,11 @@
     <!-- Field Monitor Fragment Strings -->
     <string name="field_monitor_retry_button">Retry</string>
     <string name="field_monitor_connection_prefix">FMS Connection Status: </string>
+    <string name="field_monitor_station_number">#</string>
+    <string name="field_monitor_team_number">Team</string>
+    <string name="field_monitor_battery_voltage">Volt</string>
+    <string name="field_monitor_bandwidth">Band</string>
+    <string name="field_monitor_missed_packets">MP</string>
+    <string name="field_monitor_trip_time">TT</string>
+    <string name="field_monitor_match_status">Match Status:</string>
 </resources>

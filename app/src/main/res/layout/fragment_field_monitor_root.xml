@@ -30,4 +30,9 @@
             android:textSize="@dimen/large_text_size" />
     </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/field_monitor_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </FrameLayout>

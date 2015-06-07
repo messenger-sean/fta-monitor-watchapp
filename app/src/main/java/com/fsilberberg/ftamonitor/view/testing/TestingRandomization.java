@@ -2,7 +2,11 @@ package com.fsilberberg.ftamonitor.view.testing;
 
 
 import android.app.Fragment;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -11,10 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
+
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.RandomizationService;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * Contains the settings for the randomization service
@@ -25,6 +31,8 @@ public class TestingRandomization extends Fragment {
     protected Switch m_enableRandom;
     @InjectView(R.id.randomize_field_con)
     protected Switch m_fieldCon;
+    @InjectView(R.id.randomize_match_status)
+    protected Switch m_matchStatus;
     @InjectView(R.id.randomize_robot_con)
     protected Switch m_robotCon;
     @InjectView(R.id.randomize_robot_vals)
@@ -32,6 +40,7 @@ public class TestingRandomization extends Fragment {
 
     private SharedPreferences m_prefs;
     private String m_fieldKey;
+    private String m_matchStatusKey;
     private String m_robotConKey;
     private String m_robotValsKey;
 
@@ -75,6 +84,7 @@ public class TestingRandomization extends Fragment {
 
         m_prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         m_fieldKey = getString(R.string.randomize_field_con_key);
+        m_matchStatusKey = getString(R.string.randomize_match_status_key);
         m_robotConKey = getString(R.string.randomize_robot_con_key);
         m_robotValsKey = getString(R.string.randomize_robot_vals_key);
 
@@ -93,6 +103,15 @@ public class TestingRandomization extends Fragment {
                     m_random.update();
                 }
                 m_prefs.edit().putBoolean(m_fieldKey, isChecked).apply();
+            }
+        });
+        m_matchStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (m_isBound) {
+                    m_random.update();
+                }
+                m_prefs.edit().putBoolean(m_matchStatusKey, isChecked).apply();
             }
         });
         m_robotCon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -115,6 +134,7 @@ public class TestingRandomization extends Fragment {
         });
 
         m_fieldCon.setChecked(m_prefs.getBoolean(m_fieldKey, false));
+        m_matchStatus.setChecked(m_prefs.getBoolean(m_matchStatusKey, false));
         m_robotCon.setChecked(m_prefs.getBoolean(m_robotConKey, false));
         m_robotVals.setChecked(m_prefs.getBoolean(m_robotValsKey, false));
 

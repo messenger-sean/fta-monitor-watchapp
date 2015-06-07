@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
+import com.fsilberberg.ftamonitor.view.fieldmonitor.BlankFragment;
 
 import microsoft.aspnet.signalr.client.ConnectionState;
 

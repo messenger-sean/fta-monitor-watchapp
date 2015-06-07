@@ -1,17 +1,25 @@
 package com.fsilberberg.ftamonitor.services;
 
 import android.app.Service;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
-import microsoft.aspnet.signalr.client.ConnectionState;
 
 import java.math.BigDecimal;
 import java.util.Random;
+
+import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
  * Randomizes the values seen on the field monitor every second for testing
@@ -124,23 +132,27 @@ public class RandomizationService extends Service {
 
         private final SharedPreferences m_prefs = PreferenceManager.getDefaultSharedPreferences(RandomizationService.this);
         private final Random m_random = new Random();
+        private final FieldStatus m_field = FieldMonitorFactory.getInstance().getFieldStatus();
         private final TeamStatus[] m_robots = new TeamStatus[]{
-                FieldMonitorFactory.getInstance().getFieldStatus().getBlue1(),
-                FieldMonitorFactory.getInstance().getFieldStatus().getBlue2(),
-                FieldMonitorFactory.getInstance().getFieldStatus().getBlue3(),
-                FieldMonitorFactory.getInstance().getFieldStatus().getRed1(),
-                FieldMonitorFactory.getInstance().getFieldStatus().getRed2(),
-                FieldMonitorFactory.getInstance().getFieldStatus().getRed3()
+                m_field.getBlue1(),
+                m_field.getBlue2(),
+                m_field.getBlue3(),
+                m_field.getRed1(),
+                m_field.getRed2(),
+                m_field.getRed3()
         };
         private boolean m_fieldConRandom;
+        private boolean m_matchStatusRandom;
         private boolean m_robotConRandom;
         private boolean m_robotValRandom;
         private String m_fieldConKey;
+        private String m_matchStatusKey;
         private String m_robotConKey;
         private String m_robotValKey;
 
         public RandomThread() {
             m_fieldConKey = RandomizationService.this.getString(R.string.randomize_field_con_key);
+            m_matchStatusKey = getString(R.string.randomize_match_status_key);
             m_robotConKey = RandomizationService.this.getString(R.string.randomize_robot_con_key);
             m_robotValKey = RandomizationService.this.getString(R.string.randomize_robot_vals_key);
             update();
@@ -148,6 +160,7 @@ public class RandomizationService extends Service {
 
         private void update() {
             m_fieldConRandom = m_prefs.getBoolean(m_fieldConKey, false);
+            m_matchStatusRandom = m_prefs.getBoolean(m_matchStatusKey, false);
             m_robotConRandom = m_prefs.getBoolean(m_robotConKey, false);
             m_robotValRandom = m_prefs.getBoolean(m_robotValKey, false);
         }
@@ -165,6 +178,11 @@ public class RandomizationService extends Service {
                 if (m_fieldConRandom && m_isBound) {
                     int newState = m_random.nextInt(ConnectionState.values().length);
                     m_stateObservable.setConnectionState(ConnectionState.values()[newState]);
+                }
+
+                if (m_matchStatusRandom) {
+                    int newState = m_random.nextInt(MatchStatus.values().length);
+                    m_field.setMatchStatus(MatchStatus.values()[newState]);
                 }
 
                 if (m_robotConRandom) {
@@ -262,7 +280,7 @@ public class RandomizationService extends Service {
             robot.setDsEth(eth);
             robot.setDs(ds);
             robot.setRadio(radio);
-            robot.setRobot(rio);
+            robot.setRio(rio);
             robot.setCode(code);
             robot.setBypassed(bypass);
             robot.setEstop(estop);

@@ -1,5 +1,9 @@
 package com.fsilberberg.ftamonitor.fieldmonitor;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+
+import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.common.Observable;
 import com.fsilberberg.ftamonitor.common.Observer;
@@ -18,7 +22,7 @@ import static com.fsilberberg.ftamonitor.fieldmonitor.UpdateType.FIELD;
  *
  * @author Fredric
  */
-public class FieldStatus implements Observable<UpdateType> {
+public class FieldStatus extends BaseObservable implements Observable<UpdateType> {
     // Teams
     private final TeamStatus m_red1 = new TeamStatus();
     private final TeamStatus m_red2 = new TeamStatus();
@@ -59,6 +63,7 @@ public class FieldStatus implements Observable<UpdateType> {
     }
 
     @SuppressWarnings("unused")
+    @Bindable
     public synchronized String getMatchNumber() {
         return m_matchNumber;
     }
@@ -66,14 +71,17 @@ public class FieldStatus implements Observable<UpdateType> {
     @SuppressWarnings("unused")
     public void setMatchNumber(String matchNumber) {
         m_matchNumber = matchNumber;
+        notifyPropertyChanged(BR.matchNumber);
     }
 
+    @Bindable
     public synchronized MatchStatus getMatchStatus() {
         return m_matchStatus;
     }
 
     public void setMatchStatus(MatchStatus matchStatus) {
         m_matchStatus = matchStatus;
+        notifyPropertyChanged(BR.matchStatus);
     }
 
     public void registerObserver(Observer<UpdateType> observer) {

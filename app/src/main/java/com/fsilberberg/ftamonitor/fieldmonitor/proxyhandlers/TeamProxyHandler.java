@@ -6,6 +6,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 /**
@@ -67,7 +68,7 @@ public class TeamProxyHandler extends ProxyHandlerBase implements SubscriptionHa
         status.setBattery(newStatus.get(BATTERY_FIELD).getAsFloat());
         status.setRoundTrip(newStatus.get(AVERAGE_TRIP_FIELD).getAsInt());
         status.setDroppedPackets(newStatus.get(LOST_PACK_FIELD).getAsInt());
-        status.setRobot(newStatus.get(RIO_FIELD).getAsBoolean());
+        status.setRio(newStatus.get(RIO_FIELD).getAsBoolean());
         status.setBypassed(newStatus.get(BYPASSED_FIELD).getAsBoolean());
         switch (newStatus.get(MONITOR_FIELD).getAsInt()) {
             case 1: // Estop

@@ -38,12 +38,7 @@ public class FieldMonitorRootFragment extends Fragment {
             m_observer = new FieldMonitorSignalrObserver();
             m_conState.registerObserver(m_observer);
             m_isBound = true;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    m_fieldMonitorStatus.setText(m_conPrefix + "\n" + fcs.getState());
-                }
-            });
+            m_observer.update(fcs.getState());
         }
 
         @Override
@@ -138,6 +133,9 @@ public class FieldMonitorRootFragment extends Fragment {
                             @Override
                             public void run() {
                                 m_signalrLayout.setVisibility(View.VISIBLE);
+                                getFragmentManager().beginTransaction()
+                                        .replace(R.id.field_monitor_fragment, new BlankFragment())
+                                        .commit();
                             }
                         });
                         break;
@@ -148,6 +146,9 @@ public class FieldMonitorRootFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     m_signalrLayout.setVisibility(View.INVISIBLE);
+                                    getFragmentManager().beginTransaction()
+                                            .replace(R.id.field_monitor_fragment, new FieldMonitorStatusFragment())
+                                            .commit();
                                 }
                             }, 500);
                         }
