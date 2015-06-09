@@ -4,33 +4,47 @@
     <data>
 
         <variable
+            name="isTeam"
+            type="boolean" />
+
+        <variable
+            name="teamBackground"
+            type="android.graphics.drawable.Drawable" />
+
+        <variable
+            name="rowNumber"
+            type="int" />
+
+        <variable
             name="team"
             type="com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus" />
+
+        <import type="com.fsilberberg.ftamonitor.common.Alliance" />
     </data>
 
     <LinearLayout
         android:id="@+id/field_monitor_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/team_status_background"
-        android:elevation="5dp"
+        android:clipToPadding="false"
         android:orientation="horizontal"
-        android:padding="0dp"
-        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment"
-        tools:ignore="UnusedAttribute"
-        tools:layout_margin="@dimen/standard_padding">
+        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">
 
         <TextView
             android:id="@+id/field_monitor_row_number"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/standard_padding"
+            android:layout_marginEnd="@dimen/spacing"
+            android:layout_marginStart="@dimen/standard_padding"
+            android:layout_marginTop="@dimen/standard_padding"
             android:layout_weight="1"
+            android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+            android:elevation="@dimen/standard_elevation"
             android:gravity="center"
             android:paddingBottom="@dimen/large_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="@dimen/standard_padding"
             android:paddingTop="@dimen/large_padding"
-            android:text=""
+            android:text="@{isTeam ? @string/field_monitor_station_number : Integer.toString(rowNumber + 1)}"
             android:textColor="@color/white_text"
             android:textSize="@dimen/medium_text_size" />
 
@@ -38,15 +52,17 @@
             android:id="@+id/field_monitor_team_number"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/standard_padding"
+            android:layout_marginEnd="@dimen/spacing"
+            android:layout_marginStart="@dimen/spacing"
+            android:layout_marginTop="@dimen/standard_padding"
             android:layout_weight="3"
-            android:background="@drawable/team_status_border"
+            android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+            android:elevation="@dimen/standard_elevation"
             android:gravity="center"
-            android:padding="@dimen/standard_padding"
             android:paddingBottom="@dimen/large_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="@dimen/standard_padding"
             android:paddingTop="@dimen/large_padding"
-            android:text="@{Integer.toString(team.teamNumber)}"
+            android:text="@{isTeam ? @string/field_monitor_team_number : Integer.toString(team.teamNumber)}"
             android:textColor="@color/white_text"
             android:textSize="@dimen/medium_text_size" />
 
@@ -54,61 +70,102 @@
             android:id="@+id/field_monitor_battery"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/standard_padding"
+            android:layout_marginEnd="@dimen/spacing"
+            android:layout_marginStart="@dimen/spacing"
+            android:layout_marginTop="@dimen/standard_padding"
             android:layout_weight="3"
-            android:background="@drawable/team_status_border"
+            android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+            android:elevation="@dimen/standard_elevation"
             android:gravity="center"
             android:paddingBottom="@dimen/large_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="@dimen/standard_padding"
             android:paddingTop="@dimen/large_padding"
-            android:text="@{String.format(`%.2f`, team.battery)}"
+            android:text="@{isTeam ? @string/field_monitor_battery_voltage : String.format(`%.2f`, team.battery)}"
             android:textColor="@color/white_text"
             android:textSize="@dimen/medium_text_size" />
 
-        <TextView
-            android:id="@+id/field_monitor_bandwidth"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:background="@drawable/team_status_border"
-            android:gravity="center"
-            android:paddingBottom="@dimen/large_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="@dimen/standard_padding"
-            android:paddingTop="@dimen/large_padding"
-            android:text="@{String.format(`%.3f`, team.dataRate)}"
-            android:textColor="@color/white_text"
-            android:textSize="@dimen/medium_text_size" />
+            android:layout_height="wrap_content"
+            android:layout_weight="9">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/field_monitor_missed_packets"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:background="@drawable/team_status_border"
-            android:gravity="center"
-            android:paddingBottom="@dimen/large_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="@dimen/standard_padding"
-            android:paddingTop="@dimen/large_padding"
-            android:text="@{Integer.toString(team.droppedPackets)}"
-            android:textColor="@color/white_text"
-            android:textSize="@dimen/medium_text_size" />
+                <TextView
+                    android:id="@+id/field_monitor_bandwidth"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/standard_padding"
+                    android:layout_marginEnd="@dimen/spacing"
+                    android:layout_marginStart="@dimen/spacing"
+                    android:layout_marginTop="@dimen/standard_padding"
+                    android:layout_weight="1"
+                    android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+                    android:elevation="@dimen/standard_elevation"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/large_padding"
+                    android:paddingTop="@dimen/large_padding"
+                    android:text="@{isTeam ? @string/field_monitor_bandwidth : String.format(`%.3f`, team.dataRate)}"
+                    android:textColor="@color/white_text"
+                    android:textSize="@dimen/medium_text_size" />
 
-        <TextView
-            android:id="@+id/field_monitor_trip_time"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:background="@drawable/team_status_border"
-            android:gravity="center"
-            android:paddingBottom="@dimen/large_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="@dimen/standard_padding"
-            android:paddingTop="@dimen/large_padding"
-            android:text="@{Integer.toString(team.roundTrip)}"
-            android:textColor="@color/white_text"
-            android:textSize="@dimen/medium_text_size" />
+                <TextView
+                    android:id="@+id/field_monitor_missed_packets"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/standard_padding"
+                    android:layout_marginEnd="@dimen/spacing"
+                    android:layout_marginStart="@dimen/spacing"
+                    android:layout_marginTop="@dimen/standard_padding"
+                    android:layout_weight="1"
+                    android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+                    android:elevation="@dimen/standard_elevation"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/large_padding"
+                    android:paddingTop="@dimen/large_padding"
+                    android:text="@{isTeam ? @string/field_monitor_missed_packets : Integer.toString(team.droppedPackets)}"
+                    android:textColor="@color/white_text"
+                    android:textSize="@dimen/medium_text_size" />
+
+                <TextView
+                    android:id="@+id/field_monitor_trip_time"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/standard_padding"
+                    android:layout_marginEnd="@dimen/standard_padding"
+                    android:layout_marginStart="@dimen/spacing"
+                    android:layout_marginTop="@dimen/standard_padding"
+                    android:layout_weight="1"
+                    android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+                    android:elevation="@dimen/standard_elevation"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/large_padding"
+                    android:paddingTop="@dimen/large_padding"
+                    android:text="@{isTeam ? @string/field_monitor_trip_time : Integer.toString(team.roundTrip)}"
+                    android:textColor="@color/white_text"
+                    android:textSize="@dimen/medium_text_size" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/field_monitor_error_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/standard_padding"
+                android:layout_marginEnd="@dimen/standard_padding"
+                android:layout_marginStart="@dimen/spacing"
+                android:layout_marginTop="@dimen/standard_padding"
+                android:background="@{isTeam ? @drawable/team_status_background : teamBackground}"
+                android:elevation="@dimen/standard_elevation"
+                android:gravity="center"
+                android:paddingBottom="@dimen/large_padding"
+                android:paddingEnd="@dimen/standard_padding"
+                android:paddingStart="@dimen/standard_padding"
+                android:paddingTop="@dimen/large_padding"
+                android:textColor="@color/white_text"
+                android:textSize="@dimen/medium_text_size"
+                android:visibility="invisible" />
+        </FrameLayout>
     </LinearLayout>
 </layout>

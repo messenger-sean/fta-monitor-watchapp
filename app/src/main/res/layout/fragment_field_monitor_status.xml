@@ -8,201 +8,148 @@
             type="com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus" />
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/FRC_LIGHT_GREY"
-        android:orientation="vertical"
-        android:padding="@dimen/standard_padding"
+        android:clipToPadding="false"
         tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorStatusFragment">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/field_monitor_match_status_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/standard_padding"
+            android:text="@string/field_monitor_match_status"
+            android:textColor="@color/FRC_DARK_GREY"
+            android:textSize="@dimen/medium_text_size" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="0dp"
-                android:text="@string/field_monitor_match_status"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-            <TextView
-                android:id="@+id/field_monitor_match_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{field.matchStatus.toString()}"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size"
-                tools:text="Not Ready" />
-
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/field_monitor_match_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/field_monitor_match_status_text"
+            android:paddingBottom="@dimen/standard_padding"
+            android:paddingEnd="@dimen/standard_padding"
+            android:paddingStart="0dp"
+            android:paddingTop="@dimen/standard_padding"
+            android:text="@{field.matchStatus.toString()}"
+            android:textColor="@color/FRC_DARK_GREY"
+            android:textSize="@dimen/medium_text_size"
+            tools:text="Not Ready" />
 
         <Space
+            android:id="@+id/space1"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_match_status_text" />
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/field_monitor_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/team_status_background"
-            android:elevation="5dp"
-            android:orientation="horizontal"
-            android:padding="0dp"
-            tools:ignore="UnusedAttribute">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:paddingBottom="@dimen/large_padding"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="@dimen/standard_padding"
-                android:paddingTop="@dimen/large_padding"
-                android:text="@string/field_monitor_station_number"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:background="@drawable/team_status_border"
-                android:gravity="center"
-                android:paddingBottom="@dimen/large_padding"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="@dimen/standard_padding"
-                android:paddingTop="@dimen/large_padding"
-                android:text="@string/field_monitor_team_number"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:background="@drawable/team_status_border"
-                android:gravity="center"
-                android:paddingBottom="@dimen/large_padding"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="@dimen/standard_padding"
-                android:paddingTop="@dimen/large_padding"
-                android:text="@string/field_monitor_battery_voltage"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:background="@drawable/team_status_border"
-                android:gravity="center"
-                android:paddingBottom="@dimen/large_padding"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="@dimen/standard_padding"
-                android:paddingTop="@dimen/large_padding"
-                android:text="@string/field_monitor_bandwidth"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:background="@drawable/team_status_border"
-                android:gravity="center"
-                android:paddingBottom="@dimen/large_padding"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="@dimen/standard_padding"
-                android:paddingTop="@dimen/large_padding"
-                android:text="@string/field_monitor_missed_packets"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:background="@drawable/team_status_border"
-                android:gravity="center"
-                android:paddingBottom="@dimen/large_padding"
-                android:paddingEnd="@dimen/standard_padding"
-                android:paddingStart="@dimen/standard_padding"
-                android:paddingTop="@dimen/large_padding"
-                android:text="@string/field_monitor_trip_time"
-                android:textColor="@color/white_text"
-                android:textSize="@dimen/medium_text_size" />
-
-        </LinearLayout>
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space1"
+            android:clipToPadding="false" />
 
         <Space
+            android:id="@+id/space2"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_header" />
 
         <FrameLayout
             android:id="@+id/field_monitor_blue1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space2"
+            android:clipToPadding="false"
             tools:layout="@layout/fragment_team_status" />
 
         <Space
+            android:id="@+id/space3"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_blue1" />
 
         <FrameLayout
             android:id="@+id/field_monitor_blue2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space3"
+            android:clipToPadding="false"
             tools:layout="@layout/fragment_team_status" />
 
         <Space
+            android:id="@+id/space4"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_blue2" />
 
         <FrameLayout
             android:id="@+id/field_monitor_blue3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space4"
+            android:clipToPadding="false"
             tools:layout="@layout/fragment_team_status" />
 
         <Space
+            android:id="@+id/space5"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_blue3" />
 
         <FrameLayout
             android:id="@+id/field_monitor_red1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space5"
+            android:clipToPadding="false"
             tools:layout="@layout/fragment_team_status" />
 
         <Space
+            android:id="@+id/space6"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_red1" />
 
         <FrameLayout
             android:id="@+id/field_monitor_red2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space6"
+            android:clipToPadding="false"
             tools:layout="@layout/fragment_team_status" />
 
         <Space
+            android:id="@+id/space7"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_red2" />
 
         <FrameLayout
             android:id="@+id/field_monitor_red3"
             android:name="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space7"
+            android:clipToPadding="false"
             tools:layout="@layout/fragment_team_status" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding" />
-    </LinearLayout>
+    </RelativeLayout>
 </layout>
