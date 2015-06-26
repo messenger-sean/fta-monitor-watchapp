@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.transition.Fade;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
@@ -19,6 +18,8 @@ import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.Station;
 import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusBinding;
+import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusBlueBinding;
+import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusRedBinding;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
@@ -74,18 +75,7 @@ public class TeamStatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        final FragmentTeamStatusBinding binding = DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_team_status,
-                container,
-                false);
-
-        m_bandwidthText = binding.fieldMonitorBandwidth;
-        m_mpText = binding.fieldMonitorMissedPackets;
-        m_ttText = binding.fieldMonitorTripTime;
-        m_errorText = binding.fieldMonitorErrorText;
-        m_container = binding.fieldMonitorRow;
+        View v;
 
         if (getArguments() != null) {
             m_isHeader = false;
@@ -101,29 +91,83 @@ public class TeamStatusFragment extends Fragment {
                     field.getBlue1(), field.getBlue2(), field.getBlue3()
             };
 
-            Drawable background;
-
             switch (alliance) {
                 case RED:
                     m_team = red[station];
-                    background = ResourcesCompat.getDrawable(getResources(), R.drawable.team_status_background_red, null);
+
+                    final FragmentTeamStatusRedBinding redBinding = DataBindingUtil.inflate(
+                            inflater,
+                            R.layout.fragment_team_status_red,
+                            container,
+                            false);
+
+                    v = redBinding.getRoot();
+
+                    m_bandwidthText = redBinding.fieldMonitorBandwidth;
+                    m_mpText = redBinding.fieldMonitorMissedPackets;
+                    m_ttText = redBinding.fieldMonitorTripTime;
+                    m_errorText = redBinding.fieldMonitorErrorText;
+                    m_container = redBinding.fieldMonitorRow;
+
+                    redBinding.setRowNumber(station);
+                    redBinding.setTeam(m_team);
+                    redBinding.setIsTeam(m_isHeader);
                     break;
                 case BLUE:
                     m_team = blue[station];
-                    background = ResourcesCompat.getDrawable(getResources(), R.drawable.team_status_background_blue, null);
+
+                    final FragmentTeamStatusBlueBinding blueBinding = DataBindingUtil.inflate(
+                            inflater,
+                            R.layout.fragment_team_status_blue,
+                            container,
+                            false);
+
+                    v = blueBinding.getRoot();
+
+                    m_bandwidthText = blueBinding.fieldMonitorBandwidth;
+                    m_mpText = blueBinding.fieldMonitorMissedPackets;
+                    m_ttText = blueBinding.fieldMonitorTripTime;
+                    m_errorText = blueBinding.fieldMonitorErrorText;
+                    m_container = blueBinding.fieldMonitorRow;
+
+                    blueBinding.setRowNumber(station);
+                    blueBinding.setTeam(m_team);
+                    blueBinding.setIsTeam(m_isHeader);
                     break;
                 default:
                     throw new RuntimeException("Unknown Alliance type " + alliance);
             }
+        } else {
+            final FragmentTeamStatusBinding blueBinding = DataBindingUtil.inflate(
+                    inflater,
+                    R.layout.fragment_team_status,
+                    container,
+                    false);
 
-            binding.setTeamBackground(background);
-            binding.setRowNumber(station);
-            binding.setTeam(m_team);
+            v = blueBinding.getRoot();
+
+            m_bandwidthText = blueBinding.fieldMonitorBandwidth;
+            m_mpText = blueBinding.fieldMonitorMissedPackets;
+            m_ttText = blueBinding.fieldMonitorTripTime;
+            m_errorText = blueBinding.fieldMonitorErrorText;
+            m_container = blueBinding.fieldMonitorRow;
+
+            blueBinding.setIsTeam(m_isHeader);
         }
 
-        binding.setIsTeam(m_isHeader);
 
-        return binding.getRoot();
+        return v;
+    }
+
+    private void setBackground(Drawable background, View v) {
+        int pL = v.getPaddingLeft();
+        int pR = v.getPaddingRight();
+        int pT = v.getPaddingTop();
+        int pB = v.getPaddingBottom();
+        ViewGroup.LayoutParams params = v.getLayoutParams();
+        v.setBackground(background);
+        v.setPadding(pL, pT, pR, pB);
+        v.setLayoutParams(params);
     }
 
     private class TeamObserver implements Observer<UpdateType> {
