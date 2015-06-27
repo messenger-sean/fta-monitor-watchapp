@@ -1,19 +1,24 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="MaterialDrawerTheme.Light.DarkToolbar.ActionBar">
-        <item name="material_drawer_header_selection_text">@color/material_drawer_dark_primary_text</item>
-        <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
-        <!-- MaterialDrawer DEFAULT items -->
-        <item name="material_drawer_primary_text">@color/white_text</item>
-        <item name="material_drawer_secondary_text">@color/white_text</item>
-        <item name="material_drawer_window_background">@color/FRC_LIGHT_GREY</item>
-        <item name="material_drawer_background">@color/FRC_LIGHT_GREY</item>
-        <!-- Material DEFAULT text / items items -->
-        <item name="material_drawer_divider">@color/FRC_DARK_GREY</item>
-        <!-- Material DEFAULT drawer items -->
-        <item name="material_drawer_selected">@color/FRC_DARK_GREY</item>
-        <item name="material_drawer_selected_text">@color/white_text</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/FRC_GREY</item>
+        <item name="colorPrimaryDark">@color/FRC_DARK_GREY</item>
+        <item name="colorAccent">@color/FRC_LIGHT_GREY</item>
+        <item name="colorControlNormal">@color/FRC_DARK_GREY</item>
+        <item name="android:textColorPrimary">@color/myTextPrimaryColor</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
+    <style name="ToolBarStyle" parent="">
+        <item name="elevation">@dimen/toolbar_elevation</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
 </resources>

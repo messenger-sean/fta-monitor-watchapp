@@ -1,36 +1,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="com.fsilberberg.ftamonitor.view.testing.TestingFieldStatus">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.fsilberberg.ftamonitor.view.testing.TestingFieldStatus">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/table_margin"
+        android:layout_margin="@dimen/standard_padding"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/table_margin"
+            android:layout_marginRight="@dimen/standard_padding"
             android:text="Match Number"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText
-            android:id="@+id/field_match_number"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Q1"/>
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/field_match_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Q1"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/table_margin"
+        android:layout_margin="@dimen/standard_padding"
         android:text="Field Status"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -45,71 +51,71 @@
                 android:id="@+id/field_testing_not_started"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Not Started"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Not Started" />
 
             <RadioButton
                 android:id="@+id/field_testing_timeout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Timeout"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Timeout" />
 
             <RadioButton
                 android:id="@+id/field_testing_ready_prestart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Ready to Prestart"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Ready to Prestart" />
 
             <RadioButton
                 android:id="@+id/field_testing_prestart_init"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Prestart Initiated"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Prestart Initiated" />
 
             <RadioButton
                 android:id="@+id/field_testing_prestart_comp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Prestart Completed"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Prestart Completed" />
 
             <RadioButton
                 android:id="@+id/field_testing_match_ready"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Match Ready"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Match Ready" />
 
             <RadioButton
                 android:id="@+id/field_testing_auto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Auto"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Auto" />
 
             <RadioButton
                 android:id="@+id/field_testing_teleop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Teleop"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Teleop" />
 
             <RadioButton
                 android:id="@+id/field_testing_over"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Over"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Over" />
 
             <RadioButton
                 android:id="@+id/field_testing_aborted"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/table_margin"
-                android:text="Aborted"/>
+                android:layout_margin="@dimen/standard_padding"
+                android:text="Aborted" />
         </RadioGroup>
     </ScrollView>
 </LinearLayout>

@@ -17,7 +17,7 @@ import com.fsilberberg.ftamonitor.common.Observable;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.MatchStateProxyHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
-import com.fsilberberg.ftamonitor.view.DrawerActivity;
+import com.fsilberberg.ftamonitor.view.MainActivity;
 import com.google.gson.JsonArray;
 import microsoft.aspnet.signalr.client.*;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
@@ -249,7 +249,7 @@ public class FieldConnectionService extends Service {
             String contentText = state.toString() + " - " + m_url;
 
             // Create the intent for the main action
-            Intent mainIntent = new Intent(FieldConnectionService.this, DrawerActivity.class);
+            Intent mainIntent = new Intent(FieldConnectionService.this, MainActivity.class);
 
             // Create the intent for the action button
             Intent actionIntent = new Intent(FieldConnectionService.this, FieldConnectionService.class);
@@ -258,7 +258,7 @@ public class FieldConnectionService extends Service {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(FieldConnectionService.this)
                     .setContentTitle("Field Monitor")
                     .setContentText(contentText)
-                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_stat_big_logo)
                     .setContentIntent(PendingIntent.getActivity(FieldConnectionService.this,
                             MAIN_ACTIVITY_INTENT_ID,
                             mainIntent,

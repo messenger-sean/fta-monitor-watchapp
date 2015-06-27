@@ -13,13 +13,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Team Number:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -34,7 +34,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:text="Robot Status"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -42,7 +42,7 @@
             android:id="@+id/team_testing_status"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/table_margin">
+            android:layout_margin="@dimen/standard_padding">
 
             <RadioButton
                 android:id="@+id/team_testing_dseth"
@@ -75,6 +75,13 @@
                 android:text="Code"/>
 
             <RadioButton
+                android:id="@+id/team_testing_byp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bypassed"/>
+
+
+            <RadioButton
                 android:id="@+id/team_testing_estop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,13 +103,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Battery:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -117,13 +124,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Bandwidth:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -138,13 +145,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Missed Packets:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -159,13 +166,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Round Trip:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -180,13 +187,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Signal Quality:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -201,13 +208,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/table_margin"
+            android:layout_margin="@dimen/standard_padding"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/table_margin"
+                android:layout_marginRight="@dimen/standard_padding"
                 android:text="Signal Strength:"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 

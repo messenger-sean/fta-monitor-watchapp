@@ -1,0 +1,117 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="field"
+            type="com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorStatusFragment">
+
+        <TextView
+            android:id="@+id/field_monitor_match_status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/standard_padding"
+            android:text="@string/field_monitor_match_status"
+            android:textColor="@color/FRC_DARK_GREY"
+            android:textSize="@dimen/medium_text_size" />
+
+        <TextView
+            android:id="@+id/field_monitor_match_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/field_monitor_match_status_text"
+            android:paddingBottom="@dimen/standard_padding"
+            android:paddingEnd="@dimen/standard_padding"
+            android:paddingStart="0dp"
+            android:paddingTop="@dimen/standard_padding"
+            android:text="@{field.matchStatus.toString()}"
+            android:textColor="@color/FRC_DARK_GREY"
+            android:textSize="@dimen/medium_text_size"
+            tools:text="Not Ready" />
+
+        <Space
+            android:id="@+id/space1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/standard_padding"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_match_status_text"
+            tools:ignore="RtlHardcoded" />
+
+        <FrameLayout
+            android:id="@+id/field_monitor_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/space1"
+            android:clipToPadding="false"
+            tools:ignore="RtlHardcoded" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/field_monitor_header"
+            tools:ignore="RtlHardcoded">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/field_monitor_blue1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    tools:layout="@layout/fragment_team_status" />
+
+                <FrameLayout
+                    android:id="@+id/field_monitor_blue2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    tools:layout="@layout/fragment_team_status" />
+
+                <FrameLayout
+                    android:id="@+id/field_monitor_blue3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    tools:layout="@layout/fragment_team_status" />
+
+                <FrameLayout
+                    android:id="@+id/field_monitor_red1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    tools:layout="@layout/fragment_team_status" />
+
+                <FrameLayout
+                    android:id="@+id/field_monitor_red2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    tools:layout="@layout/fragment_team_status" />
+
+                <FrameLayout
+                    android:id="@+id/field_monitor_red3"
+                    android:name="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    tools:layout="@layout/fragment_team_status" />
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</layout>

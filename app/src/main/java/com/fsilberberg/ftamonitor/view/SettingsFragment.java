@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
 import com.fsilberberg.ftamonitor.R;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -39,7 +41,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onResume();
         updatePref(m_fmsKey);
         updatePref(m_bwuKey);
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.action_settings));
+        ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.setTitle(getString(R.string.settings_drawer));
+        }
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -78,8 +83,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             pref.setSummary(newUrl);
             Log.d(SettingsFragment.class.getName(), "Text is " + pref.getSummary());
         } else if (key.equals(m_fmEnabledKey) || key.equals(m_testingEnabledKey)) {
-            Intent mainIntent = new Intent(getActivity(), DrawerActivity.class);
-            mainIntent.putExtra(DrawerActivity.START_FRAGMENT, DrawerActivity.SETTINGS);
+            Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+            // TODO: Fix me
+//            mainIntent.putExtra(DrawerActivity.START_FRAGMENT, DrawerActivity.SETTINGS);
             getActivity().finish();
             getActivity().startActivity(mainIntent);
         }
