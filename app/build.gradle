@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "23.0.0 rc2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.fsilberberg.ftamonitor"
         minSdkVersion 17
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -73,14 +73,14 @@ task copyBlue(type: Copy) {
     into(layoutFolder)
 }
 
-task copyAll << {}
+task copyAll()
 copyAll.dependsOn copyBlue
 copyAll.dependsOn copyRed
 
 // Shim the copy resources task in before the generate debug resources task
 afterEvaluate {
-    getTasks().getByName('generateDebugResources').dependsOn getTasks().getByName('copyAll')
-    getTasks().getByName('generateReleaseResources').dependsOn getTasks().getByName('copyAll')
+    getTasks().getByName('generateDebugResources').dependsOn copyAll
+    getTasks().getByName('generateReleaseResources').dependsOn copyAll
 }
 
 clean {
@@ -92,13 +92,13 @@ dependencies {
     compile(name: 'signalr-client-sdk-android-debug', ext: 'aar')
     compile(name: 'signalr-client-sdk', ext: 'jar')
     compile 'com.google.code.gson:gson:2.3'
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:support-v13:22.2.0'
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:support-v13:23.0.1'
+    compile 'com.android.support:support-v4:23.0.1'
     compile 'com.getpebble:pebblekit:2.6.0@aar'
     compile 'joda-time:joda-time:2.7'
     compile 'org.java-websocket:Java-WebSocket:1.3.0'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.android.support:design:23.0.1'
 }
