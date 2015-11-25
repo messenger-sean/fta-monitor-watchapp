@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorStatusFragment">
+        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitorold.FieldMonitorStatusFragment">
 
         <TextView
             android:id="@+id/field_monitor_match_status_text"

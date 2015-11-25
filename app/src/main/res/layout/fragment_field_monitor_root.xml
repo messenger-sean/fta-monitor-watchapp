@@ -3,7 +3,7 @@
     android:id="@+id/field_monitor_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorRootFragment">
+    tools:context="com.fsilberberg.ftamonitor.view.fieldmonitorold.FieldMonitorRootFragment">
 
     <LinearLayout
         android:id="@+id/field_monitor_signalr_layout"

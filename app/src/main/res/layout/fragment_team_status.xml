@@ -27,7 +27,7 @@
         android:orientation="horizontal"
         android:paddingEnd="@dimen/spacing"
         android:paddingStart="@dimen/spacing"
-        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">
+        tools:context="com.fsilberberg.ftamonitor.view.fieldmonitorold.TeamStatusFragment">
 
         <TextView
             android:id="@+id/field_monitor_row_number"
