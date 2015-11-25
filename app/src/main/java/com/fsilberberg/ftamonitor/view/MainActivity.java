@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.view.fieldmonitorold.FieldMonitorRootFragment;
+import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorRootFragment;
 import com.fsilberberg.ftamonitor.view.testing.TestingRootFragment;
 
 import butterknife.ButterKnife;
