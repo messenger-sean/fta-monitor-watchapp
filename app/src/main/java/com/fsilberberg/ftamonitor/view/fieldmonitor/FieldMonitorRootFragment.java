@@ -9,6 +9,8 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
@@ -96,6 +98,10 @@ public class FieldMonitorRootFragment extends Fragment {
         super.onResume();
         if (m_isBound) {
             m_conState.registerObserver(m_observer);
+        }
+        ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.setTitle(getString(R.string.field_monitor_drawer));
         }
     }
 
