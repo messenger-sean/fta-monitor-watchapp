@@ -48,20 +48,11 @@
             android:layout_below="@id/field_monitor_match_status_text"
             tools:ignore="RtlHardcoded" />
 
-        <FrameLayout
-            android:id="@+id/field_monitor_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/space1"
-            android:clipToPadding="false"
-            tools:ignore="RtlHardcoded" />
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/field_monitor_header"
+            android:layout_below="@id/space1"
             tools:ignore="RtlHardcoded">
 
             <LinearLayout
@@ -73,6 +64,7 @@
                     android:id="@+id/field_monitor_blue1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:clipToPadding="false"
                     tools:layout="@layout/fragment_team_status" />
 
@@ -80,6 +72,7 @@
                     android:id="@+id/field_monitor_blue2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:clipToPadding="false"
                     tools:layout="@layout/fragment_team_status" />
 
@@ -87,6 +80,7 @@
                     android:id="@+id/field_monitor_blue3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:clipToPadding="false"
                     tools:layout="@layout/fragment_team_status" />
 
@@ -94,6 +88,7 @@
                     android:id="@+id/field_monitor_red1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:clipToPadding="false"
                     tools:layout="@layout/fragment_team_status" />
 
@@ -101,6 +96,7 @@
                     android:id="@+id/field_monitor_red2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:clipToPadding="false"
                     tools:layout="@layout/fragment_team_status" />
 
@@ -109,6 +105,7 @@
                     android:name="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:clipToPadding="false"
                     tools:layout="@layout/fragment_team_status" />
             </LinearLayout>

@@ -5,16 +5,12 @@
     <data>
 
         <variable
-            name="isTeam"
-            type="boolean" />
-
-        <variable
             name="rowText"
             type="String" />
 
         <variable
             name="alliance"
-            type="com.fsilberberg.common.Alliance" />
+            type="com.fsilberberg.ftamonitor.common.Alliance" />
 
         <variable
             name="team"
@@ -28,216 +24,175 @@
         android:layout_height="wrap_content">
 
         <GridLayout
+            android:id="@+id/root_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@{team.alliance.equals(Alliance.RED) ? @color/FMS_RED : @color/FMS_BLUE}"
+            android:background="@{alliance.equals(Alliance.RED) ? @color/FRC_RED : @color/FRC_BLUE}"
             android:columnCount="8"
             android:padding="10dp"
             android:rowCount="2"
             android:useDefaultMargins="true"
-            tools:background="@color/FMS_RED">
+            tools:background="@color/FRC_RED">
 
             <TextView
                 android:id="@+id/row_number"
                 android:layout_column="0"
+                android:textAlignment="center"
                 android:layout_columnSpan="2"
+                android:layout_columnWeight="1"
                 android:layout_row="0"
                 android:text="@{rowText}"
                 android:textColor="@color/white_text"
                 tools:text="Red 1" />
 
             <TextView
+                android:id="@+id/team_number_label"
                 android:layout_column="0"
+                android:layout_columnWeight="1"
                 android:layout_row="1"
                 android:text="#:"
                 android:textColor="@color/white_text" />
 
             <TextView
+                android:id="@+id/team_number"
                 android:layout_column="1"
+                android:layout_columnWeight="1"
                 android:layout_row="1"
-                android:text="@{team.number}"
+                android:text="@{Integer.toString(team.teamNumber)}"
                 android:textColor="@color/white_text"
                 tools:text="3218" />
 
             <TextView
+                android:id="@+id/robot_status_label"
                 android:layout_column="2"
-                android:layout_columnSpan="2"
+                android:layout_columnSpan="1"
+                android:layout_columnWeight="1"
                 android:layout_row="0"
                 android:text="Status:"
                 android:textColor="@color/white_text" />
 
             <TextView
-                android:id="@+id/team_status_text"
-                android:layout_column="4"
-                android:layout_columnSpan="4"
+                android:id="@+id/robot_status"
+                android:layout_column="3"
+                android:layout_columnSpan="5"
+                android:layout_columnWeight="1"
                 android:layout_row="0"
                 android:textColor="@color/white_text"
                 tools:text="No RoboRIO" />
 
             <TextView
+                android:id="@+id/bandwidth_label"
                 android:layout_column="2"
+                android:layout_columnWeight="1"
                 android:layout_row="0"
                 android:text="BW:"
                 android:textColor="@color/white_text"
                 android:visibility="invisible" />
 
             <TextView
+                android:id="@+id/bandwidth"
                 android:layout_column="3"
+                android:layout_columnWeight="1"
                 android:layout_row="0"
-                android:text="@{team.dataRate}"
+                android:text="@{Float.toString(team.dataRate)}"
                 android:textColor="@color/white_text"
                 android:visibility="invisible"
                 tools:text="7.589" />
 
             <TextView
+                android:id="@+id/battery_label"
                 android:layout_column="2"
+                android:layout_columnWeight="1"
                 android:layout_row="1"
                 android:text="Volt:"
                 android:textColor="@color/white_text" />
 
             <TextView
+                android:id="@+id/battery"
                 android:layout_column="3"
+                android:layout_columnWeight="1"
                 android:layout_row="1"
+                android:text="@{Float.toString(team.battery)}"
                 android:textColor="@color/white_text"
-                android:text="@{team.battery}"
-                tools:text="12.32"/>
+                tools:text="12.32" />
+
+            <TextView
+                android:id="@+id/round_trip_label"
+                android:layout_column="4"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="RT:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/round_trip"
+                android:layout_column="5"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="@{Integer.toString(team.roundTrip)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+            <TextView
+                android:id="@+id/missed_packets_label"
+                android:layout_column="4"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="MP:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/missed_packets"
+                android:layout_column="5"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="@{Integer.toString(team.droppedPackets)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+            <TextView
+                android:id="@+id/signal_strength_label"
+                android:layout_column="6"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="SS:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/signal_strength"
+                android:layout_column="7"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="@{Float.toString(team.signalStrength)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+            <TextView
+                android:id="@+id/signal_quality_label"
+                android:layout_column="6"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="SQ:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/signal_quality"
+                android:layout_column="7"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="@{Float.toString(team.signalQuality)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
 
         </GridLayout>
 
     </android.support.v7.widget.CardView>
-
-    <!--<LinearLayout-->
-    <!--android:id="@+id/field_monitor_row"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:clipToPadding="false"-->
-    <!--android:orientation="horizontal"-->
-    <!--android:paddingEnd="@dimen/spacing"-->
-    <!--android:paddingStart="@dimen/spacing"-->
-    <!--tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment">-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_row_number"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@{isTeam ? @string/field_monitor_station_number : Integer.toString(rowNumber + 1)}"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size" />-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_team_number"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:layout_weight="3"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@{isTeam ? @string/field_monitor_team_number : Integer.toString(team.teamNumber)}"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size" />-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_battery"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:layout_weight="3"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@{isTeam ? @string/field_monitor_battery_voltage : String.format(`%.2f`, team.battery)}"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size" />-->
-
-    <!--<FrameLayout-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_weight="9">-->
-
-    <!--<LinearLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content">-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_bandwidth"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@{isTeam ? @string/field_monitor_bandwidth : String.format(`%.3f`, team.dataRate)}"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size" />-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_missed_packets"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@{isTeam ? @string/field_monitor_missed_packets : Integer.toString(team.droppedPackets)}"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size" />-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_trip_time"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:layout_weight="1"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@{isTeam ? @string/field_monitor_trip_time : Integer.toString(team.roundTrip)}"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size" />-->
-    <!--</LinearLayout>-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/field_monitor_error_text"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="@dimen/standard_padding"-->
-    <!--android:layout_marginEnd="@dimen/spacing"-->
-    <!--android:layout_marginStart="@dimen/spacing"-->
-    <!--android:layout_marginTop="@dimen/standard_padding"-->
-    <!--android:background="@drawable/team_status_background"-->
-    <!--android:elevation="@dimen/standard_elevation"-->
-    <!--android:gravity="center"-->
-    <!--android:paddingEnd="@dimen/standard_padding"-->
-    <!--android:paddingStart="@dimen/standard_padding"-->
-    <!--android:textColor="@color/white_text"-->
-    <!--android:textSize="@dimen/medium_text_size"-->
-    <!--android:visibility="invisible" />-->
-    <!--</FrameLayout>-->
-    <!--</LinearLayout>-->
 </layout>

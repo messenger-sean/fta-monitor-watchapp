@@ -46,7 +46,6 @@ public class FieldMonitorStatusFragment extends Fragment {
 
         // Insert all of the team status fragments
         getFragmentManager().beginTransaction()
-                .replace(R.id.field_monitor_header, new TeamStatusFragment())
                 .replace(R.id.field_monitor_blue1, TeamStatusFragment.makeInstance(Alliance.BLUE, Station.STATION1))
                 .replace(R.id.field_monitor_blue2, TeamStatusFragment.makeInstance(Alliance.BLUE, Station.STATION2))
                 .replace(R.id.field_monitor_blue3, TeamStatusFragment.makeInstance(Alliance.BLUE, Station.STATION3))
