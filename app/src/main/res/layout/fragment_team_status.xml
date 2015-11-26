@@ -1,4 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedAttribute">
 
@@ -21,7 +22,10 @@
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:elevation="@dimen/standard_elevation"
+        card_view:cardUseCompatPadding="true">
 
         <GridLayout
             android:id="@+id/root_layout"
@@ -37,11 +41,11 @@
             <TextView
                 android:id="@+id/row_number"
                 android:layout_column="0"
-                android:textAlignment="center"
                 android:layout_columnSpan="2"
                 android:layout_columnWeight="1"
                 android:layout_row="0"
                 android:text="@{rowText}"
+                android:textAlignment="center"
                 android:textColor="@color/white_text"
                 tools:text="Red 1" />
 
@@ -58,6 +62,7 @@
                 android:layout_column="1"
                 android:layout_columnWeight="1"
                 android:layout_row="1"
+                android:gravity="start"
                 android:text="@{Integer.toString(team.teamNumber)}"
                 android:textColor="@color/white_text"
                 tools:text="3218" />
@@ -77,6 +82,7 @@
                 android:layout_columnSpan="5"
                 android:layout_columnWeight="1"
                 android:layout_row="0"
+                android:gravity="start"
                 android:textColor="@color/white_text"
                 tools:text="No RoboRIO" />
 
@@ -94,6 +100,7 @@
                 android:layout_column="3"
                 android:layout_columnWeight="1"
                 android:layout_row="0"
+                android:gravity="start"
                 android:text="@{Float.toString(team.dataRate)}"
                 android:textColor="@color/white_text"
                 android:visibility="invisible"
@@ -112,6 +119,7 @@
                 android:layout_column="3"
                 android:layout_columnWeight="1"
                 android:layout_row="1"
+                android:gravity="start"
                 android:text="@{Float.toString(team.battery)}"
                 android:textColor="@color/white_text"
                 tools:text="12.32" />
@@ -130,6 +138,7 @@
                 android:layout_column="5"
                 android:layout_columnWeight="1"
                 android:layout_row="0"
+                android:gravity="start"
                 android:text="@{Integer.toString(team.roundTrip)}"
                 android:textColor="@color/white_text"
                 android:visibility="invisible"
@@ -149,6 +158,7 @@
                 android:layout_column="5"
                 android:layout_columnWeight="1"
                 android:layout_row="1"
+                android:gravity="start"
                 android:text="@{Integer.toString(team.droppedPackets)}"
                 android:textColor="@color/white_text"
                 android:visibility="invisible"
@@ -168,6 +178,7 @@
                 android:layout_column="7"
                 android:layout_columnWeight="1"
                 android:layout_row="0"
+                android:gravity="start"
                 android:text="@{Float.toString(team.signalStrength)}"
                 android:textColor="@color/white_text"
                 android:visibility="invisible"
@@ -186,7 +197,9 @@
                 android:id="@+id/signal_quality"
                 android:layout_column="7"
                 android:layout_columnWeight="1"
+                android:layout_gravity="left"
                 android:layout_row="1"
+                android:gravity="start"
                 android:text="@{Float.toString(team.signalQuality)}"
                 android:textColor="@color/white_text"
                 android:visibility="invisible"

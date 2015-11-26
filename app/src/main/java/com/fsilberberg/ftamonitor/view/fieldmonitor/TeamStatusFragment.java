@@ -3,7 +3,6 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 import android.app.Fragment;
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.transition.Fade;
@@ -60,6 +59,7 @@ public class TeamStatusFragment extends Fragment {
     public void onResume() {
         super.onResume();
         m_team.registerObserver(m_observer);
+        m_observer.update(UpdateType.TEAM);
     }
 
     @Override
@@ -124,30 +124,19 @@ public class TeamStatusFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void setBackground(Drawable background, View v) {
-        int pL = v.getPaddingLeft();
-        int pR = v.getPaddingRight();
-        int pT = v.getPaddingTop();
-        int pB = v.getPaddingBottom();
-        ViewGroup.LayoutParams params = v.getLayoutParams();
-        v.setBackground(background);
-        v.setPadding(pL, pT, pR, pB);
-        v.setLayoutParams(params);
-    }
-
     private class TeamObserver implements Observer<UpdateType> {
         @Override
         public void update(UpdateType updateType) {
             if (!m_team.isDsEth()) {
-                animateError("Ethernet");
+                animateError("No DS Ethernet");
             } else if (!m_team.isDs()) {
-                animateError("Driver Station");
+                animateError("No Driver Station");
             } else if (!m_team.isRadio()) {
-                animateError("Radio");
+                animateError("No Robot Radio");
             } else if (!m_team.isRio()) {
-                animateError("RoboRIO");
+                animateError("No RoboRIO");
             } else if (!m_team.isCode()) {
-                animateError("Code");
+                animateError("No Code");
             } else {
                 removeError();
             }

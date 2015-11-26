@@ -64,40 +64,55 @@
                     android:id="@+id/field_monitor_blue1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="@dimen/standard_margin"
+                    android:layout_marginStart="@dimen/standard_margin"
+                    android:layout_marginTop="@dimen/standard_margin"
                     android:clipToPadding="false"
+                    android:elevation="@dimen/standard_elevation"
                     tools:layout="@layout/fragment_team_status" />
 
                 <FrameLayout
                     android:id="@+id/field_monitor_blue2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="@dimen/standard_margin"
+                    android:layout_marginStart="@dimen/standard_margin"
+                    android:layout_marginTop="@dimen/standard_margin"
                     android:clipToPadding="false"
+                    android:elevation="@dimen/standard_elevation"
                     tools:layout="@layout/fragment_team_status" />
 
                 <FrameLayout
                     android:id="@+id/field_monitor_blue3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="@dimen/standard_margin"
+                    android:layout_marginStart="@dimen/standard_margin"
+                    android:layout_marginTop="@dimen/standard_margin"
                     android:clipToPadding="false"
+                    android:elevation="@dimen/standard_elevation"
                     tools:layout="@layout/fragment_team_status" />
 
                 <FrameLayout
                     android:id="@+id/field_monitor_red1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="@dimen/standard_margin"
+                    android:layout_marginStart="@dimen/standard_margin"
+                    android:layout_marginTop="@dimen/standard_margin"
                     android:clipToPadding="false"
+                    android:elevation="@dimen/standard_elevation"
                     tools:layout="@layout/fragment_team_status" />
 
                 <FrameLayout
                     android:id="@+id/field_monitor_red2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="@dimen/standard_margin"
+                    android:layout_marginStart="@dimen/standard_margin"
+                    android:layout_marginTop="@dimen/standard_margin"
                     android:clipToPadding="false"
+                    android:elevation="@dimen/standard_elevation"
                     tools:layout="@layout/fragment_team_status" />
 
                 <FrameLayout
@@ -105,8 +120,11 @@
                     android:name="com.fsilberberg.ftamonitor.view.fieldmonitor.TeamStatusFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="@dimen/standard_margin"
+                    android:layout_marginStart="@dimen/standard_margin"
+                    android:layout_marginTop="@dimen/standard_margin"
                     android:clipToPadding="false"
+                    android:elevation="@dimen/standard_elevation"
                     tools:layout="@layout/fragment_team_status" />
             </LinearLayout>
         </ScrollView>

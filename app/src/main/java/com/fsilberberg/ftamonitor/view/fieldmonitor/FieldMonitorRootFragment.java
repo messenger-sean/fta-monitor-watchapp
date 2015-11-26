@@ -9,7 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.transition.Fade;
+import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,7 +143,7 @@ public class FieldMonitorRootFragment extends Fragment {
                             @Override
                             public void run() {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    TransitionManager.beginDelayedTransition(m_root, new Fade());
+                                    TransitionManager.beginDelayedTransition(m_root, new Slide());
                                 }
                                 m_signalrLayout.setVisibility(View.VISIBLE);
                                 m_fieldMonitorFragment.setVisibility(View.INVISIBLE);
@@ -157,7 +157,7 @@ public class FieldMonitorRootFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                        TransitionManager.beginDelayedTransition(m_root, new Fade());
+                                        TransitionManager.beginDelayedTransition(m_root, new Slide());
                                     }
                                     m_signalrLayout.setVisibility(View.INVISIBLE);
                                     m_fieldMonitorFragment.setVisibility(View.VISIBLE);
@@ -166,13 +166,6 @@ public class FieldMonitorRootFragment extends Fragment {
                         }
                         break;
                 }
-            }
-        }
-
-        private void toggleVisibility(View... views) {
-            for (View v : views) {
-                boolean visible = v.getVisibility() == View.VISIBLE;
-                v.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
             }
         }
     }
