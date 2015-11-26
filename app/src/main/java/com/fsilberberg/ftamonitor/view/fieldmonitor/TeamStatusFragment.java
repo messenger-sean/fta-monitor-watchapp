@@ -137,6 +137,10 @@ public class TeamStatusFragment extends Fragment {
                 animateError("No RoboRIO");
             } else if (!m_team.isCode()) {
                 animateError("No Code");
+            } else if (m_team.isEstop()) {
+                animateError("Team is E-Stopped");
+            } else if (m_team.isBypassed()) {
+                animateError("Team is Bypassed");
             } else {
                 removeError();
             }

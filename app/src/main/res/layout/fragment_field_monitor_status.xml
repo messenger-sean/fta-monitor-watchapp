@@ -80,7 +80,7 @@
                     android:layout_below="@id/field_monitor_match_number_label"
                     android:layout_toEndOf="@id/field_monitor_match_status"
                     android:paddingStart="@dimen/large_padding"
-                    android:text="Replay #:"
+                    android:text="Play #:"
                     android:textColor="@color/white_text" />
 
                 <TextView
