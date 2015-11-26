@@ -34,6 +34,7 @@ public class FieldStatus extends BaseObservable implements Observable<UpdateType
     // Match stats
     private String m_matchNumber = "999";
     private MatchStatus m_matchStatus = NOT_READY;
+    private int m_playNumber = 0;
 
     // Observers
     private final Collection<Observer<UpdateType>> m_observers = new ArrayList<>();
@@ -82,6 +83,16 @@ public class FieldStatus extends BaseObservable implements Observable<UpdateType
     public void setMatchStatus(MatchStatus matchStatus) {
         m_matchStatus = matchStatus;
         notifyPropertyChanged(BR.matchStatus);
+    }
+
+    @Bindable
+    public synchronized int getPlayNumber() {
+        return m_playNumber;
+    }
+
+    public void setPlayNumber(int playNumber) {
+        m_playNumber = playNumber;
+        notifyPropertyChanged(BR.playNumber);
     }
 
     public void registerObserver(Observer<UpdateType> observer) {

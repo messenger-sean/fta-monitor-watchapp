@@ -1,4 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -14,45 +15,94 @@
         android:clipToPadding="false"
         tools:context="com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorStatusFragment">
 
-        <TextView
-            android:id="@+id/field_monitor_match_status_text"
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.CardView
+            android:id="@+id/field_monitor_match_status_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:padding="@dimen/standard_padding"
-            android:text="@string/field_monitor_match_status"
-            android:textColor="@color/FRC_DARK_GREY"
-            android:textSize="@dimen/medium_text_size" />
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:elevation="@dimen/standard_elevation"
+            card_view:cardUseCompatPadding="true">
 
-        <TextView
-            android:id="@+id/field_monitor_match_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/field_monitor_match_status_text"
-            android:paddingBottom="@dimen/standard_padding"
-            android:paddingEnd="@dimen/standard_padding"
-            android:paddingStart="0dp"
-            android:paddingTop="@dimen/standard_padding"
-            android:text="@{field.matchStatus.toString()}"
-            android:textColor="@color/FRC_DARK_GREY"
-            android:textSize="@dimen/medium_text_size"
-            tools:text="Not Ready" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/FRC_LIGHT_GREY"
+                android:padding="@dimen/standard_padding">
 
-        <Space
-            android:id="@+id/space1"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/standard_padding"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/field_monitor_match_status_text"
-            tools:ignore="RtlHardcoded" />
+                <TextView
+                    android:id="@+id/field_monitor_match_number_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Match Number:"
+                    android:textColor="@color/white_text" />
+
+                <TextView
+                    android:id="@+id/field_monitor_match_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@id/field_monitor_match_number_label"
+                    android:paddingStart="@dimen/standard_padding"
+                    android:text="@{field.matchNumber}"
+                    android:textColor="@color/white_text"
+                    tools:text="1" />
+
+                <TextView
+                    android:id="@+id/field_monitor_match_status_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/field_monitor_match_number_label"
+                    android:text="Match Status:"
+                    android:textColor="@color/white_text" />
+
+                <TextView
+                    android:id="@+id/field_monitor_match_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/field_monitor_match_number_label"
+                    android:layout_toEndOf="@id/field_monitor_match_status_label"
+                    android:paddingStart="@dimen/standard_padding"
+                    android:text="@{field.matchStatus.toString()}"
+                    android:textColor="@color/white_text"
+                    tools:text="Not Ready" />
+
+                <TextView
+                    android:id="@+id/field_monitor_replay_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/field_monitor_match_number_label"
+                    android:layout_toEndOf="@id/field_monitor_match_status"
+                    android:paddingStart="@dimen/large_padding"
+                    android:text="Replay #:"
+                    android:textColor="@color/white_text" />
+
+                <TextView
+                    android:id="@+id/field_monitor_replay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/field_monitor_match_number_label"
+                    android:layout_toEndOf="@id/field_monitor_replay_label"
+                    android:paddingStart="@dimen/standard_padding"
+                    android:text="@{Integer.toString(field.playNumber)}"
+                    android:textColor="@color/white_text"
+                    tools:text="1" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@id/space1"
+            android:layout_below="@id/field_monitor_match_status_view"
             tools:ignore="RtlHardcoded">
 
             <LinearLayout
