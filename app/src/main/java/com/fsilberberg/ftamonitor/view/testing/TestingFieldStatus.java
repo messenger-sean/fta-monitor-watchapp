@@ -32,6 +32,8 @@ public class TestingFieldStatus extends Fragment {
     protected RadioGroup m_group;
     @InjectView(R.id.field_match_number)
     protected EditText m_matchTextBox;
+    @InjectView(R.id.field_match_play)
+    protected EditText m_replayTextBox;
     @InjectView(R.id.field_testing_not_started)
     protected RadioButton m_notReady;
     @InjectView(R.id.field_testing_timeout)
@@ -147,6 +149,24 @@ public class TestingFieldStatus extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0 && count != 0) {
                     FieldMonitorFactory.getInstance().getFieldStatus().setMatchNumber(s.toString());
+                    FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        m_replayTextBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0 && count != 0) {
+                    FieldMonitorFactory.getInstance().getFieldStatus().setPlayNumber(Integer.parseInt(s.toString()));
                     FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
                 }
             }

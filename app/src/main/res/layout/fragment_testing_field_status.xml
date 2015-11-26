@@ -8,12 +8,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_padding"
+        android:layout_margin="@dimen/standard_margin"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginRight="@dimen/standard_padding"
             android:text="Match Number"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -29,6 +30,28 @@
                 android:hint="Q1"
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/standard_margin"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Play Number"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/field_match_play"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="1"
+            android:inputType="number"
+            android:paddingStart="@dimen/standard_padding" />
     </LinearLayout>
 
     <TextView

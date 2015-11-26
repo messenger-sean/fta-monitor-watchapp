@@ -183,6 +183,8 @@ public class RandomizationService extends Service {
                 if (m_matchStatusRandom) {
                     int newState = m_random.nextInt(MatchStatus.values().length);
                     m_field.setMatchStatus(MatchStatus.values()[newState]);
+                    m_field.setPlayNumber(m_random.nextInt(9));
+                    m_field.updateObservers();
                 }
 
                 if (m_robotConRandom) {

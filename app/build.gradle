@@ -3,7 +3,7 @@ apply plugin: 'com.android.databinding'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "com.fsilberberg.ftamonitor"
@@ -40,65 +40,18 @@ repositories {
     }
 }
 
-// This is the ugliest hack I have ever written, but it works. There are graphical glitches
-// in the backgrounds of the tiles as they animate when I set the background programmatically.
-// The solution is to just have the correct backgrounds in the xml, but I didn't want to maintain
-// 3 versions of the file. Therefore, I generate them programmatically at compile time, and
-// make sure that they're not included in the commit. It's ugly as all get out, but it works.
-
-def layoutFolder = 'src/main/res/layout'
-def normalName = 'fragment_team_status.xml'
-def redName = 'fragment_team_status_red.xml'
-def blueName = 'fragment_team_status_blue.xml'
-def backgroundText = 'android:background="@drawable/%s"'
-def normalBackground = ~/android:background="@drawable\/team_status_background"/
-
-task copyRed(type: Copy) {
-    from(layoutFolder)
-    include(normalName)
-    rename(normalName, redName)
-    filter { line ->
-        line.replaceAll(normalBackground, String.format(backgroundText, 'team_status_background_red'))
-    }
-    into(layoutFolder)
-}
-
-task copyBlue(type: Copy) {
-    from(layoutFolder)
-    include(normalName)
-    rename(normalName, blueName)
-    filter { line ->
-        line.replaceAll(normalBackground, String.format(backgroundText, 'team_status_background_blue'))
-    }
-    into(layoutFolder)
-}
-
-task copyAll()
-copyAll.dependsOn copyBlue
-copyAll.dependsOn copyRed
-
-// Shim the copy resources task in before the generate debug resources task
-afterEvaluate {
-    getTasks().getByName('generateDebugResources').dependsOn copyAll
-    getTasks().getByName('generateReleaseResources').dependsOn copyAll
-}
-
-clean {
-    delete "$layoutFolder/$redName"
-    delete "$layoutFolder/$blueName"
-}
-
 dependencies {
     compile(name: 'signalr-client-sdk-android-debug', ext: 'aar')
     compile(name: 'signalr-client-sdk', ext: 'jar')
     compile 'com.google.code.gson:gson:2.3'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:support-v13:23.0.1'
-    compile 'com.android.support:support-v4:23.0.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:support-v13:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'com.getpebble:pebblekit:2.6.0@aar'
     compile 'joda-time:joda-time:2.7'
     compile 'org.java-websocket:Java-WebSocket:1.3.0'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
 }

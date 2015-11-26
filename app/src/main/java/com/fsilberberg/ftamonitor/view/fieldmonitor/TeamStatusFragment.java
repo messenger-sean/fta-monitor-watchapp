@@ -3,7 +3,6 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 import android.app.Fragment;
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.transition.Fade;
@@ -18,12 +17,14 @@ import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.Station;
 import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusBinding;
-import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusBlueBinding;
-import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusRedBinding;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,12 +46,10 @@ public class TeamStatusFragment extends Fragment {
 
     private final TeamObserver m_observer = new TeamObserver();
     private TeamStatus m_team;
-    private ViewGroup m_container;
-    private TextView m_bandwidthText;
-    private TextView m_mpText;
-    private TextView m_ttText;
     private TextView m_errorText;
-    private boolean m_isHeader = true;
+    private ViewGroup m_root;
+    private Collection<View> m_errorVisibleElements = new ArrayList<>();
+    private Collection<View> m_errorInvisibleElements = new ArrayList<>();
 
     public TeamStatusFragment() {
         // Required empty public constructor
@@ -59,130 +58,89 @@ public class TeamStatusFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (!m_isHeader) {
-            m_team.registerObserver(m_observer);
-        }
+        m_team.registerObserver(m_observer);
+        m_observer.update(UpdateType.TEAM);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (!m_isHeader) {
-            m_team.unregisterObserver(m_observer);
-        }
+        m_team.unregisterObserver(m_observer);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v;
+        final FragmentTeamStatusBinding binding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_team_status,
+                container,
+                false);
 
-        if (getArguments() != null) {
-            m_isHeader = false;
-
-            Bundle args = getArguments();
-            FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
-            Alliance alliance = Alliance.values()[args.getInt(ALLIANCE_ARG)];
-            int station = args.getInt(STATION_ARG);
-            TeamStatus[] red = new TeamStatus[]{
-                    field.getRed1(), field.getRed2(), field.getRed3()
-            };
-            TeamStatus[] blue = new TeamStatus[]{
-                    field.getBlue1(), field.getBlue2(), field.getBlue3()
-            };
-
-            switch (alliance) {
-                case RED:
-                    m_team = red[station];
-
-                    final FragmentTeamStatusRedBinding redBinding = DataBindingUtil.inflate(
-                            inflater,
-                            R.layout.fragment_team_status_red,
-                            container,
-                            false);
-
-                    v = redBinding.getRoot();
-
-                    m_bandwidthText = redBinding.fieldMonitorBandwidth;
-                    m_mpText = redBinding.fieldMonitorMissedPackets;
-                    m_ttText = redBinding.fieldMonitorTripTime;
-                    m_errorText = redBinding.fieldMonitorErrorText;
-                    m_container = redBinding.fieldMonitorRow;
-
-                    redBinding.setRowNumber(station);
-                    redBinding.setTeam(m_team);
-                    redBinding.setIsTeam(m_isHeader);
-                    break;
-                case BLUE:
-                    m_team = blue[station];
-
-                    final FragmentTeamStatusBlueBinding blueBinding = DataBindingUtil.inflate(
-                            inflater,
-                            R.layout.fragment_team_status_blue,
-                            container,
-                            false);
-
-                    v = blueBinding.getRoot();
-
-                    m_bandwidthText = blueBinding.fieldMonitorBandwidth;
-                    m_mpText = blueBinding.fieldMonitorMissedPackets;
-                    m_ttText = blueBinding.fieldMonitorTripTime;
-                    m_errorText = blueBinding.fieldMonitorErrorText;
-                    m_container = blueBinding.fieldMonitorRow;
-
-                    blueBinding.setRowNumber(station);
-                    blueBinding.setTeam(m_team);
-                    blueBinding.setIsTeam(m_isHeader);
-                    break;
-                default:
-                    throw new RuntimeException("Unknown Alliance type " + alliance);
-            }
-        } else {
-            final FragmentTeamStatusBinding blueBinding = DataBindingUtil.inflate(
-                    inflater,
-                    R.layout.fragment_team_status,
-                    container,
-                    false);
-
-            v = blueBinding.getRoot();
-
-            m_bandwidthText = blueBinding.fieldMonitorBandwidth;
-            m_mpText = blueBinding.fieldMonitorMissedPackets;
-            m_ttText = blueBinding.fieldMonitorTripTime;
-            m_errorText = blueBinding.fieldMonitorErrorText;
-            m_container = blueBinding.fieldMonitorRow;
-
-            blueBinding.setIsTeam(m_isHeader);
+        if (getArguments() == null) {
+            throw new RuntimeException("Null arguments passed to team status fragment! " +
+                    "Use the makeInstance factory to make new instances of team status fragment.");
         }
 
+        Bundle args = getArguments();
+        FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
+        Alliance alliance = Alliance.values()[args.getInt(ALLIANCE_ARG)];
+        Station station = Station.values()[args.getInt(STATION_ARG)];
+        TeamStatus[] red = new TeamStatus[]{
+                field.getRed1(), field.getRed2(), field.getRed3()
+        };
+        TeamStatus[] blue = new TeamStatus[]{
+                field.getBlue1(), field.getBlue2(), field.getBlue3()
+        };
 
-        return v;
-    }
+        switch (alliance) {
+            case RED:
+                m_team = red[station.getStationNumber() - 1];
+                break;
+            case BLUE:
+                m_team = blue[station.getStationNumber() - 1];
+                break;
+            default:
+                throw new RuntimeException("Unknown Alliance type " + alliance);
+        }
 
-    private void setBackground(Drawable background, View v) {
-        int pL = v.getPaddingLeft();
-        int pR = v.getPaddingRight();
-        int pT = v.getPaddingTop();
-        int pB = v.getPaddingBottom();
-        ViewGroup.LayoutParams params = v.getLayoutParams();
-        v.setBackground(background);
-        v.setPadding(pL, pT, pR, pB);
-        v.setLayoutParams(params);
+        binding.setAlliance(alliance);
+        binding.setRowText(String.format("%s %d", alliance.getPrettyName(), station.getStationNumber()));
+        binding.setTeam(m_team);
+
+        m_root = binding.rootLayout;
+        m_errorText = binding.robotStatus;
+
+        m_errorInvisibleElements.addAll(Arrays.asList(
+                binding.bandwidth, binding.bandwidthLabel,
+                binding.roundTrip, binding.roundTripLabel,
+                binding.missedPackets, binding.missedPacketsLabel,
+                binding.signalQuality, binding.signalQualityLabel,
+                binding.signalStrength, binding.signalStrengthLabel
+        ));
+
+        m_errorVisibleElements.addAll(Arrays.asList(binding.robotStatus, binding.robotStatusLabel));
+
+        return binding.getRoot();
     }
 
     private class TeamObserver implements Observer<UpdateType> {
         @Override
         public void update(UpdateType updateType) {
             if (!m_team.isDsEth()) {
-                animateError("Ethernet");
+                animateError("No DS Ethernet");
             } else if (!m_team.isDs()) {
-                animateError("Driver Station");
+                animateError("No Driver Station");
             } else if (!m_team.isRadio()) {
-                animateError("Radio");
+                animateError("No Robot Radio");
             } else if (!m_team.isRio()) {
-                animateError("RoboRIO");
+                animateError("No RoboRIO");
             } else if (!m_team.isCode()) {
-                animateError("Code");
+                animateError("No Code");
+            } else if (m_team.isEstop()) {
+                animateError("Team is E-Stopped");
+            } else if (m_team.isBypassed()) {
+                animateError("Team is Bypassed");
             } else {
                 removeError();
             }
@@ -194,12 +152,14 @@ public class TeamStatusFragment extends Fragment {
                     @Override
                     public void run() {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            TransitionManager.beginDelayedTransition(m_container, new Fade());
+                            TransitionManager.beginDelayedTransition(m_root, new Fade());
                         }
-                        m_errorText.setVisibility(View.VISIBLE);
-                        m_bandwidthText.setVisibility(View.INVISIBLE);
-                        m_mpText.setVisibility(View.INVISIBLE);
-                        m_ttText.setVisibility(View.INVISIBLE);
+                        for (View v : m_errorVisibleElements) {
+                            v.setVisibility(View.VISIBLE);
+                        }
+                        for (View v : m_errorInvisibleElements) {
+                            v.setVisibility(View.INVISIBLE);
+                        }
                         m_errorText.setText(text);
                     }
                 });
@@ -212,12 +172,14 @@ public class TeamStatusFragment extends Fragment {
                     @Override
                     public void run() {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            TransitionManager.beginDelayedTransition(m_container, new Fade());
+                            TransitionManager.beginDelayedTransition(m_root, new Fade());
                         }
-                        m_errorText.setVisibility(View.INVISIBLE);
-                        m_bandwidthText.setVisibility(View.VISIBLE);
-                        m_mpText.setVisibility(View.VISIBLE);
-                        m_ttText.setVisibility(View.VISIBLE);
+                        for (View v : m_errorInvisibleElements) {
+                            v.setVisibility(View.VISIBLE);
+                        }
+                        for (View v : m_errorVisibleElements) {
+                            v.setVisibility(View.INVISIBLE);
+                        }
                     }
                 });
             }
