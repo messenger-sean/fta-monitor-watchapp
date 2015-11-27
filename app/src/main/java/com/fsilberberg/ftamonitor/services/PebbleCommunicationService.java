@@ -1,10 +1,15 @@
 package com.fsilberberg.ftamonitor.services;
 
 import android.app.Service;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Observer;
@@ -14,13 +19,17 @@ import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
-import microsoft.aspnet.signalr.client.ConnectionState;
+
 import org.joda.time.DateTime;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
  * This service is responsible for sending data to the pebble
@@ -91,6 +100,7 @@ public class PebbleCommunicationService extends Service {
 
     private final Semaphore m_sendSem = new Semaphore(1);
     private final int[] m_statusArr = new int[6];
+    private final int[] m_numberArr = new int[6];
     private boolean m_vibrate = false;
     // Note that while this is a rwlock, I'm not actually using it as a strictly read-write style lock. In this case,
     // the "readers" are the update listeners for each team, which can all modify the status array concurrently,
@@ -222,17 +232,22 @@ public class PebbleCommunicationService extends Service {
                 // Acquire the write lock, copy the array, and release
                 m_rlock.writeLock().lock();
                 int[] statusArr = m_statusArr;
+                int[] numArr = m_numberArr;
                 boolean vibrate = m_vibrate;
                 m_vibrate = false;
                 m_rlock.writeLock().unlock();
 
                 PebbleDictionary dict = new PebbleDictionary();
                 for (int i = 0; i < 6; i++) {
-                    dict.addUint8(i + 1, (byte) statusArr[i]);
+                    dict.addUint32(i + 1, statusArr[i]);
+                }
+
+                for (int i = 0; i < 6; i++) {
+                    dict.addUint32(i + 9, numArr[i]);
                 }
 
                 if (vibrate) {
-                    dict.addUint8(VIBE, (byte) 1);
+                    dict.addUint32(VIBE, (byte) 1);
                 }
 
                 PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
@@ -270,17 +285,20 @@ public class PebbleCommunicationService extends Service {
 
         private final TeamStatus m_teamStatus;
         private final float m_maxBandwidth;
-        private final int m_teamNum;
+        private final int m_teamStation;
         private final int m_vibeInterval;
         private byte m_lastStatus = ETH;
+        private int m_teamNum;
+        private int m_lastTeamNum;
         private DateTime m_lastVibeTime = DateTime.now();
 
-        private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamNum, int vibeInterval) {
+        private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamStation, int vibeInterval) {
             m_teamStatus = teamStatus;
             m_maxBandwidth = maxBandwidth;
-            m_teamNum = teamNum;
+            m_teamStation = teamStation;
             m_teamStatus.registerObserver(this);
             m_vibeInterval = vibeInterval;
+            m_teamNum = m_teamStatus.getTeamNumber();
         }
 
         @Override
@@ -317,7 +335,9 @@ public class PebbleCommunicationService extends Service {
                 status = GOOD;
             }
 
-            if (status != m_lastStatus) {
+            m_teamNum = m_teamStatus.getTeamNumber();
+
+            if (status != m_lastStatus || m_teamNum != m_lastTeamNum) {
                 boolean vibrate = false;
                 if (m_lastVibeTime.plusSeconds(m_vibeInterval).isBeforeNow()) {
                     vibrate = true;
@@ -326,7 +346,8 @@ public class PebbleCommunicationService extends Service {
 
                 m_rlock.readLock().lock();
                 try {
-                    m_statusArr[m_teamNum - 1] = status;
+                    m_statusArr[m_teamStation - 1] = status;
+                    m_numberArr[m_teamStation - 1] = m_teamNum;
                     if (vibrate) {
                         m_vibrate = true;
                     }
@@ -334,6 +355,7 @@ public class PebbleCommunicationService extends Service {
                 } finally {
                     m_rlock.readLock().unlock();
                     m_lastStatus = status;
+                    m_lastTeamNum = m_teamNum;
                 }
             }
         }
