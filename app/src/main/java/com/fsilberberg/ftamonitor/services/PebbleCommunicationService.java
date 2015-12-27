@@ -47,7 +47,8 @@ public class PebbleCommunicationService extends Service {
     private static final String OUT_OF_MATCH_INTENT_EXTRA = "out_of_match_intent_extra";
     private static final String BANDWIDTH_INTENT_EXTRA = "bandwidth_intent_extra";
 
-    // Constants for the pebble dictionary keys
+    // Constants for the pebble dictionary keys. Not all are used here, but they are included
+    // for documentation's sake
     private static final int RED1 = 1;
     private static final int RED2 = 2;
     private static final int RED3 = 3;
@@ -55,6 +56,32 @@ public class PebbleCommunicationService extends Service {
     private static final int BLUE2 = 5;
     private static final int BLUE3 = 6;
     private static final int VIBE = 7;
+    @SuppressWarnings("unused")
+    private static final int UPDATE = 8;
+    @SuppressWarnings("unused")
+    private static final int RED1_NUM = 9;
+    @SuppressWarnings("unused")
+    private static final int RED2_NUM = 10;
+    @SuppressWarnings("unused")
+    private static final int RED3_NUM = 11;
+    @SuppressWarnings("unused")
+    private static final int BLUE1_NUM = 12;
+    @SuppressWarnings("unused")
+    private static final int BLUE2_NUM = 13;
+    @SuppressWarnings("unused")
+    private static final int BLUE3_NUM = 14;
+    @SuppressWarnings("unused")
+    private static final int RED1_BATT = 15;
+    @SuppressWarnings("unused")
+    private static final int RED2_BATT = 16;
+    @SuppressWarnings("unused")
+    private static final int RED3_BATT = 17;
+    @SuppressWarnings("unused")
+    private static final int BLUE1_BATT = 18;
+    @SuppressWarnings("unused")
+    private static final int BLUE2_BATT = 19;
+    @SuppressWarnings("unused")
+    private static final int BLUE3_BATT = 20;
 
     /**
      * Checks the current status of the pebble service, and starts/stops as necessary
@@ -101,6 +128,8 @@ public class PebbleCommunicationService extends Service {
     private final Semaphore m_sendSem = new Semaphore(1);
     private final int[] m_statusArr = new int[6];
     private final int[] m_numberArr = new int[6];
+    private final float[] m_batteryArr = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE,
+            Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE};
     private boolean m_vibrate = false;
     // Note that while this is a rwlock, I'm not actually using it as a strictly read-write style lock. In this case,
     // the "readers" are the update listeners for each team, which can all modify the status array concurrently,
@@ -233,29 +262,75 @@ public class PebbleCommunicationService extends Service {
                 m_rlock.writeLock().lock();
                 int[] statusArr = m_statusArr;
                 int[] numArr = m_numberArr;
+                float[] battArr = m_batteryArr;
                 boolean vibrate = m_vibrate;
                 m_vibrate = false;
                 m_rlock.writeLock().unlock();
 
-                PebbleDictionary dict = new PebbleDictionary();
-                for (int i = 0; i < 6; i++) {
-                    dict.addUint32(i + 1, statusArr[i]);
+                DateTime sendStart = DateTime.now();
+
+                // Send each section of data as a separate message with a bit of a backoff so the
+                // Pebble isn't overloaded. In total, a send will take 100 ms.
+                {
+                    PebbleDictionary dict = new PebbleDictionary();
+                    for (int i = 0; i < 6; i++) {
+                        // Offset by the start of the red team status
+                        dict.addUint32(i + RED1, statusArr[i]);
+                    }
+                    if (vibrate) {
+                        dict.addUint32(VIBE, (byte) 1);
+                    }
+
+                    PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
                 }
 
-                for (int i = 0; i < 6; i++) {
-                    dict.addUint32(i + 9, numArr[i]);
+                {
+                    DateTime start = DateTime.now();
+                    PebbleDictionary dict = new PebbleDictionary();
+                    for (int i = 0; i < 6; i++) {
+                        // Offset by the start of the red team status
+                        dict.addUint32(i + RED1_NUM, numArr[i]);
+                    }
+
+                    try {
+                        Thread.sleep(40 - (DateTime.now().getMillis() - start.getMillis()));
+                    } catch (InterruptedException e) {
+                        Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
+                        break;
+                    }
+
+                    PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
                 }
 
-                if (vibrate) {
-                    dict.addUint32(VIBE, (byte) 1);
+                {
+                    DateTime start = DateTime.now();
+                    PebbleDictionary dict = new PebbleDictionary();
+                    for (int i = 0; i < 6; i++) {
+                        float oldBat = battArr[i];
+                        if (oldBat > 100) {
+                            oldBat = 99.99f;
+                        }
+                        // We only send 4 digits to the watch, as that's all it can display
+                        int intBat = (int) (oldBat * 100);
+                        // Offset by the start of the red team battery
+                        dict.addUint32(i + RED1_BATT, intBat);
+                    }
+
+                    try {
+                        Thread.sleep(40 - (DateTime.now().getMillis() - start.getMillis()));
+                    } catch (InterruptedException e) {
+                        Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
+                        break;
+                    }
+
+                    PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
                 }
 
-                PebbleKit.sendDataToPebble(PebbleCommunicationService.this, PEBBLE_UUID, dict);
-
-                // We don't send data any faster than once every 50 ms, in order to prevent congestion when lots
-                // of teams update at once
+                // We don't send data any faster than once every 120 ms, in order to prevent
+                // congestion when lots of teams update at once and give the pebble app time to
+                // process all incoming messages.
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(120 - (DateTime.now().getMillis() - sendStart.getMillis()));
                 } catch (InterruptedException e) {
                     Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
                     break;
@@ -290,6 +365,8 @@ public class PebbleCommunicationService extends Service {
         private byte m_lastStatus = ETH;
         private int m_teamNum;
         private int m_lastTeamNum;
+        private float m_battery = Integer.MAX_VALUE;
+        private float m_lastBattery = Integer.MAX_VALUE;
         private DateTime m_lastVibeTime = DateTime.now();
 
         private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamStation, int vibeInterval) {
@@ -337,17 +414,38 @@ public class PebbleCommunicationService extends Service {
 
             m_teamNum = m_teamStatus.getTeamNumber();
 
-            if (status != m_lastStatus || m_teamNum != m_lastTeamNum) {
+            // If we're now on a new team, reset the battery status.
+            if (m_teamNum != m_lastTeamNum) {
+                m_battery = Float.MAX_VALUE;
+                m_lastBattery = Float.MAX_VALUE;
+            }
+
+            // Only update the battery status if it's now less than the previous battery value.
+            float battery = m_teamStatus.getBattery();
+            if (battery < m_battery) {
+                m_battery = battery;
+            }
+
+            if (status != m_lastStatus ||
+                    m_teamNum != m_lastTeamNum ||
+                    m_battery != m_lastBattery) {
+                // Only vibrate if the status has been updated. Don't do it for team number or
+                // battery updates
                 boolean vibrate = false;
-                if (m_lastVibeTime.plusSeconds(m_vibeInterval).isBeforeNow()) {
-                    vibrate = true;
-                    m_lastVibeTime = DateTime.now();
+                if (status != m_lastStatus) {
+                    if (m_lastVibeTime.plusSeconds(m_vibeInterval).isBeforeNow()) {
+                        vibrate = true;
+                        m_lastVibeTime = DateTime.now();
+                    }
                 }
+
+                int arrIndex = m_teamStation - 1;
 
                 m_rlock.readLock().lock();
                 try {
-                    m_statusArr[m_teamStation - 1] = status;
-                    m_numberArr[m_teamStation - 1] = m_teamNum;
+                    m_statusArr[arrIndex] = status;
+                    m_numberArr[arrIndex] = m_teamNum;
+                    m_batteryArr[arrIndex] = m_battery;
                     if (vibrate) {
                         m_vibrate = true;
                     }
@@ -356,6 +454,7 @@ public class PebbleCommunicationService extends Service {
                     m_rlock.readLock().unlock();
                     m_lastStatus = status;
                     m_lastTeamNum = m_teamNum;
+                    m_lastBattery = m_battery;
                 }
             }
         }
