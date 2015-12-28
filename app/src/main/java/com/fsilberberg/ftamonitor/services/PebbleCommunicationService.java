@@ -348,8 +348,8 @@ public class PebbleCommunicationService extends Service {
     }
 
     private final class TeamProblemObserver extends Observable.OnPropertyChangedCallback {
-        private final Collection<Integer> TEAM_PROPERTIES = Arrays.asList(BR.teamNumber, BR.dsEth,
-                BR.ds, BR.radio, BR.rio, BR.code, BR.bypassed, BR.estop, BR.dataRate, BR.battery);
+        private final Collection<Integer> TEAM_PROPERTIES = Arrays.asList(BR.teamNumber,
+                BR.robotStatus, BR.bypassed, BR.estop, BR.dataRate, BR.battery);
         // Constants for the different statuses
         private static final byte ETH = 0;
         private static final byte DS = 1;
@@ -399,20 +399,32 @@ public class PebbleCommunicationService extends Service {
                 status = ESTOP;
             } else if (m_teamStatus.isBypassed()) {
                 status = BYP;
-            } else if (!m_teamStatus.isDsEth()) {
-                status = ETH;
-            } else if (!m_teamStatus.isDs()) {
-                status = DS;
-            } else if (!m_teamStatus.isRadio()) {
-                status = RADIO;
-            } else if (!m_teamStatus.isRio()) {
-                status = RIO;
-            } else if (!m_teamStatus.isCode()) {
-                status = CODE;
-            } else if (m_teamStatus.getDataRate() > m_maxBandwidth) {
-                status = BWU;
             } else {
-                status = GOOD;
+                switch (m_teamStatus.getRobotStatus()) {
+                    case NO_DS_ETH:
+                        status = ETH;
+                        break;
+                    case NO_DS:
+                        status = DS;
+                        break;
+                    case NO_RADIO:
+                        status = RADIO;
+                        break;
+                    case NO_RIO:
+                        status = RIO;
+                        break;
+                    case NO_CODE:
+                        status = CODE;
+                        break;
+                    case GOOD:
+                    default:
+                        if (m_teamStatus.getDataRate() > m_maxBandwidth) {
+                            status = BWU;
+                        } else {
+                            status = GOOD;
+                        }
+                        break;
+                }
             }
 
             m_teamNum = m_teamStatus.getTeamNumber();

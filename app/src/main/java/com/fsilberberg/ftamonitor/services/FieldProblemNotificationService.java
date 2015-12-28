@@ -148,8 +148,8 @@ public class FieldProblemNotificationService {
     }
 
     private class ProblemObserver extends Observable.OnPropertyChangedCallback {
-        private final Collection<Integer> updateValues = Arrays.asList(BR.dsEth, BR.ds, BR.radio,
-                BR.rio, BR.code, BR.estop, BR.bypassed);
+        private final Collection<Integer> updateValues = Arrays.asList(BR.robotStatus,
+                BR.estop, BR.bypassed);
 
         private int m_stationNumber;
         private Alliance m_alliance;
@@ -196,20 +196,32 @@ public class FieldProblemNotificationService {
             } else if (m_team.isBypassed()) {
                 // If the team is bypassed, we're done here
                 m_display = false;
-            } else if (!m_team.isDsEth()) {
-                setError(R.string.ds_ethernet_error);
-            } else if (!m_team.isDs()) {
-                setError(R.string.ds_error);
-            } else if (!m_team.isRadio()) {
-                setError(R.string.radio_error);
-            } else if (!m_team.isRio()) {
-                setError(R.string.robot_error);
-            } else if (!m_team.isCode()) {
-                setError(R.string.code_error);
-            } else if (m_team.getDataRate() > m_maxBandwidth) {
-                setError(R.string.bandwidth_error);
             } else {
-                m_display = false;
+                switch (m_team.getRobotStatus()) {
+                    case NO_DS_ETH:
+                        setError(R.string.ds_ethernet_error);
+                        break;
+                    case NO_DS:
+                        setError(R.string.ds_error);
+                        break;
+                    case NO_RADIO:
+                        setError(R.string.radio_error);
+                        break;
+                    case NO_RIO:
+                        setError(R.string.robot_error);
+                        break;
+                    case NO_CODE:
+                        setError(R.string.code_error);
+                        break;
+                    case GOOD:
+                    default:
+                        if (m_team.getDataRate() > m_maxBandwidth) {
+                            setError(R.string.bandwidth_error);
+                        } else {
+                            m_display = false;
+                        }
+                        break;
+                }
             }
 
             // If any of the factors affecting the notification have changed, update. Otherwise, don't

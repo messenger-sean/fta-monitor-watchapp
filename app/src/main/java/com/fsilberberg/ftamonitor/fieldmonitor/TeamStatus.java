@@ -2,8 +2,12 @@ package com.fsilberberg.ftamonitor.fieldmonitor;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.Observable;
 
 import com.fsilberberg.ftamonitor.BR;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Encapsulates the current status of one of the alliance team members. There are however many of these
@@ -11,6 +15,15 @@ import com.fsilberberg.ftamonitor.BR;
  * This class should never be instantiated directly outside this package
  */
 public class TeamStatus extends BaseObservable {
+    /**
+     * Defines the 6 possible connection states that a robot can be in. Rather than be constantly
+     * calculated in multiple places throughout the code, they are calculated here as a
+     * meta-property.
+     */
+    public enum RobotConnectionStatus {
+        NO_DS_ETH, NO_DS, NO_RADIO, NO_RIO, NO_CODE, GOOD
+    }
+
     private Integer m_teamNumber = 1;
     private Integer m_droppedPackets = 0;
     private Integer m_roundTrip = 0;
@@ -26,10 +39,12 @@ public class TeamStatus extends BaseObservable {
     private Float m_signalQuality = 0.0f;
     private Boolean m_enabled = false;
     private Boolean m_bypassed = false;
+    private RobotConnectionStatus m_robotStatus = RobotConnectionStatus.NO_DS_ETH;
 
     public TeamStatus() {
+        RobotConnectionStatusObserver statusObserver = new RobotConnectionStatusObserver();
+        addOnPropertyChangedCallback(statusObserver);
     }
-
 
     @Bindable
     public synchronized int getTeamNumber() {
@@ -179,5 +194,38 @@ public class TeamStatus extends BaseObservable {
     public void setBypassed(boolean bypassed) {
         m_bypassed = bypassed;
         notifyPropertyChanged(BR.bypassed);
+    }
+
+    @Bindable
+    public synchronized RobotConnectionStatus getRobotStatus() {
+        return m_robotStatus;
+    }
+
+    public void setRobotStatus(RobotConnectionStatus status) {
+        m_robotStatus = status;
+        notifyPropertyChanged(BR.robotStatus);
+    }
+
+    private class RobotConnectionStatusObserver extends OnPropertyChangedCallback {
+        Collection<Integer> statusProperties = Arrays.asList(BR.dsEth, BR.ds, BR.radio, BR.rio, BR.code);
+
+        public void onPropertyChanged(Observable observable, int propertyChanged) {
+            if (statusProperties.contains(propertyChanged)) {
+                TeamStatus status = TeamStatus.this;
+                RobotConnectionStatus robotStatus = RobotConnectionStatus.GOOD;
+                if (!status.isDsEth()) {
+                    robotStatus = RobotConnectionStatus.NO_DS_ETH;
+                } else if (!status.isDs()) {
+                    robotStatus = RobotConnectionStatus.NO_DS;
+                } else if (!status.isRadio()) {
+                    robotStatus = RobotConnectionStatus.NO_RADIO;
+                } else if (!status.isRio()) {
+                    robotStatus = RobotConnectionStatus.NO_RIO;
+                } else if (!status.isCode()) {
+                    robotStatus = RobotConnectionStatus.NO_CODE;
+                }
+                setRobotStatus(robotStatus);
+            }
+        }
     }
 }

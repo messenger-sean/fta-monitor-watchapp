@@ -125,8 +125,8 @@ public class TeamStatusFragment extends Fragment {
     }
 
     private class TeamObserver extends Observable.OnPropertyChangedCallback {
-        private final Collection<Integer> updateTypes = Arrays.asList(BR.dsEth, BR.ds, BR.radio,
-                BR.rio, BR.code, BR.bypassed, BR.estop);
+        private final Collection<Integer> updateTypes =
+                Arrays.asList(BR.robotStatus, BR.bypassed, BR.estop);
 
         private void animateError(final String text) {
             if (getActivity() != null) {
@@ -170,20 +170,38 @@ public class TeamStatusFragment extends Fragment {
         @Override
         public void onPropertyChanged(Observable observable, int propertyChanged) {
             if (!updateTypes.contains(propertyChanged)) return;
-            if (!m_team.isDsEth()) {
-                animateError("No DS Ethernet");
-            } else if (!m_team.isDs()) {
-                animateError("No Driver Station");
-            } else if (!m_team.isRadio()) {
-                animateError("No Robot Radio");
-            } else if (!m_team.isRio()) {
-                animateError("No RoboRIO");
-            } else if (!m_team.isCode()) {
-                animateError("No Code");
-            } else if (m_team.isEstop()) {
-                animateError("Team is E-Stopped");
+            boolean isError = true;
+            String errorText = "";
+            if (m_team.isEstop()) {
+                errorText = "Team is E-Stopped";
             } else if (m_team.isBypassed()) {
-                animateError("Team is Bypassed");
+                errorText = "Team is Bypassed";
+            } else {
+                switch (m_team.getRobotStatus()) {
+                    case NO_DS_ETH:
+                        errorText = "No DS Ethernet";
+                        break;
+                    case NO_DS:
+                        errorText = "No Driver Station";
+                        break;
+                    case NO_RADIO:
+                        errorText = "No Robot Radio";
+                        break;
+                    case NO_RIO:
+                        errorText = "No RoboRIO";
+                        break;
+                    case NO_CODE:
+                        errorText = "No Code";
+                        break;
+                    case GOOD:
+                    default:
+                        isError = false;
+                        break;
+                }
+            }
+
+            if (isError) {
+                animateError(errorText);
             } else {
                 removeError();
             }
