@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/333fred/fta-monitor.svg)](https://travis-ci.org/333fred/fta-monitor)
 # FTA Monitor
 This application is designed to allow FTAs and FTAAs to monitor field status and take notes on teams, matches, and events.
 
