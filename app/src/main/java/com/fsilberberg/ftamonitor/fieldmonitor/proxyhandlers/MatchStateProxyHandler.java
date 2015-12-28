@@ -60,6 +60,5 @@ public class MatchStateProxyHandler extends ProxyHandlerBase implements Subscrip
                 break;
         }
         m_fieldStatus.setMatchStatus(status);
-        m_fieldStatus.updateObservers();
     }
 }

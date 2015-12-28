@@ -168,7 +168,6 @@ public class TestingTeamStatus extends Fragment {
                         setStatus(true, true, true, true, true, false, false);
                         break;
                 }
-                m_status.updateObservers();
             }
         });
 
@@ -180,7 +179,6 @@ public class TestingTeamStatus extends Fragment {
                 if (s.length() != 0) {
                     int teamNum = Integer.parseInt(s.toString());
                     m_status.setTeamNumber(teamNum);
-                    m_status.updateObservers();
                 }
             }
         });
@@ -201,7 +199,6 @@ public class TestingTeamStatus extends Fragment {
                         if (s.length() != 0 && count != 0) {
                             float battery = Float.parseFloat(s.toString());
                             m_status.setBattery(battery);
-                            m_status.updateObservers();
                         }
                     }
                 }
@@ -215,7 +212,6 @@ public class TestingTeamStatus extends Fragment {
                         if (s.length() != 0 && count != 0) {
                             float dataRate = Float.parseFloat(s.toString());
                             m_status.setDataRate(dataRate);
-                            m_status.updateObservers();
                         }
                     }
                 }
@@ -229,7 +225,6 @@ public class TestingTeamStatus extends Fragment {
                         if (s.length() != 0 && count != 0) {
                             int missedPackets = Integer.parseInt(s.toString());
                             m_status.setDroppedPackets(missedPackets);
-                            m_status.updateObservers();
                         }
                     }
                 }
@@ -243,7 +238,6 @@ public class TestingTeamStatus extends Fragment {
                         if (s.length() != 0 && count != 0) {
                             int rtt = Integer.parseInt(s.toString());
                             m_status.setRoundTrip(rtt);
-                            m_status.updateObservers();
                         }
                     }
                 }
@@ -257,7 +251,6 @@ public class TestingTeamStatus extends Fragment {
                         if (s.length() != 0 && count != 0) {
                             float sq = Float.parseFloat(s.toString());
                             m_status.setSignalQuality(sq);
-                            m_status.updateObservers();
                         }
                     }
                 }
@@ -271,7 +264,6 @@ public class TestingTeamStatus extends Fragment {
                         if (s.length() != 0 && count != 0) {
                             float ss = Float.parseFloat(s.toString());
                             m_status.setSignalStrength(ss);
-                            m_status.updateObservers();
                         }
                     }
                 }

@@ -136,7 +136,6 @@ public class TestingFieldStatus extends Fragment {
                 }
 
                 FieldMonitorFactory.getInstance().getFieldStatus().setMatchStatus(status);
-                FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
             }
         });
 
@@ -149,7 +148,6 @@ public class TestingFieldStatus extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0 && count != 0) {
                     FieldMonitorFactory.getInstance().getFieldStatus().setMatchNumber(s.toString());
-                    FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
                 }
             }
 
@@ -167,7 +165,6 @@ public class TestingFieldStatus extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() != 0 && count != 0) {
                     FieldMonitorFactory.getInstance().getFieldStatus().setPlayNumber(Integer.parseInt(s.toString()));
-                    FieldMonitorFactory.getInstance().getFieldStatus().updateObservers();
                 }
             }
 

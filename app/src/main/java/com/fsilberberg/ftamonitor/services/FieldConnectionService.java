@@ -6,29 +6,34 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.Observable;
-import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.MatchStateProxyHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
 import com.fsilberberg.ftamonitor.view.MainActivity;
 import com.google.gson.JsonArray;
-import microsoft.aspnet.signalr.client.*;
+
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
+
+import microsoft.aspnet.signalr.client.ConnectionState;
+import microsoft.aspnet.signalr.client.ErrorCallback;
+import microsoft.aspnet.signalr.client.NullLogger;
+import microsoft.aspnet.signalr.client.Platform;
+import microsoft.aspnet.signalr.client.StateChangedCallback;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;
 import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 import static microsoft.aspnet.signalr.client.ConnectionState.Connecting;
 import static microsoft.aspnet.signalr.client.ConnectionState.Disconnected;
@@ -118,14 +123,6 @@ public class FieldConnectionService extends Service {
     private HubProxy m_fieldProxy;
     private Thread m_connectionThread = new Thread();
 
-    public void registerObserver(Observer<ConnectionState> observer) {
-        m_statusObservable.registerObserver(observer);
-    }
-
-    public void deregisterObserver(Observer<ConnectionState> observer) {
-        m_statusObservable.unregisterObserver(observer);
-    }
-
     public ConnectionState getState() {
         return m_statusObservable.getState();
     }
@@ -179,7 +176,7 @@ public class FieldConnectionService extends Service {
                 doConnect();
             }
         });
-        m_statusObservable.registerObserver(new FCSNotificationObserver());
+        m_statusObservable.addOnPropertyChangedCallback(new FCSNotificationObserver());
         m_connectionThread.start();
 
         // We want to make sure that we get the same intent, that way we receive the url to connect to
@@ -238,11 +235,12 @@ public class FieldConnectionService extends Service {
         return m_binder;
     }
 
-    private class FCSNotificationObserver implements Observer<ConnectionState> {
+    private class FCSNotificationObserver extends android.databinding.Observable.OnPropertyChangedCallback {
 
         @Override
-        public void update(ConnectionState updateType) {
-            startForeground(FOREGROUND_ID, createNotification(updateType));
+        public void onPropertyChanged(android.databinding.Observable observable, int property) {
+            startForeground(FOREGROUND_ID,
+                    createNotification(((ConnectionStateObservable) observable).getState()));
         }
 
         private Notification createNotification(ConnectionState state) {
@@ -285,40 +283,20 @@ public class FieldConnectionService extends Service {
     /**
      * Observer implementation for the field connection state
      */
-    public static class ConnectionStateObservable implements Observable<ConnectionState>, StateChangedCallback {
+    public static class ConnectionStateObservable extends BaseObservable implements StateChangedCallback {
 
-        private final Collection<Observer<ConnectionState>> m_observers = new ArrayList<>();
+        @Bindable
         private ConnectionState m_connectionState = Disconnected;
 
         public void setConnectionState(ConnectionState newState) {
             if (!m_connectionState.equals(newState)) {
                 m_connectionState = newState;
-                synchronized (this) {
-                    for (Observer<ConnectionState> observer : m_observers) {
-                        observer.update(newState);
-                    }
-                }
+                notifyPropertyChanged(BR.connectionState);
             }
         }
 
-        private ConnectionState getState() {
+        public ConnectionState getState() {
             return m_connectionState;
-        }
-
-        @Override
-        public void registerObserver(Observer<ConnectionState> observer) {
-            synchronized (this) {
-                if (!m_observers.contains(observer)) {
-                    m_observers.add(observer);
-                }
-            }
-        }
-
-        @Override
-        public void unregisterObserver(Observer<ConnectionState> observer) {
-            synchronized (this) {
-                m_observers.remove(observer);
-            }
         }
 
         @Override

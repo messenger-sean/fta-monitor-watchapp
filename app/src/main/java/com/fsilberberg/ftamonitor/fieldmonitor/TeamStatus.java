@@ -4,10 +4,6 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import com.fsilberberg.ftamonitor.BR;
-import com.fsilberberg.ftamonitor.common.Observer;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Encapsulates the current status of one of the alliance team members. There are however many of these
@@ -34,7 +30,6 @@ public class TeamStatus extends BaseObservable {
     public TeamStatus() {
     }
 
-    private final Collection<Observer<UpdateType>> m_observers = new ArrayList<>();
 
     @Bindable
     public synchronized int getTeamNumber() {
@@ -184,19 +179,5 @@ public class TeamStatus extends BaseObservable {
     public void setBypassed(boolean bypassed) {
         m_bypassed = bypassed;
         notifyPropertyChanged(BR.bypassed);
-    }
-
-    public void registerObserver(Observer<UpdateType> observer) {
-        m_observers.add(observer);
-    }
-
-    public void unregisterObserver(Observer<UpdateType> observer) {
-        m_observers.remove(observer);
-    }
-
-    public void updateObservers() {
-        for (Observer<UpdateType> observer : m_observers) {
-            observer.update(UpdateType.TEAM);
-        }
     }
 }

@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.databinding.Observable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -20,8 +21,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 
 import butterknife.ButterKnife;
@@ -41,15 +42,15 @@ public class FieldMonitorRootFragment extends Fragment {
             final FieldConnectionService fcs = ((FieldConnectionService.FCSBinder) service).getService();
             m_conState = fcs.getStatusObservable();
             m_observer = new FieldMonitorSignalrObserver();
-            m_conState.registerObserver(m_observer);
+            m_conState.addOnPropertyChangedCallback(m_observer);
             m_isBound = true;
-            m_observer.update(fcs.getState());
+            m_observer.onPropertyChanged(m_conState, BR.connectionState);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             m_isBound = false;
-            m_conState.unregisterObserver(m_observer);
+            m_conState.removeOnPropertyChangedCallback(m_observer);
             m_conState = null;
             m_observer = null;
         }
@@ -97,7 +98,7 @@ public class FieldMonitorRootFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (m_isBound) {
-            m_conState.registerObserver(m_observer);
+            m_conState.addOnPropertyChangedCallback(m_observer);
         }
         ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (toolbar != null) {
@@ -109,7 +110,7 @@ public class FieldMonitorRootFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (m_isBound) {
-            m_conState.unregisterObserver(m_observer);
+            m_conState.removeOnPropertyChangedCallback(m_observer);
         }
     }
 
@@ -130,17 +131,19 @@ public class FieldMonitorRootFragment extends Fragment {
         }
     }
 
-    private class FieldMonitorSignalrObserver implements Observer<ConnectionState> {
+    private class FieldMonitorSignalrObserver extends Observable.OnPropertyChangedCallback {
         @Override
-        public void update(final ConnectionState updateType) {
+        public void onPropertyChanged(Observable observable, int propertyChanged) {
+            if (propertyChanged != BR.connectionState) return;
+            final ConnectionState state = ((FieldConnectionService.ConnectionStateObservable) observable).getState();
             if (getActivity() != null) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        m_fieldMonitorStatus.setText(m_conPrefix + "\n" + updateType.toString());
+                        m_fieldMonitorStatus.setText(m_conPrefix + "\n" + state.toString());
                     }
                 });
-                switch (updateType) {
+                switch (state) {
                     case Connecting:
                     case Disconnected:
                     case Reconnecting:

@@ -6,23 +6,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.databinding.Observable;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
-import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
@@ -115,13 +116,6 @@ public class PebbleCommunicationService extends Service {
         ctx.startService(intent);
     }
 
-    /**
-     * Private enum that holds the different states the service can be in
-     */
-    private enum State {
-        DISCONNECTED, NOT_SENDING, SENDING, RETRY
-    }
-
     // Class lock and notifier for accessing the queue and making changes to the state, as well as letting
     // the communications thread know to send new data
 
@@ -150,12 +144,12 @@ public class PebbleCommunicationService extends Service {
         public void onServiceConnected(ComponentName name, IBinder service) {
             m_fieldConnectionService = ((FieldConnectionService.FCSBinder) service).getService();
             m_isBound = true;
-            m_fieldConnectionService.registerObserver(m_connectionObserver);
+            m_fieldConnectionService.getStatusObservable().addOnPropertyChangedCallback(m_connectionObserver);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            m_fieldConnectionService.deregisterObserver(m_connectionObserver);
+            m_fieldConnectionService.getStatusObservable().addOnPropertyChangedCallback(m_connectionObserver);
             m_isBound = false;
             m_fieldConnectionService = null;
         }
@@ -223,6 +217,7 @@ public class PebbleCommunicationService extends Service {
     public void onDestroy() {
         unregisterObservers();
         if (m_sendThread != null) {
+            Log.d(PebbleCommunicationService.class.getName(), "Interrupting the send thread for service destruction");
             m_sendThread.interrupt();
         }
         if (m_dataReceiverRegistered) {
@@ -246,7 +241,6 @@ public class PebbleCommunicationService extends Service {
     }
 
     private final class PebbleSendThread implements Runnable {
-
         @Override
         public void run() {
             while (true) {
@@ -254,7 +248,7 @@ public class PebbleCommunicationService extends Service {
                     // Attempt to acquire the send semaphore. When there is an update, it will be acquired
                     m_sendSem.acquire();
                 } catch (InterruptedException e) {
-                    Log.e(PebbleCommunicationService.class.getName(), "Could not acquire the send semaphore!", e);
+                    Log.w(PebbleCommunicationService.class.getName(), "Pebble send thread interrupted. Shutting down.", e);
                     break;
                 }
 
@@ -293,9 +287,13 @@ public class PebbleCommunicationService extends Service {
                     }
 
                     try {
-                        Thread.sleep(40 - (DateTime.now().getMillis() - start.getMillis()));
+                        // Ensure the pebble has at least 10 ms to process exisiting messages.
+                        long interval = 40 - (DateTime.now().getMillis() - start.getMillis());
+                        if (interval > 0) {
+                            Thread.sleep(interval);
+                        }
                     } catch (InterruptedException e) {
-                        Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
+                        Log.w(PebbleCommunicationService.class.getName(), "Pebble send thread interrupted. Shutting down.", e);
                         break;
                     }
 
@@ -317,9 +315,13 @@ public class PebbleCommunicationService extends Service {
                     }
 
                     try {
-                        Thread.sleep(40 - (DateTime.now().getMillis() - start.getMillis()));
+                        // Ensure the pebble has at least 10 ms to process exisiting messages.
+                        long interval = 40 - (DateTime.now().getMillis() - start.getMillis());
+                        if (interval > 0) {
+                            Thread.sleep(interval);
+                        }
                     } catch (InterruptedException e) {
-                        Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
+                        Log.w(PebbleCommunicationService.class.getName(), "Pebble send thread interrupted. Shutting down.", e);
                         break;
                     }
 
@@ -328,11 +330,16 @@ public class PebbleCommunicationService extends Service {
 
                 // We don't send data any faster than once every 120 ms, in order to prevent
                 // congestion when lots of teams update at once and give the pebble app time to
-                // process all incoming messages.
+                // process all incoming messages. If the remaining wait time is less than 40 ms, use
+                // at least 40.
                 try {
-                    Thread.sleep(120 - (DateTime.now().getMillis() - sendStart.getMillis()));
+                    long interval = 120 - (DateTime.now().getMillis() - sendStart.getMillis());
+                    if (interval < 40) {
+                        interval = 40;
+                    }
+                    Thread.sleep(interval);
                 } catch (InterruptedException e) {
-                    Log.e(PebbleCommunicationService.class.getName(), "Interrupted while sleeping!", e);
+                    Log.w(PebbleCommunicationService.class.getName(), "Pebble send thread interrupted. Shutting down.", e);
                     break;
                 }
             }
@@ -340,10 +347,9 @@ public class PebbleCommunicationService extends Service {
 
     }
 
-    private final class TeamProblemObserver implements Observer<UpdateType> {
-        // Constants for the team types
-        private static final byte VIBE = 7;
-
+    private final class TeamProblemObserver extends Observable.OnPropertyChangedCallback {
+        private final Collection<Integer> TEAM_PROPERTIES = Arrays.asList(BR.teamNumber, BR.dsEth,
+                BR.ds, BR.radio, BR.rio, BR.code, BR.bypassed, BR.estop, BR.dataRate, BR.battery);
         // Constants for the different statuses
         private static final byte ETH = 0;
         private static final byte DS = 1;
@@ -354,9 +360,6 @@ public class PebbleCommunicationService extends Service {
         private static final byte GOOD = 6;
         private static final byte BWU = 7;
         private static final byte BYP = 8;
-
-        // This is not a valid state, but it's the state I start off in to make sure to send the first status
-        private static final byte INVALID = (byte) 255;
 
         private final TeamStatus m_teamStatus;
         private final float m_maxBandwidth;
@@ -373,24 +376,24 @@ public class PebbleCommunicationService extends Service {
             m_teamStatus = teamStatus;
             m_maxBandwidth = maxBandwidth;
             m_teamStation = teamStation;
-            m_teamStatus.registerObserver(this);
+            m_teamStatus.addOnPropertyChangedCallback(this);
             m_vibeInterval = vibeInterval;
             m_teamNum = m_teamStatus.getTeamNumber();
         }
 
         @Override
-        public void update(UpdateType updateType) {
-            updateTeamStatus(false);
+        public void onPropertyChanged(Observable observable, int property) {
+            if (TEAM_PROPERTIES.contains(property)) {
+                updateTeamStatus();
+            }
         }
 
         /**
          * Updates the status of the current team. Normally, this will optimize by not updating the status if the
          * status is the same as the previous status. If force is true, however, then the status will be updated
          * regardless of whether or not the new status is the same as the last status
-         *
-         * @param force Whether to update if the status is the same or not
          */
-        private void updateTeamStatus(boolean force) {
+        private void updateTeamStatus() {
             byte status;
             if (m_teamStatus.isEstop()) {
                 status = ESTOP;
@@ -460,19 +463,20 @@ public class PebbleCommunicationService extends Service {
         }
 
         private void unregister() {
-            m_teamStatus.unregisterObserver(this);
+            m_teamStatus.removeOnPropertyChangedCallback(this);
         }
     }
 
     /**
      * Watches the field connection service and updates all statuses when the field connects
      */
-    private final class ConnectionObserver implements Observer<ConnectionState> {
+    private final class ConnectionObserver extends Observable.OnPropertyChangedCallback {
         @Override
-        public void update(ConnectionState updateType) {
-            if (updateType == ConnectionState.Connected) {
+        public void onPropertyChanged(Observable observable, int property) {
+            if (property == BR.connectionState &&
+                    ((FieldConnectionService.ConnectionStateObservable) observable).getState() == ConnectionState.Connected) {
                 for (TeamProblemObserver observer : m_observers) {
-                    observer.updateTeamStatus(true);
+                    observer.updateTeamStatus();
                 }
             }
         }
@@ -492,7 +496,7 @@ public class PebbleCommunicationService extends Service {
             if (pebbleDictionary.contains(UPDATE)) {
                 // Force all team statuses to be updated
                 for (TeamProblemObserver observer : m_observers) {
-                    observer.updateTeamStatus(true);
+                    observer.updateTeamStatus();
                 }
             }
         }

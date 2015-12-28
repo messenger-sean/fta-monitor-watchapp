@@ -3,6 +3,7 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 import android.app.Fragment;
 import android.databinding.DataBindingUtil;
+import android.databinding.Observable;
 import android.os.Build;
 import android.os.Bundle;
 import android.transition.Fade;
@@ -12,15 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.Station;
 import com.fsilberberg.ftamonitor.databinding.FragmentTeamStatusBinding;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,14 +58,14 @@ public class TeamStatusFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        m_team.registerObserver(m_observer);
-        m_observer.update(UpdateType.TEAM);
+        m_team.addOnPropertyChangedCallback(m_observer);
+        m_observer.onPropertyChanged(m_team, BR.dsEth);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        m_team.unregisterObserver(m_observer);
+        m_team.removeOnPropertyChangedCallback(m_observer);
     }
 
     @Override
@@ -124,27 +124,9 @@ public class TeamStatusFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private class TeamObserver implements Observer<UpdateType> {
-        @Override
-        public void update(UpdateType updateType) {
-            if (!m_team.isDsEth()) {
-                animateError("No DS Ethernet");
-            } else if (!m_team.isDs()) {
-                animateError("No Driver Station");
-            } else if (!m_team.isRadio()) {
-                animateError("No Robot Radio");
-            } else if (!m_team.isRio()) {
-                animateError("No RoboRIO");
-            } else if (!m_team.isCode()) {
-                animateError("No Code");
-            } else if (m_team.isEstop()) {
-                animateError("Team is E-Stopped");
-            } else if (m_team.isBypassed()) {
-                animateError("Team is Bypassed");
-            } else {
-                removeError();
-            }
-        }
+    private class TeamObserver extends Observable.OnPropertyChangedCallback {
+        private final Collection<Integer> updateTypes = Arrays.asList(BR.dsEth, BR.ds, BR.radio,
+                BR.rio, BR.code, BR.bypassed, BR.estop);
 
         private void animateError(final String text) {
             if (getActivity() != null) {
@@ -182,6 +164,28 @@ public class TeamStatusFragment extends Fragment {
                         }
                     }
                 });
+            }
+        }
+
+        @Override
+        public void onPropertyChanged(Observable observable, int propertyChanged) {
+            if (!updateTypes.contains(propertyChanged)) return;
+            if (!m_team.isDsEth()) {
+                animateError("No DS Ethernet");
+            } else if (!m_team.isDs()) {
+                animateError("No Driver Station");
+            } else if (!m_team.isRadio()) {
+                animateError("No Robot Radio");
+            } else if (!m_team.isRio()) {
+                animateError("No RoboRIO");
+            } else if (!m_team.isCode()) {
+                animateError("No Code");
+            } else if (m_team.isEstop()) {
+                animateError("Team is E-Stopped");
+            } else if (m_team.isBypassed()) {
+                animateError("Team is Bypassed");
+            } else {
+                removeError();
             }
         }
     }

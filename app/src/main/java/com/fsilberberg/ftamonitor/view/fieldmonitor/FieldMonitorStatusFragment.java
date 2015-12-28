@@ -3,6 +3,7 @@ package com.fsilberberg.ftamonitor.view.fieldmonitor;
 
 import android.app.Fragment;
 import android.databinding.DataBindingUtil;
+import android.databinding.Observable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,10 @@ import android.widget.TextView;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
-import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.common.Station;
 import com.fsilberberg.ftamonitor.databinding.FragmentFieldMonitorStatusBinding;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,18 +59,18 @@ public class FieldMonitorStatusFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        m_field.registerObserver(m_observer);
+        m_field.addOnPropertyChangedCallback(m_observer);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        m_field.unregisterObserver(m_observer);
+        m_field.removeOnPropertyChangedCallback(m_observer);
     }
 
-    private class FieldStatusObserver implements Observer<UpdateType> {
+    private class FieldStatusObserver extends Observable.OnPropertyChangedCallback {
         @Override
-        public void update(UpdateType updateType) {
+        public void onPropertyChanged(Observable observable, int i) {
             if (getActivity() != null) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

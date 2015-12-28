@@ -25,7 +25,6 @@ import microsoft.aspnet.signalr.client.ConnectionState;
  * Randomizes the values seen on the field monitor every second for testing
  */
 public class RandomizationService extends Service {
-
     private final RandomizationBinder m_binder = new RandomizationBinder();
     private final ServiceConnection m_connection = new ServiceConnection() {
         @Override
@@ -56,7 +55,7 @@ public class RandomizationService extends Service {
             m_shouldUpdate = true;
             // If we've already started, then we're done, just return
             if (m_isStarted) {
-                return START_STICKY;
+                return START_NOT_STICKY;
             } else {
                 m_isStarted = true;
             }
@@ -69,7 +68,7 @@ public class RandomizationService extends Service {
         m_randomThread = new Thread(new RandomThread());
         m_randomThread.start();
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -182,16 +181,15 @@ public class RandomizationService extends Service {
 
                 if (m_matchStatusRandom) {
                     int newState = m_random.nextInt(MatchStatus.values().length);
+                    m_field.setMatchNumber(Integer.toString(m_random.nextInt(999)));
                     m_field.setMatchStatus(MatchStatus.values()[newState]);
                     m_field.setPlayNumber(m_random.nextInt(9));
-                    m_field.updateObservers();
                 }
 
                 if (m_robotConRandom) {
                     for (TeamStatus robot : m_robots) {
                         int newState = m_random.nextInt(RobotEnableStatus.values().length);
                         RobotEnableStatus.values()[newState].setRobot(robot);
-                        robot.updateObservers();
                     }
                 }
 

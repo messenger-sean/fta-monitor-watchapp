@@ -86,6 +86,5 @@ public class TeamProxyHandler extends ProxyHandlerBase implements SubscriptionHa
                 status.setEstop(false);
                 break;
         }
-        status.updateObservers();
     }
 }

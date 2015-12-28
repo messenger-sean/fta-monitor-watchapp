@@ -5,14 +5,8 @@ import android.databinding.Bindable;
 
 import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
-import com.fsilberberg.ftamonitor.common.Observable;
-import com.fsilberberg.ftamonitor.common.Observer;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
-import static com.fsilberberg.ftamonitor.fieldmonitor.UpdateType.FIELD;
 
 /**
  * The field status maintains the current status of the field via updates from signalr, so that there
@@ -22,7 +16,7 @@ import static com.fsilberberg.ftamonitor.fieldmonitor.UpdateType.FIELD;
  *
  * @author Fredric
  */
-public class FieldStatus extends BaseObservable implements Observable<UpdateType> {
+public class FieldStatus extends BaseObservable {
     // Teams
     private final TeamStatus m_red1 = new TeamStatus();
     private final TeamStatus m_red2 = new TeamStatus();
@@ -35,9 +29,6 @@ public class FieldStatus extends BaseObservable implements Observable<UpdateType
     private String m_matchNumber = "999";
     private MatchStatus m_matchStatus = NOT_READY;
     private int m_playNumber = 0;
-
-    // Observers
-    private final Collection<Observer<UpdateType>> m_observers = new ArrayList<>();
 
     public synchronized TeamStatus getRed1() {
         return m_red1;
@@ -93,19 +84,5 @@ public class FieldStatus extends BaseObservable implements Observable<UpdateType
     public void setPlayNumber(int playNumber) {
         m_playNumber = playNumber;
         notifyPropertyChanged(BR.playNumber);
-    }
-
-    public void registerObserver(Observer<UpdateType> observer) {
-        m_observers.add(observer);
-    }
-
-    public void unregisterObserver(Observer<UpdateType> observer) {
-        m_observers.remove(observer);
-    }
-
-    public void updateObservers() {
-        for (Observer<UpdateType> observer : m_observers) {
-            observer.update(FIELD);
-        }
     }
 }

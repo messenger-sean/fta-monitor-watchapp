@@ -6,20 +6,22 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.databinding.Observable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+
+import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.common.Alliance;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
-import com.fsilberberg.ftamonitor.common.Observer;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
-import com.fsilberberg.ftamonitor.fieldmonitor.UpdateType;
 import com.fsilberberg.ftamonitor.view.MainActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static com.fsilberberg.ftamonitor.common.Alliance.BLUE;
@@ -145,7 +147,9 @@ public class FieldProblemNotificationService {
         }
     }
 
-    private class ProblemObserver implements Observer<UpdateType> {
+    private class ProblemObserver extends Observable.OnPropertyChangedCallback {
+        private final Collection<Integer> updateValues = Arrays.asList(BR.dsEth, BR.ds, BR.radio,
+                BR.rio, BR.code, BR.estop, BR.bypassed);
 
         private int m_stationNumber;
         private Alliance m_alliance;
@@ -157,23 +161,11 @@ public class FieldProblemNotificationService {
             m_stationNumber = stationNumber;
             m_alliance = alliance;
             m_team = team;
-            m_team.registerObserver(this);
-        }
-
-        @Override
-        public void update(UpdateType updateType) {
-            // We only care about the states in which there could be an error
-            switch (updateType) {
-                case TEAM:
-                    // If we should always notify or if a match is playing, then process an update
-                    if (m_alwaysNotify || isMatchPlaying()) {
-                        updateErrorText();
-                    }
-            }
+            m_team.addOnPropertyChangedCallback(this);
         }
 
         public void deregister() {
-            m_team.unregisterObserver(this);
+            m_team.removeOnPropertyChangedCallback(this);
         }
 
         public boolean shouldDisplay() {
@@ -252,6 +244,13 @@ public class FieldProblemNotificationService {
                     ", m_display=" + m_display +
                     ", m_errorString='" + m_errorString + '\'' +
                     '}';
+        }
+
+        @Override
+        public void onPropertyChanged(Observable observable, int propertyChanged) {
+            if (updateValues.contains(propertyChanged) && (m_alwaysNotify || isMatchPlaying())) {
+                updateErrorText();
+            }
         }
     }
 }
