@@ -40,6 +40,18 @@ repositories {
     }
 }
 
+sonarqube {
+    properties {
+        property 'sonar.host.url', 'https://sonar.fsilberberg.com'
+        property 'sonar.binaries', 'build/intermediates/classes/debug'
+        property 'sonar.profile', 'Android Lint'
+        property 'sonar.login', 'jenkins'
+        property 'sonar.sources', 'src/main/java'
+    }
+}
+
+project(':').tasks['sonarqube'].dependsOn build
+
 dependencies {
     compile(name: 'signalr-client-sdk-android-debug', ext: 'aar')
     compile(name: 'signalr-client-sdk', ext: 'jar')
