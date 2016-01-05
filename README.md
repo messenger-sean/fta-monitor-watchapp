@@ -10,5 +10,5 @@ Features:
 * If you have a Pebble, there is a companion WatchApp for the Pebble that will display the Field Monitor statuses, and vibrate when a team's status changes.
 * Can display the Field Monitor on your lock screen, so you don't have to unlock your phone to see the current field status.
 
-=============
+---
 Click to find out more information about [FIRST](http://www3.usfirst.org/roboticsprograms/frc) or becoming a [volunteer](http://www3.usfirst.org/community/volunteers/frc-volunteer-training).
