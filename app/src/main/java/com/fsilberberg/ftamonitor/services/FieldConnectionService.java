@@ -17,14 +17,22 @@ import android.util.Log;
 import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
+import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.MatchStateProxyHandler;
 import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
 import com.fsilberberg.ftamonitor.view.MainActivity;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -67,6 +75,7 @@ public class FieldConnectionService extends Service {
     private static final String HUB_NAME = "messageservicehub";
     private static final String FIELD_MONITOR = "fieldMonitorDataChanged";
     private static final String MATCH_STATE_CHANGED = "matchStateChanged";
+    private static final String INITIAL_STATE_PATH = "/FieldMonitor/MatchNumberAndPlay";
 
     // This is a general ip pattern matching the general form of an ipv4 address, used for basic input validation
     // This is only a rough checker, and does not attempt to validate for out of range addresses. However, as this
@@ -236,6 +245,36 @@ public class FieldConnectionService extends Service {
                 public void onError(Throwable throwable) {
                     Log.i(FieldConnectionService.class.getName(), "Received Signalr error", throwable);
                     disconnect();
+                }
+            });
+
+            // On connected, get the current match and play number from the field, so the initial state
+            // is correct.
+            m_fieldConnection.connected(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URI signalrURI = new URI(m_url);
+                        URL newUrl = new URI(signalrURI.getScheme(), signalrURI.getUserInfo(),
+                                signalrURI.getHost(), m_monitorPort, INITIAL_STATE_PATH, "", "").toURL();
+                        try (InputStream is = newUrl.openStream();
+                             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = br.readLine()) != null) {
+                                sb.append(line);
+                            }
+
+                            Gson gson = new Gson();
+                            JsonArray initialState = gson.fromJson(sb.toString(), JsonArray.class);
+                            FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
+                            field.setMatchNumber(initialState.get(0).toString());
+                            field.setPlayNumber(initialState.get(1).getAsInt());
+                        }
+                    } catch (IOException | URISyntaxException e) {
+                        Log.w(FieldConnectionService.class.getName(),
+                                "Error when connecting for initial match number state", e);
+                    }
                 }
             });
 
