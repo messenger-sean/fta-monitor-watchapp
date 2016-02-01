@@ -3,6 +3,7 @@ package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
+
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
 import static com.fsilberberg.ftamonitor.common.MatchStatus.*;
@@ -17,7 +18,7 @@ public class MatchStateProxyHandler extends ProxyHandlerBase implements Subscrip
     public void run(Integer message) {
         MatchStatus status = NOT_READY;
         switch (message) {
-            case 0: // Unknown: They aren't listed in the Json
+            case 0: // No currently active event or tournament level
             case 1:
                 break;
             case 2: // WaitingForPrestart or WaitingForPrestartTO
@@ -35,27 +36,24 @@ public class MatchStateProxyHandler extends ProxyHandlerBase implements Subscrip
             case 8: // WaitingForMatchReady
                 status = NOT_READY;
                 break;
-            case 9: // WaitingForMatchReadyTO
-                status = TIMEOUT;
-                break;
-            case 10:
+            case 9: // WaitingForMatchStart
                 status = MATCH_READY;
                 break;
-            case 11:
+            case 10: // Match Auto
                 status = AUTO;
                 break;
-            case 12: // Match Transition: It stays the same as it currently is
-                status = m_fieldStatus.getMatchStatus();
+            case 11: // Match Transition
                 break;
-            case 13:
+            case 12: // Match Teleop
                 status = TELEOP;
                 break;
+            case 13: // TournamentLevelComplete
             case 14: // WaitingForCommit
             case 15: // WaitingForPostResults
-            case 16: // TournamentLevelComplete
                 status = OVER;
                 break;
-            case 17: // Aborted
+            case 16: // Aborted
+            default:
                 status = ABORTED;
                 break;
         }
