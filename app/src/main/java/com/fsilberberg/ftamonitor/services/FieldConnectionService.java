@@ -22,6 +22,9 @@ import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
 import com.fsilberberg.ftamonitor.view.MainActivity;
 import com.google.gson.JsonArray;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -51,6 +54,8 @@ public class FieldConnectionService extends Service {
 
     // Parameter intent extras
     private static final String URL_INTENT_EXTRA = "url_intent_extra";
+    private static final String SIGNALR_PORT_INTENT_EXTRA = "signalr_port_intent_extra";
+    private static final String MONITOR_PORT_INTENT_EXTRA = "monitor_port_intent_extra";
 
     // Notification ID for updating the ongoing notification. 3 has no special significance other
     // than being my favorite number
@@ -100,12 +105,18 @@ public class FieldConnectionService extends Service {
         // Check if the field monitor is enabled. If it is, then send the start signal to the app
         // If it is not, then send the stop signal to the service
         if (enabled) {
-            String fmsOnFieldKey = ctx.getString(R.string.on_field_key);
             String fmsUrlKey = ctx.getString(R.string.fms_ip_addr_key);
-            boolean onField = prefs.getBoolean(fmsOnFieldKey, true);
-            String fieldUrl = onField ? "http://" + FTAMonitorApplication.DEFAULT_IP :
-                    prefs.getString(fmsUrlKey, "http://" + FTAMonitorApplication.DEFAULT_IP);
+            String fmsDefaultUrl = ctx.getString(R.string.fms_ip_addr_default);
+            String signalrPortKey = ctx.getString(R.string.fms_signalr_port_key);
+            String signalrPortDefault = ctx.getString(R.string.fms_signalr_port_default);
+            String monitorPortKey = ctx.getString(R.string.fms_monitor_port_key);
+            String monitorPortDefault = ctx.getString(R.string.fms_monitor_port_addr_default);
+            String fieldUrl = prefs.getString(fmsUrlKey, fmsDefaultUrl);
+            String signalrPort = prefs.getString(signalrPortKey, signalrPortDefault);
+            String monitorPort = prefs.getString(monitorPortKey, monitorPortDefault);
             intent.putExtra(URL_INTENT_EXTRA, fieldUrl);
+            intent.putExtra(SIGNALR_PORT_INTENT_EXTRA, signalrPort);
+            intent.putExtra(MONITOR_PORT_INTENT_EXTRA, monitorPort);
             lifecycle = update ? UPDATE : START;
         } else {
             lifecycle = STOP;
@@ -119,6 +130,8 @@ public class FieldConnectionService extends Service {
     private final FCSBinder m_binder = new FCSBinder();
     private final ConnectionStateObservable m_statusObservable = new ConnectionStateObservable();
     private String m_url;
+    private int m_signalrPort;
+    private int m_monitorPort;
     private HubConnection m_fieldConnection;
     private HubProxy m_fieldProxy;
     private Thread m_connectionThread = new Thread();
@@ -168,12 +181,33 @@ public class FieldConnectionService extends Service {
                             m_url = "http://" + m_url;
                         }
                     } else {
-                        m_url = FTAMonitorApplication.DEFAULT_IP;
+                        m_url = getString(R.string.fms_ip_addr_default);
+                    }
+
+                    // Get the signalr port and the monitor port
+                    int defaultSignalrPort = Integer.parseInt(getString(R.string.fms_signalr_port_default));
+                    if (intent != null && intent.hasExtra(SIGNALR_PORT_INTENT_EXTRA)) {
+                        m_signalrPort = tryParse(intent.getStringExtra(SIGNALR_PORT_INTENT_EXTRA), defaultSignalrPort);
+                    } else {
+                        m_signalrPort = defaultSignalrPort;
+                    }
+                    int defaultMonitorPort = Integer.parseInt(getString(R.string.fms_monitor_port_addr_default));
+                    if (intent != null && intent.hasExtra(MONITOR_PORT_INTENT_EXTRA)) {
+                        m_monitorPort = tryParse(intent.getStringExtra(MONITOR_PORT_INTENT_EXTRA), defaultMonitorPort);
+                    } else {
+                        m_monitorPort = defaultMonitorPort;
                     }
                 }
 
                 // Finally, do the actual connection
-                doConnect();
+                try {
+                    doConnect();
+                } catch (MalformedURLException | URISyntaxException e) {
+                    Log.e(FieldConnectionService.class.getName(),
+                            "Url: " + m_url + "\n" +
+                                    "Signalr Port: " + m_signalrPort + "\n" +
+                                    "Monitor Port: " + m_monitorPort, e);
+                }
             }
         });
         m_statusObservable.addOnPropertyChangedCallback(new FCSNotificationObserver());
@@ -183,11 +217,14 @@ public class FieldConnectionService extends Service {
         return START_REDELIVER_INTENT;
     }
 
-    public void doConnect() {
+    public void doConnect() throws MalformedURLException, URISyntaxException {
         // Start the connection process
         m_statusObservable.setConnectionState(Connecting);
         synchronized (m_lock) {
             // Create a new connection with the FMS hub name and register the proxy functions
+            URI origUrl = new URI(m_url);
+            URI finalUrl = changePort(origUrl, m_signalrPort);
+            m_url = finalUrl.toASCIIString();
             m_fieldConnection = new HubConnection(m_url);
             m_fieldProxy = m_fieldConnection.createHubProxy(HUB_NAME);
             m_fieldProxy.on(FIELD_MONITOR, new TeamProxyHandler(), JsonArray.class);
@@ -304,5 +341,17 @@ public class FieldConnectionService extends Service {
             Log.i(FieldConnectionService.class.getName(), "State changed from " + oldState + " to " + newState);
             setConnectionState(newState);
         }
+    }
+
+    private static int tryParse(String toParse, int defaultVal) {
+        try {
+            return Integer.parseInt(toParse);
+        } catch (NumberFormatException ex) {
+            return defaultVal;
+        }
+    }
+
+    private static URI changePort(URI old, int port) throws URISyntaxException {
+        return new URI(old.getScheme(), old.getUserInfo(), old.getHost(), port, old.getPath(), old.getQuery(), old.getFragment());
     }
 }
