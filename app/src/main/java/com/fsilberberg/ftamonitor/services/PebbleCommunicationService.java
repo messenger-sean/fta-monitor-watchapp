@@ -14,6 +14,7 @@ import android.util.Log;
 import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.FTAMonitorApplication;
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
@@ -116,27 +117,29 @@ public class PebbleCommunicationService extends Service {
         ctx.startService(intent);
     }
 
-    // Class lock and notifier for accessing the queue and making changes to the state, as well as letting
-    // the communications thread know to send new data
-
+    // Class lock and notifier for accessing the queue and making changes to the state, as well as
+    // letting the communications thread know to send new data.
+    // Note that while this is a rwlock, the reader/writer role is reversed. In this case, the "readers"
+    // are the update listeners for each team, which can all modify the status array concurrently,
+    // and the send thread is the writer, which must have exclusive access to the entire array
+    private final ReadWriteLock m_rlock = new ReentrantReadWriteLock(true);
     private final Semaphore m_sendSem = new Semaphore(1);
     private final int[] m_statusArr = new int[6];
     private final int[] m_numberArr = new int[6];
     private final float[] m_batteryArr = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE,
             Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE};
     private boolean m_vibrate = false;
-    // Note that while this is a rwlock, I'm not actually using it as a strictly read-write style lock. In this case,
-    // the "readers" are the update listeners for each team, which can all modify the status array concurrently,
-    // and the send thread is the writer, which must have exclusive access to the entire array
-    private final ReadWriteLock m_rlock = new ReentrantReadWriteLock(true);
+
     private Thread m_sendThread;
+    private boolean m_updateOutOfMatch = true;
+    private boolean m_inMatch = false;
 
     // The receiver for messages from the pebble
     private final UpdateReceiver m_dataReceiver = new UpdateReceiver();
     private boolean m_dataReceiverRegistered = false;
 
-    // The registered team problem observers
-    private Collection<TeamProblemObserver> m_observers = new ArrayList<>();
+    // The registered team problem observers and field status observable
+    private Collection<DeletableObserver> m_observers = new ArrayList<>();
 
     // The service connection to the field status service.
     private ServiceConnection m_connection = new ServiceConnection() {
@@ -189,16 +192,18 @@ public class PebbleCommunicationService extends Service {
 
     private void setup(int vibeInterval, boolean outOfMatch, float bandwidth) {
         FieldStatus fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidth, BLUE1, vibeInterval));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidth, BLUE2, vibeInterval));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidth, BLUE3, vibeInterval));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidth, RED1, vibeInterval));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidth, RED2, vibeInterval));
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidth, RED3, vibeInterval));
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidth, BLUE1, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidth, BLUE2, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidth, BLUE3, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidth, RED1, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidth, RED2, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidth, RED3, vibeInterval).init());
+        m_observers.add(new FieldUpdateObserver().init());
 
         m_sendThread = new Thread(new PebbleSendThread());
         m_sendThread.setName("Pebble Send Thread");
         m_sendThread.start();
+        m_updateOutOfMatch = outOfMatch;
 
         PebbleKit.registerReceivedDataHandler(this, m_dataReceiver);
         m_dataReceiverRegistered = true;
@@ -234,7 +239,7 @@ public class PebbleCommunicationService extends Service {
      * Unregisters any existing observers and clears the array
      */
     private void unregisterObservers() {
-        for (TeamProblemObserver observer : m_observers) {
+        for (DeletableObserver observer : m_observers) {
             observer.unregister();
         }
         m_observers.clear();
@@ -264,14 +269,16 @@ public class PebbleCommunicationService extends Service {
                 DateTime sendStart = DateTime.now();
 
                 // Send each section of data as a separate message with a bit of a backoff so the
-                // Pebble isn't overloaded. In total, a send will take 100 ms.
+                // Pebble isn't overloaded. In total, a send will take at least 120 ms. If the send
+                // process for the individual parts ends up not leaving 40 ms at the end for the Pebble
+                // to process all messages, it will wait a minimum of 40 ms to not overload it.
                 {
                     PebbleDictionary dict = new PebbleDictionary();
                     for (int i = 0; i < 6; i++) {
                         // Offset by the start of the red team status
                         dict.addUint32(i + RED1, statusArr[i]);
                     }
-                    if (vibrate) {
+                    if ((m_updateOutOfMatch || m_inMatch) && vibrate) {
                         dict.addUint32(VIBE, (byte) 1);
                     }
 
@@ -287,7 +294,7 @@ public class PebbleCommunicationService extends Service {
                     }
 
                     try {
-                        // Ensure the pebble has at least 10 ms to process exisiting messages.
+                        // Ensure the pebble has at least 40 ms to process exisiting messages.
                         long interval = 40 - (DateTime.now().getMillis() - start.getMillis());
                         if (interval > 0) {
                             Thread.sleep(interval);
@@ -315,7 +322,7 @@ public class PebbleCommunicationService extends Service {
                     }
 
                     try {
-                        // Ensure the pebble has at least 10 ms to process exisiting messages.
+                        // Ensure the pebble has at least 40 ms to process exisiting messages.
                         long interval = 40 - (DateTime.now().getMillis() - start.getMillis());
                         if (interval > 0) {
                             Thread.sleep(interval);
@@ -344,10 +351,20 @@ public class PebbleCommunicationService extends Service {
                 }
             }
         }
-
     }
 
-    private final class TeamProblemObserver extends Observable.OnPropertyChangedCallback {
+    /**
+     * Simple interface to allow {@link com.fsilberberg.ftamonitor.services.PebbleCommunicationService.TeamProblemObserver}
+     * and {@link com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorStatusFragment.FieldStatusObserver}
+     * to live in the same list.
+     */
+    private interface DeletableObserver {
+        void checkUpdate();
+
+        void unregister();
+    }
+
+    private final class TeamProblemObserver extends Observable.OnPropertyChangedCallback implements DeletableObserver {
         private final Collection<Integer> TEAM_PROPERTIES = Arrays.asList(BR.teamNumber,
                 BR.robotStatus, BR.bypassed, BR.estop, BR.dataRate, BR.battery);
         // Constants for the different statuses
@@ -361,6 +378,9 @@ public class PebbleCommunicationService extends Service {
         private static final byte BWU = 7;
         private static final byte BYP = 8;
 
+        private static final float DEFAULT_BATTERY = 37.37f;
+
+        private final FieldStatus m_fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
         private final TeamStatus m_teamStatus;
         private final float m_maxBandwidth;
         private final int m_teamStation;
@@ -368,23 +388,79 @@ public class PebbleCommunicationService extends Service {
         private byte m_lastStatus = ETH;
         private int m_teamNum;
         private int m_lastTeamNum;
-        private float m_battery = Integer.MAX_VALUE;
-        private float m_lastBattery = Integer.MAX_VALUE;
+        private float m_battery = DEFAULT_BATTERY;
+        private float m_lastBattery = DEFAULT_BATTERY;
         private DateTime m_lastVibeTime = DateTime.now();
+        private MatchStatus m_lastMatchStatus;
 
         private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamStation, int vibeInterval) {
             m_teamStatus = teamStatus;
             m_maxBandwidth = maxBandwidth;
             m_teamStation = teamStation;
-            m_teamStatus.addOnPropertyChangedCallback(this);
             m_vibeInterval = vibeInterval;
             m_teamNum = m_teamStatus.getTeamNumber();
+            m_lastMatchStatus = m_fieldStatus.getMatchStatus();
+        }
+
+        /**
+         * Initializes the team problem observer to start listening for updatess from the field and
+         * team statuses. We make sure not to do this in the constructor to avoid passing around an
+         * object that has not been fully initialized.
+         *
+         * @return This observer, fully initialized.
+         */
+        public TeamProblemObserver init() {
+            m_teamStatus.addOnPropertyChangedCallback(this);
+            m_fieldStatus.addOnPropertyChangedCallback(this);
+            return this;
         }
 
         @Override
         public void onPropertyChanged(Observable observable, int property) {
             if (TEAM_PROPERTIES.contains(property)) {
                 updateTeamStatus();
+            } else if (property == BR.matchStatus) {
+                batteryCheckUpdate();
+                updateTeamStatus();
+            }
+        }
+
+        @Override
+        public void checkUpdate() {
+            batteryCheckUpdate();
+            updateTeamStatus();
+        }
+
+        /**
+         * Updates the current battery monitor checking state. If we're in between matches, then
+         * we don't check the battery. If auto just started, reset the battery status.
+         */
+        private void batteryCheckUpdate() {
+            MatchStatus newStatus = m_fieldStatus.getMatchStatus();
+            if (newStatus.equals(m_lastMatchStatus)) {
+                return;
+            }
+
+            m_lastMatchStatus = newStatus;
+            switch (m_lastMatchStatus) {
+                case AUTO:
+                case READY_TO_PRESTART:
+                    // In both these cases, we want to reset the battery. We could have gotten
+                    // some spurious values from during setup, so we want to make sure that everything
+                    // is reset for the actual match. However, the pre-start values might also be
+                    // useful, so we reset after the opponents have left the field.
+                    m_battery = DEFAULT_BATTERY;
+                    break;
+                case PRESTART_INITIATED:
+                case PRESTART_COMPLETED:
+                case NOT_READY:
+                case MATCH_READY:
+                case TELEOP:
+                case ABORTED:
+                case OVER:
+                case TIMEOUT:
+                default:
+                    break;
             }
         }
 
@@ -429,12 +505,6 @@ public class PebbleCommunicationService extends Service {
 
             m_teamNum = m_teamStatus.getTeamNumber();
 
-            // If we're now on a new team, reset the battery status.
-            if (m_teamNum != m_lastTeamNum) {
-                m_battery = Float.MAX_VALUE;
-                m_lastBattery = Float.MAX_VALUE;
-            }
-
             // Only update the battery status if it's now less than the previous battery value.
             float battery = m_teamStatus.getBattery();
             if (battery < m_battery) {
@@ -474,8 +544,10 @@ public class PebbleCommunicationService extends Service {
             }
         }
 
-        private void unregister() {
+        @Override
+        public void unregister() {
             m_teamStatus.removeOnPropertyChangedCallback(this);
+            m_fieldStatus.removeOnPropertyChangedCallback(this);
         }
     }
 
@@ -487,9 +559,46 @@ public class PebbleCommunicationService extends Service {
         public void onPropertyChanged(Observable observable, int property) {
             if (property == BR.connectionState &&
                     ((FieldConnectionService.ConnectionStateObservable) observable).getState() == ConnectionState.Connected) {
-                for (TeamProblemObserver observer : m_observers) {
-                    observer.updateTeamStatus();
+                for (DeletableObserver observer : m_observers) {
+                    observer.checkUpdate();
                 }
+            }
+        }
+    }
+
+    private final class FieldUpdateObserver extends Observable.OnPropertyChangedCallback implements DeletableObserver {
+        private final FieldStatus m_fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
+
+        public FieldUpdateObserver init() {
+            m_fieldStatus.addOnPropertyChangedCallback(this);
+            return this;
+        }
+
+        public void unregister() {
+            m_fieldStatus.removeOnPropertyChangedCallback(this);
+        }
+
+        @Override
+        public void checkUpdate() {
+            checkMatchStatus();
+        }
+
+        @Override
+        public void onPropertyChanged(Observable observable, int property) {
+            if (property != BR.matchStatus) {
+                return;
+            }
+
+            checkMatchStatus();
+        }
+
+        private void checkMatchStatus() {
+            switch (m_fieldStatus.getMatchStatus()) {
+                case AUTO:
+                case TELEOP:
+                    m_inMatch = true;
+                default:
+                    m_inMatch = false;
             }
         }
     }
@@ -507,8 +616,8 @@ public class PebbleCommunicationService extends Service {
             PebbleKit.sendAckToPebble(context, transId);
             if (pebbleDictionary.contains(UPDATE)) {
                 // Force all team statuses to be updated
-                for (TeamProblemObserver observer : m_observers) {
-                    observer.updateTeamStatus();
+                for (DeletableObserver observer : m_observers) {
+                    observer.checkUpdate();
                 }
             }
         }

@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.services.ServicePreferenceListener;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -23,6 +24,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private String m_bwuKey;
     private String m_fmsEnabledKey;
     private String m_testingEnabledKey;
+    private ServicePreferenceListener m_servicePreferenceListener;
 
     public SettingsFragment() {
     }
@@ -38,6 +40,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         m_bwuKey = getString(R.string.bandwidth_key);
         m_fmsEnabledKey = getString(R.string.field_monitor_enabled_key);
         m_testingEnabledKey = getString(R.string.testing_enabled_key);
+        m_servicePreferenceListener = new ServicePreferenceListener(getContext());
     }
 
     @Override
@@ -52,12 +55,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             toolbar.setTitle(getString(R.string.settings_drawer));
         }
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_servicePreferenceListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(m_servicePreferenceListener);
     }
 
     @Override

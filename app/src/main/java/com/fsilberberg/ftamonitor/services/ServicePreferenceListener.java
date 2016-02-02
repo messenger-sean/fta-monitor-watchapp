@@ -2,6 +2,7 @@ package com.fsilberberg.ftamonitor.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import com.fsilberberg.ftamonitor.R;
 
 /**

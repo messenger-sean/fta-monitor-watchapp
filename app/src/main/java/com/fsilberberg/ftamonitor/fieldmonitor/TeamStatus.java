@@ -24,6 +24,7 @@ public class TeamStatus extends BaseObservable {
         NO_DS_ETH, NO_DS, NO_RADIO, NO_RIO, NO_CODE, GOOD
     }
 
+    private final Object m_lock = new Object();
     private Integer m_teamNumber = 1;
     private Integer m_droppedPackets = 0;
     private Integer m_roundTrip = 0;
@@ -47,162 +48,226 @@ public class TeamStatus extends BaseObservable {
     }
 
     @Bindable
-    public synchronized int getTeamNumber() {
-        return m_teamNumber;
+    public int getTeamNumber() {
+        synchronized (m_lock) {
+            return m_teamNumber;
+        }
     }
 
     public void setTeamNumber(int teamNumber) {
-        m_teamNumber = teamNumber;
+        synchronized (m_lock) {
+            m_teamNumber = teamNumber;
+        }
         notifyPropertyChanged(BR.teamNumber);
     }
 
     @Bindable
-    public synchronized int getDroppedPackets() {
-        return m_droppedPackets;
+    public int getDroppedPackets() {
+        synchronized (m_lock) {
+            return m_droppedPackets;
+        }
     }
 
     public void setDroppedPackets(int droppedPackets) {
-        m_droppedPackets = droppedPackets;
+        synchronized (m_lock) {
+            m_droppedPackets = droppedPackets;
+        }
         notifyPropertyChanged(BR.droppedPackets);
     }
 
     @Bindable
-    public synchronized int getRoundTrip() {
-        return m_roundTrip;
+    public int getRoundTrip() {
+        synchronized (m_lock) {
+            return m_roundTrip;
+        }
     }
 
     public void setRoundTrip(int roundTrip) {
-        m_roundTrip = roundTrip;
+        synchronized (m_lock) {
+            m_roundTrip = roundTrip;
+        }
         notifyPropertyChanged(BR.roundTrip);
     }
 
     @Bindable
-    public synchronized boolean isDsEth() {
-        return m_dsEth;
+    public boolean isDsEth() {
+        synchronized (m_lock) {
+            return m_dsEth;
+        }
     }
 
     public void setDsEth(boolean dsEth) {
-        m_dsEth = dsEth;
+        synchronized (m_lock) {
+            m_dsEth = dsEth;
+        }
         notifyPropertyChanged(BR.dsEth);
     }
 
     @Bindable
-    public synchronized boolean isDs() {
-        return m_ds;
+    public boolean isDs() {
+        synchronized (m_lock) {
+            return m_ds;
+        }
     }
 
     public void setDs(boolean ds) {
-        m_ds = ds;
+        synchronized (m_lock) {
+            m_ds = ds;
+        }
         notifyPropertyChanged(BR.ds);
     }
 
     @Bindable
-    public synchronized boolean isRadio() {
-        return m_radio;
+    public boolean isRadio() {
+        synchronized (m_lock) {
+            return m_radio;
+        }
     }
 
     public void setRadio(boolean radio) {
-        m_radio = radio;
+        synchronized (m_lock) {
+            m_radio = radio;
+        }
         notifyPropertyChanged(BR.radio);
     }
 
     @Bindable
-    public synchronized boolean isRio() {
-        return m_rio;
+    public boolean isRio() {
+        synchronized (m_lock) {
+            return m_rio;
+        }
     }
 
     public void setRio(boolean rio) {
-        m_rio = rio;
+        synchronized (m_lock) {
+            m_rio = rio;
+        }
         notifyPropertyChanged(BR.rio);
     }
 
     @Bindable
-    public synchronized boolean isEstop() {
-        return m_estop;
+    public boolean isEstop() {
+        synchronized (m_lock) {
+            return m_estop;
+        }
     }
 
     public void setEstop(boolean estop) {
-        m_estop = estop;
+        synchronized (m_lock) {
+            m_estop = estop;
+        }
         notifyPropertyChanged(BR.estop);
     }
 
     @Bindable
-    public synchronized boolean isCode() {
-        return m_code;
+    public boolean isCode() {
+        synchronized (m_lock) {
+            return m_code;
+        }
     }
 
     public void setCode(boolean code) {
-        m_code = code;
+        synchronized (m_lock) {
+            m_code = code;
+        }
         notifyPropertyChanged(BR.code);
     }
 
     @Bindable
-    public synchronized float getBattery() {
-        return m_battery;
+    public float getBattery() {
+        synchronized (m_lock) {
+            return m_battery;
+        }
     }
 
     public void setBattery(float battery) {
-        m_battery = battery;
+        synchronized (m_lock) {
+            m_battery = battery;
+        }
         notifyPropertyChanged(BR.battery);
     }
 
     @Bindable
-    public synchronized float getDataRate() {
-        return m_dataRate;
+    public float getDataRate() {
+        synchronized (m_lock) {
+            return m_dataRate;
+        }
     }
 
     public void setDataRate(float dataRate) {
-        m_dataRate = dataRate;
+        synchronized (m_lock) {
+            m_dataRate = dataRate;
+        }
         notifyPropertyChanged(BR.dataRate);
     }
 
     @Bindable
-    public synchronized float getSignalStrength() {
-        return m_signalStrength;
+    public float getSignalStrength() {
+        synchronized (m_lock) {
+            return m_signalStrength;
+        }
     }
 
     public void setSignalStrength(float signalStrength) {
-        m_signalStrength = signalStrength;
+        synchronized (m_lock) {
+            m_signalStrength = signalStrength;
+        }
         notifyPropertyChanged(BR.signalStrength);
     }
 
     @Bindable
-    public synchronized float getSignalQuality() {
-        return m_signalQuality;
+    public float getSignalQuality() {
+        synchronized (m_lock) {
+            return m_signalQuality;
+        }
     }
 
     public void setSignalQuality(float signalQuality) {
-        m_signalQuality = signalQuality;
+        synchronized (m_lock) {
+            m_signalQuality = signalQuality;
+        }
         notifyPropertyChanged(BR.signalQuality);
     }
 
     @Bindable
-    public synchronized boolean isEnabled() {
-        return m_enabled;
+    public boolean isEnabled() {
+        synchronized (m_lock) {
+            return m_enabled;
+        }
     }
 
     public void setEnabled(boolean enabled) {
-        m_enabled = enabled;
+        synchronized (m_lock) {
+            m_enabled = enabled;
+        }
         notifyPropertyChanged(BR.enabled);
     }
 
     @Bindable
-    public synchronized boolean isBypassed() {
-        return m_bypassed;
+    public boolean isBypassed() {
+        synchronized (m_lock) {
+            return m_bypassed;
+        }
     }
 
     public void setBypassed(boolean bypassed) {
-        m_bypassed = bypassed;
+        synchronized (m_lock) {
+            m_bypassed = bypassed;
+        }
         notifyPropertyChanged(BR.bypassed);
     }
 
     @Bindable
-    public synchronized RobotConnectionStatus getRobotStatus() {
-        return m_robotStatus;
+    public RobotConnectionStatus getRobotStatus() {
+        synchronized (m_lock) {
+            return m_robotStatus;
+        }
     }
 
     public void setRobotStatus(RobotConnectionStatus status) {
-        m_robotStatus = status;
+        synchronized (m_lock) {
+            m_robotStatus = status;
+        }
         notifyPropertyChanged(BR.robotStatus);
     }
 
