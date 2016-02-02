@@ -40,7 +40,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         m_bwuKey = getString(R.string.bandwidth_key);
         m_fmsEnabledKey = getString(R.string.field_monitor_enabled_key);
         m_testingEnabledKey = getString(R.string.testing_enabled_key);
-        m_servicePreferenceListener = new ServicePreferenceListener(getContext());
+        m_servicePreferenceListener = new ServicePreferenceListener(getActivity());
     }
 
     @Override
