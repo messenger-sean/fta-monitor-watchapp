@@ -33,6 +33,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -258,7 +260,7 @@ public class FieldConnectionService extends Service {
                         URL newUrl = new URI(signalrURI.getScheme(), signalrURI.getUserInfo(),
                                 signalrURI.getHost(), m_monitorPort, INITIAL_STATE_PATH, "", "").toURL();
                         try (InputStream is = newUrl.openStream();
-                             BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+                             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
                             StringBuilder sb = new StringBuilder();
                             String line;
                             while ((line = br.readLine()) != null) {

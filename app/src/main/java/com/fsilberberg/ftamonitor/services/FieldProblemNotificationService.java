@@ -36,15 +36,18 @@ public class FieldProblemNotificationService {
     private static final int ID = 9;
     private static final int MAIN_ACTIVITY_ID = 4;
     private static FieldProblemNotificationService instance;
+    private static final Object s_lock = new Object();
 
     public static void start() {
-        if (instance != null) {
-            instance.stopService();
-            instance = null;
-        }
+        synchronized (s_lock) {
+            if (instance != null) {
+                instance.stopService();
+                instance = null;
+            }
 
-        instance = new FieldProblemNotificationService();
-        instance.startService(FTAMonitorApplication.getContext());
+            instance = new FieldProblemNotificationService();
+            instance.startService(FTAMonitorApplication.getContext());
+        }
     }
 
     // References to the teams

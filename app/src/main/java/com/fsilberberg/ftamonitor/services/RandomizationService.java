@@ -25,6 +25,7 @@ import microsoft.aspnet.signalr.client.ConnectionState;
  * Randomizes the values seen on the field monitor every second for testing
  */
 public class RandomizationService extends Service {
+    private final Object m_lock = new Object();
     private final RandomizationBinder m_binder = new RandomizationBinder();
     private final ServiceConnection m_connection = new ServiceConnection() {
         @Override
@@ -51,7 +52,7 @@ public class RandomizationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        synchronized (this) {
+        synchronized (m_lock) {
             m_shouldUpdate = true;
             // If we've already started, then we're done, just return
             if (m_isStarted) {
@@ -73,7 +74,7 @@ public class RandomizationService extends Service {
 
     @Override
     public void onDestroy() {
-        synchronized (this) {
+        synchronized (m_lock) {
             m_isStarted = false;
         }
 
@@ -88,7 +89,9 @@ public class RandomizationService extends Service {
     }
 
     public boolean isStarted() {
-        return m_isStarted;
+        synchronized (m_lock) {
+            return m_isStarted;
+        }
     }
 
     /**
@@ -101,13 +104,13 @@ public class RandomizationService extends Service {
         if (toEnable) {
             // If we have not started, then we need to start up the service. Otherwise, do nothing, the service is
             // already running
-            synchronized (this) {
+            synchronized (m_lock) {
                 if (!m_isStarted) {
                     startService(new Intent(context, RandomizationService.class));
                 }
             }
         } else {
-            synchronized (this) {
+            synchronized (m_lock) {
                 if (m_isStarted) {
                     m_isStarted = false;
                     stopService(new Intent(context, RandomizationService.class));
@@ -117,7 +120,7 @@ public class RandomizationService extends Service {
     }
 
     public void update() {
-        synchronized (this) {
+        synchronized (m_lock) {
             m_shouldUpdate = true;
         }
     }
@@ -167,9 +170,13 @@ public class RandomizationService extends Service {
         @Override
         public void run() {
             while (!Thread.interrupted() && m_isStarted) {
-                if (m_shouldUpdate) {
+                boolean shouldUpdate;
+                synchronized (m_lock) {
+                    shouldUpdate = m_shouldUpdate;
+                }
+                if (shouldUpdate) {
                     update();
-                    synchronized (RandomizationService.this) {
+                    synchronized (m_lock) {
                         m_shouldUpdate = false;
                     }
                 }

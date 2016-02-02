@@ -51,7 +51,7 @@ public class TestingRootFragment extends Fragment {
         }
     }
 
-    private class PagerAdapter extends FragmentStatePagerAdapter {
+    private static final class PagerAdapter extends FragmentStatePagerAdapter {
 
         String[] m_names = new String[]{
                 "Randomization", "Field Connection", "Field Status",
