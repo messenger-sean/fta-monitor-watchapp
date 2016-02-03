@@ -22,6 +22,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private String m_monitorPortKey;
     private String m_defaultKey;
     private String m_bwuKey;
+    private String m_batKey;
     private String m_fmsEnabledKey;
     private String m_testingEnabledKey;
     private ServicePreferenceListener m_servicePreferenceListener;
@@ -38,6 +39,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         m_monitorPortKey = getString(R.string.fms_monitor_port_key);
         m_defaultKey = getString(R.string.on_field_key);
         m_bwuKey = getString(R.string.bandwidth_key);
+        m_batKey = getString(R.string.low_battery_key);
         m_fmsEnabledKey = getString(R.string.field_monitor_enabled_key);
         m_testingEnabledKey = getString(R.string.testing_enabled_key);
         m_servicePreferenceListener = new ServicePreferenceListener(getActivity());
@@ -50,6 +52,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         updatePref(m_signalrPortKey);
         updatePref(m_monitorPortKey);
         updatePref(m_bwuKey);
+        updatePref(m_batKey);
         ActionBar toolbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (toolbar != null) {
             toolbar.setTitle(getString(R.string.settings_drawer));
@@ -68,7 +71,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(m_fmsKey) || key.equals(m_signalrPortKey) ||
-                key.equals(m_monitorPortKey) || key.equals(m_bwuKey)) {
+                key.equals(m_monitorPortKey) || key.equals(m_bwuKey) || key.equals(m_batKey)) {
             updatePref(key);
         } else if (key.equals(m_defaultKey)) {
             boolean defaultUrl = sharedPreferences.getBoolean(key, true);

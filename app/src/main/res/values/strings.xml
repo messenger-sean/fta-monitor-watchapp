@@ -19,6 +19,8 @@
     <string name="fms_monitor_port_addr_default">80</string>
     <string name="bandwidth_key">max_bandwidth</string>
     <string name="bandwidth">Maximum Bandwidth Usage (Mb/s)</string>
+    <string name="low_battery_key">low_battery</string>
+    <string name="low_battery">Low Battery (Volts)</string>
     <string name="field_monitor_enabled_key">field_monitor_enabled</string>
     <string name="field_monitor_enabled">Enable Field Monitor</string>
     <string name="field_monitor_enabled_desc">Enable the Field Monitor, which allows for the status of the current match to be displayed on the screen and the various notification services to work.</string>
@@ -36,6 +38,12 @@
     <string name="notify_always_key">notify_always</string>
     <string name="notify_always">Enable Out-of-Match Notify</string>
     <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
+    <string name="low_battery_notify_key">low_battery_notify</string>
+    <string name="low_battery_notify">Notify on Low Battery</string>
+    <string name="low_battery_notify_desc">Notify when a team battery drops below the low battery minimum.</string>
+    <string name="bandwidth_notify_key">low_battery_notify</string>
+    <string name="bandwidth_notify">Notify on Max Bandwidth Exceeded</string>
+    <string name="bandwidth_notify_desc">Notify when a team uses more than the max allowed bandwidth.</string>
 
     <!-- Pebble Settings -->
     <string name="pebble_key">pebble</string>
@@ -47,6 +55,12 @@
     <string name="pebble_notify_times_key">pebble_notify_times</string>
     <string name="pebble_notify_times">Enable Out-of-Match Pebble Vibration</string>
     <string name="pebble_notify_times_desc">Always vibrate Pebble when a team status changes, even when a match is not playing</string>
+    <string name="pebble_low_battery_notify_key">pebble_low_battery_notify</string>
+    <string name="pebble_low_battery_notify">Notify on Low Battery</string>
+    <string name="pebble_low_battery_notify_desc">Notify on the Pebble when a team battery drops below the low battery minimum.</string>
+    <string name="pebble_bandwidth_notify_key">pebble_low_battery_notify</string>
+    <string name="pebble_bandwidth_notify">Notify on Max Bandwidth Exceeded</string>
+    <string name="pebble_bandwidth_notify_desc">Notify on the Pebble when a team uses more than the max allowed bandwidth.</string>
 
     <!-- Settings sections and subscreen names -->
     <string name="field_settings_title">Field Monitor Settings</string>
@@ -70,6 +84,7 @@
     <string name="code_error">no code</string>
     <string name="estop_error">estopped</string>
     <string name="bandwidth_error">exceeded max bandwidth</string>
+    <string name="low_battery_error">dropped below min battery</string>
 
     <!-- Drawer Entry Names -->
     <string name="field_monitor_drawer">Field Monitor</string>

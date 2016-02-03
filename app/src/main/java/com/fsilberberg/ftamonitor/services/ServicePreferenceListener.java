@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import com.fsilberberg.ftamonitor.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * This is a shared preference listener that starts or stops services when they are enabled, disabled, or their settings
  * are changed
@@ -13,36 +17,36 @@ public class ServicePreferenceListener implements SharedPreferences.OnSharedPref
 
     private final String m_fmsEnabledKey;
     private final String m_fmsIpKey;
-    private final String m_bwuKey;
-    private final String m_pebbleEnabledKey;
-    private final String m_pebbleOutOfMatchKey;
-    private final String m_pebbleVibeIntervalKey;
-    private final String m_notificationEnabledKey;
-    private final String m_notificationOutOfMatchKey;
+    private final Collection<String> m_pebbleUpdateKeys;
+    private final Collection<String> m_notificationUpdateKeys;
 
     public ServicePreferenceListener(Context context) {
         m_fmsEnabledKey = context.getString(R.string.field_monitor_enabled_key);
         m_fmsIpKey = context.getString(R.string.fms_ip_addr_key);
-        m_bwuKey = context.getString(R.string.bandwidth_key);
-        m_pebbleEnabledKey = context.getString(R.string.pebble_key);
-        m_pebbleOutOfMatchKey = context.getString(R.string.pebble_notify_times_key);
-        m_pebbleVibeIntervalKey = context.getString(R.string.pebble_vibe_interval_key);
-        m_notificationEnabledKey = context.getString(R.string.notification_key);
-        m_notificationOutOfMatchKey = context.getString(R.string.notify_always_key);
+        String bwuKey = context.getString(R.string.bandwidth_key);
+        String lowBatKey = context.getString(R.string.low_battery_key);
+        m_pebbleUpdateKeys = Arrays.asList(context.getString(R.string.pebble_key),
+                context.getString(R.string.pebble_notify_times_key),
+                context.getString(R.string.pebble_vibe_interval_key),
+                context.getString(R.string.pebble_bandwidth_notify_key),
+                context.getString(R.string.pebble_low_battery_notify_key),
+                bwuKey, lowBatKey);
+        m_notificationUpdateKeys = Arrays.asList(context.getString(R.string.notification_key),
+                context.getString(R.string.notify_always_key),
+                context.getString(R.string.low_battery_notify_key),
+                context.getString(R.string.bandwidth_notify_key),
+                bwuKey, lowBatKey);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(m_fmsEnabledKey) || key.equals(m_fmsIpKey)) {
             updateFmsConnection();
-        } else if (key.equals(m_pebbleEnabledKey) ||
-                key.equals(m_pebbleOutOfMatchKey) ||
-                key.equals(m_pebbleVibeIntervalKey)) {
+        }
+        if (m_pebbleUpdateKeys.contains(key)) {
             updatePebbleConnection();
-        } else if (key.equals(m_notificationEnabledKey) || key.equals(m_notificationOutOfMatchKey)) {
-            updateNotification();
-        } else if (key.equals(m_bwuKey)) {
-            updatePebbleConnection();
+        }
+        if (m_notificationUpdateKeys.contains(key)) {
             updateNotification();
         }
     }

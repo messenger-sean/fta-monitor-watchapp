@@ -47,7 +47,10 @@ public class PebbleCommunicationService extends Service {
 
     private static final String VIBE_INTERVAL_INTENT_EXTRA = "vibe_interval_intent_extra";
     private static final String OUT_OF_MATCH_INTENT_EXTRA = "out_of_match_intent_extra";
+    private static final String BANDWIDTH_NOTIFY_INTENT_EXTRA = "bandwidth_notify_intent_extra";
     private static final String BANDWIDTH_INTENT_EXTRA = "bandwidth_intent_extra";
+    private static final String LOW_BATTERY_NOTIFY_INTENT_EXTRA = "low_battery_notify_intent_extra";
+    private static final String LOW_BATTERY_INTENT_EXTRA = "low_battery_intent_extra";
 
     // Constants for the pebble dictionary keys. Not all are used here, but they are included
     // for documentation's sake
@@ -100,16 +103,25 @@ public class PebbleCommunicationService extends Service {
             // Get the arguments
             String vibeIntervalKey = ctx.getString(R.string.pebble_vibe_interval_key);
             String outOfMatchKey = ctx.getString(R.string.pebble_notify_times_key);
+            String bandwidthNotifyKey = ctx.getString(R.string.pebble_bandwidth_notify_key);
             String bandwidthKey = ctx.getString(R.string.bandwidth_key);
+            String lowBatteryNotifyKey = ctx.getString(R.string.pebble_low_battery_notify_key);
+            String lowBatteryKey = ctx.getString(R.string.low_battery_key);
             int vibeInterval = Integer.parseInt(prefs.getString(vibeIntervalKey, "10"));
             boolean outOfMatch = prefs.getBoolean(outOfMatchKey, true);
+            boolean bandwidthNotify = prefs.getBoolean(bandwidthNotifyKey, true);
             float bandwidth = Float.parseFloat(prefs.getString(bandwidthKey, "7.0"));
+            boolean lowBatteryNotify = prefs.getBoolean(lowBatteryNotifyKey, true);
+            float lowBattery = Float.parseFloat(prefs.getString(lowBatteryKey, "6.5"));
 
             // Put all of the arguments
             intent.putExtra(LIFECYCLE_INTENT_EXTRA, START);
             intent.putExtra(VIBE_INTERVAL_INTENT_EXTRA, vibeInterval);
             intent.putExtra(OUT_OF_MATCH_INTENT_EXTRA, outOfMatch);
+            intent.putExtra(BANDWIDTH_NOTIFY_INTENT_EXTRA, bandwidthNotify);
             intent.putExtra(BANDWIDTH_INTENT_EXTRA, bandwidth);
+            intent.putExtra(LOW_BATTERY_NOTIFY_INTENT_EXTRA, lowBatteryNotify);
+            intent.putExtra(LOW_BATTERY_INTENT_EXTRA, lowBattery);
         } else {
             intent.putExtra(LIFECYCLE_INTENT_EXTRA, STOP);
         }
@@ -179,25 +191,34 @@ public class PebbleCommunicationService extends Service {
         // Get the parameters for the observers
         int vibeInterval = intent.getIntExtra(VIBE_INTERVAL_INTENT_EXTRA, 10);
         boolean outOfMatch = intent.getBooleanExtra(OUT_OF_MATCH_INTENT_EXTRA, true);
+        boolean bandwidthNotify = intent.getBooleanExtra(BANDWIDTH_NOTIFY_INTENT_EXTRA, true);
         float bandwidth = intent.getFloatExtra(BANDWIDTH_INTENT_EXTRA, 7.0f);
+        boolean lowBatteryNotify = intent.getBooleanExtra(LOW_BATTERY_NOTIFY_INTENT_EXTRA, true);
+        float lowBattery = intent.getFloatExtra(LOW_BATTERY_INTENT_EXTRA, 6.5f);
 
         // Unregister any existing observers
         unregisterObservers();
 
         // Register all of the observers and set up the send thread
-        setup(vibeInterval, outOfMatch, bandwidth);
+        setup(vibeInterval, outOfMatch, bandwidthNotify, bandwidth, lowBatteryNotify, lowBattery);
 
         return START_STICKY;
     }
 
-    private void setup(int vibeInterval, boolean outOfMatch, float bandwidth) {
+    private void setup(int vibeInterval, boolean outOfMatch, boolean bandwidthNotify, float bandwidth, boolean lowBatteryNotify, float lowBattery) {
         FieldStatus fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidth, BLUE1, vibeInterval).init());
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidth, BLUE2, vibeInterval).init());
-        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidth, BLUE3, vibeInterval).init());
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidth, RED1, vibeInterval).init());
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidth, RED2, vibeInterval).init());
-        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidth, RED3, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue1(), bandwidthNotify, bandwidth,
+                lowBatteryNotify, lowBattery, BLUE1, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue2(), bandwidthNotify, bandwidth,
+                lowBatteryNotify, lowBattery, BLUE2, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getBlue3(), bandwidthNotify, bandwidth,
+                lowBatteryNotify, lowBattery, BLUE3, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed1(), bandwidthNotify, bandwidth,
+                lowBatteryNotify, lowBattery, RED1, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed2(), bandwidthNotify, bandwidth,
+                lowBatteryNotify, lowBattery, RED2, vibeInterval).init());
+        m_observers.add(new TeamProblemObserver(fieldStatus.getRed3(), bandwidthNotify, bandwidth,
+                lowBatteryNotify, lowBattery, RED3, vibeInterval).init());
         m_observers.add(new FieldUpdateObserver().init());
 
         m_sendThread = new Thread(new PebbleSendThread());
@@ -210,6 +231,11 @@ public class PebbleCommunicationService extends Service {
 
         // Start the watchapp
         PebbleKit.startAppOnPebble(this, PEBBLE_UUID);
+
+        // Update all observers for starting state
+        for (DeletableObserver observer : m_observers) {
+            observer.checkUpdate();
+        }
     }
 
     @Override
@@ -377,12 +403,16 @@ public class PebbleCommunicationService extends Service {
         private static final byte GOOD = 6;
         private static final byte BWU = 7;
         private static final byte BYP = 8;
+        private static final byte BAT = 9;
 
         private static final float DEFAULT_BATTERY = 37.37f;
 
         private final FieldStatus m_fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
         private final TeamStatus m_teamStatus;
+        private final boolean m_bandwidthNotify;
         private final float m_maxBandwidth;
+        private final boolean m_lowBatteryNotify;
+        private final float m_lowBattery;
         private final int m_teamStation;
         private final int m_vibeInterval;
         private byte m_lastStatus = ETH;
@@ -393,9 +423,13 @@ public class PebbleCommunicationService extends Service {
         private DateTime m_lastVibeTime = DateTime.now();
         private MatchStatus m_lastMatchStatus;
 
-        private TeamProblemObserver(TeamStatus teamStatus, float maxBandwidth, int teamStation, int vibeInterval) {
+        private TeamProblemObserver(TeamStatus teamStatus, boolean bandwidthNotify, float maxBandwidth,
+                                    boolean lowBatteryNotify, float lowBattery, int teamStation, int vibeInterval) {
             m_teamStatus = teamStatus;
+            m_bandwidthNotify = bandwidthNotify;
             m_maxBandwidth = maxBandwidth;
+            m_lowBattery = lowBattery;
+            m_lowBatteryNotify = lowBatteryNotify;
             m_teamStation = teamStation;
             m_vibeInterval = vibeInterval;
             m_teamNum = m_teamStatus.getTeamNumber();
@@ -494,7 +528,10 @@ public class PebbleCommunicationService extends Service {
                         break;
                     case GOOD:
                     default:
-                        if (m_teamStatus.getDataRate() > m_maxBandwidth) {
+                        // Battery is more important than bandwidth, imo
+                        if (m_lowBatteryNotify && m_teamStatus.getBattery() < m_lowBattery) {
+                            status = BAT;
+                        } else if (m_bandwidthNotify && m_teamStatus.getDataRate() > m_maxBandwidth) {
                             status = BWU;
                         } else {
                             status = GOOD;
