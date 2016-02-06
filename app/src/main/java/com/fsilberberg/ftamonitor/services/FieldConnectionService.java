@@ -33,7 +33,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -239,7 +238,7 @@ public class FieldConnectionService extends Service {
             m_fieldConnection = new HubConnection(m_url);
             m_fieldProxy = m_fieldConnection.createHubProxy(HUB_NAME);
             m_fieldProxy.on(FIELD_MONITOR, new TeamProxyHandler(), JsonArray.class);
-            m_fieldProxy.on(MATCH_STATE_CHANGED, new MatchStateProxyHandler(), Integer.class);
+            m_fieldProxy.on(MATCH_STATE_CHANGED, new MatchStateProxyHandler(this), Integer.class);
 
             // Set up the error handler, disconnect on error
             m_fieldConnection.error(new ErrorCallback() {
@@ -255,28 +254,7 @@ public class FieldConnectionService extends Service {
             m_fieldConnection.connected(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        URI signalrURI = new URI(m_url);
-                        URL newUrl = new URI(signalrURI.getScheme(), signalrURI.getUserInfo(),
-                                signalrURI.getHost(), m_monitorPort, INITIAL_STATE_PATH, "", "").toURL();
-                        try (InputStream is = newUrl.openStream();
-                             BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                            StringBuilder sb = new StringBuilder();
-                            String line;
-                            while ((line = br.readLine()) != null) {
-                                sb.append(line);
-                            }
-
-                            Gson gson = new Gson();
-                            JsonArray initialState = gson.fromJson(sb.toString(), JsonArray.class);
-                            FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
-                            field.setMatchNumber(initialState.get(0).toString());
-                            field.setPlayNumber(initialState.get(1).getAsInt());
-                        }
-                    } catch (IOException | URISyntaxException e) {
-                        Log.w(FieldConnectionService.class.getName(),
-                                "Error when connecting for initial match number state", e);
-                    }
+                    updateMatchNumberAndPlay();
                 }
             });
 
@@ -286,6 +264,31 @@ public class FieldConnectionService extends Service {
             } catch (InterruptedException | ExecutionException e) {
                 Log.w(FieldConnectionService.class.getName(), "Could not start the signalr connection", e);
             }
+        }
+    }
+
+    public void updateMatchNumberAndPlay() {
+        try {
+            URI signalrURI = new URI(m_url);
+            URL newUrl = new URI(signalrURI.getScheme(), signalrURI.getUserInfo(),
+                    signalrURI.getHost(), m_monitorPort, INITIAL_STATE_PATH, "", "").toURL();
+            try (InputStream is = newUrl.openStream();
+                 BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                Gson gson = new Gson();
+                JsonArray initialState = gson.fromJson(sb.toString(), JsonArray.class);
+                FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
+                field.setMatchNumber(initialState.get(0).toString());
+                field.setPlayNumber(initialState.get(1).getAsInt());
+            }
+        } catch (IOException | URISyntaxException e) {
+            Log.w(FieldConnectionService.class.getName(),
+                    "Error when connecting for initial match number state", e);
         }
     }
 

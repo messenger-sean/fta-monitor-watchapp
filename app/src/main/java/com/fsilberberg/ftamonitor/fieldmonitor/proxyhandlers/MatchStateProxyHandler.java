@@ -3,6 +3,7 @@ package com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
+import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
 
@@ -13,6 +14,11 @@ import static com.fsilberberg.ftamonitor.common.MatchStatus.*;
  */
 public class MatchStateProxyHandler extends ProxyHandlerBase implements SubscriptionHandler1<Integer> {
     private final FieldStatus m_fieldStatus = FieldMonitorFactory.getInstance().getFieldStatus();
+    private final FieldConnectionService m_fieldConnectionService;
+
+    public MatchStateProxyHandler(FieldConnectionService fieldConnectionService) {
+        m_fieldConnectionService = fieldConnectionService;
+    }
 
     @Override
     public void run(Integer message) {
@@ -58,5 +64,6 @@ public class MatchStateProxyHandler extends ProxyHandlerBase implements Subscrip
                 break;
         }
         m_fieldStatus.setMatchStatus(status);
+        m_fieldConnectionService.updateMatchNumberAndPlay();
     }
 }
