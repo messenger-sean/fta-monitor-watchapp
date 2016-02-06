@@ -87,6 +87,8 @@ public class PebbleCommunicationService extends Service {
     private static final int BLUE2_BATT = 19;
     @SuppressWarnings("unused")
     private static final int BLUE3_BATT = 20;
+    @SuppressWarnings("unused")
+    private static final int MATCH_STATE = 21;
 
     /**
      * Checks the current status of the pebble service, and starts/stops as necessary
@@ -140,6 +142,7 @@ public class PebbleCommunicationService extends Service {
     private final int[] m_numberArr = new int[6];
     private final float[] m_batteryArr = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE,
             Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE};
+    private MatchStatus m_matchStatus = MatchStatus.NOT_READY;
     private boolean m_vibrate = false;
 
     private Thread m_sendThread;
@@ -346,6 +349,9 @@ public class PebbleCommunicationService extends Service {
                         // Offset by the start of the red team battery
                         dict.addUint32(i + RED1_BATT, intBat);
                     }
+
+                    // On the last update, include the current match status
+                    dict.addUint32(MATCH_STATE, m_matchStatus.ordinal());
 
                     try {
                         // Ensure the pebble has at least 40 ms to process exisiting messages.
@@ -630,12 +636,23 @@ public class PebbleCommunicationService extends Service {
         }
 
         private void checkMatchStatus() {
-            switch (m_fieldStatus.getMatchStatus()) {
+            MatchStatus curStatus = m_fieldStatus.getMatchStatus();
+            switch (curStatus) {
                 case AUTO:
                 case TELEOP:
                     m_inMatch = true;
+                    break;
                 default:
                     m_inMatch = false;
+                    break;
+            }
+
+            m_rlock.readLock().lock();
+            try {
+                m_matchStatus = curStatus;
+                m_sendSem.release();
+            } finally {
+                m_rlock.readLock().unlock();
             }
         }
     }
