@@ -6,6 +6,9 @@ import android.databinding.Bindable;
 import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
 
 /**
@@ -24,12 +27,11 @@ public class FieldStatus extends BaseObservable {
     private final TeamStatus m_blue1 = new TeamStatus();
     private final TeamStatus m_blue2 = new TeamStatus();
     private final TeamStatus m_blue3 = new TeamStatus();
-    private final Object m_lock = new Object();
 
     // Match stats
-    private String m_matchNumber = "999";
-    private MatchStatus m_matchStatus = NOT_READY;
-    private int m_playNumber = 0;
+    private AtomicReference<String> m_matchNumber = new AtomicReference<>("999");
+    private AtomicReference<MatchStatus> m_matchStatus = new AtomicReference<>(NOT_READY);
+    private AtomicInteger m_playNumber = new AtomicInteger(0);
 
     public TeamStatus getRed1() {
         return m_red1;
@@ -58,44 +60,32 @@ public class FieldStatus extends BaseObservable {
     @SuppressWarnings("unused")
     @Bindable
     public String getMatchNumber() {
-        synchronized (m_lock) {
-            return m_matchNumber;
-        }
+        return m_matchNumber.get();
     }
 
     @SuppressWarnings("unused")
     public void setMatchNumber(String matchNumber) {
-        synchronized (m_lock) {
-            m_matchNumber = matchNumber;
-        }
+        m_matchNumber.set(matchNumber);
         notifyPropertyChanged(BR.matchNumber);
     }
 
     @Bindable
     public MatchStatus getMatchStatus() {
-        synchronized (m_lock) {
-            return m_matchStatus;
-        }
+        return m_matchStatus.get();
     }
 
     public void setMatchStatus(MatchStatus matchStatus) {
-        synchronized (m_lock) {
-            m_matchStatus = matchStatus;
-        }
+        m_matchStatus.set(matchStatus);
         notifyPropertyChanged(BR.matchStatus);
     }
 
     @Bindable
     public int getPlayNumber() {
-        synchronized (m_lock) {
-            return m_playNumber;
-        }
+        return m_playNumber.get();
     }
 
     public void setPlayNumber(int playNumber) {
-        synchronized (m_lock) {
-            m_playNumber = playNumber;
-        }
+        m_playNumber.set(playNumber);
         notifyPropertyChanged(BR.playNumber);
     }
 }
