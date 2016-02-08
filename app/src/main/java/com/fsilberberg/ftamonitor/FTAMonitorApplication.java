@@ -12,7 +12,7 @@ import com.fsilberberg.ftamonitor.services.ServicePreferenceListener;
  */
 public class FTAMonitorApplication extends Application {
 
-    private static Context _context;
+    private static volatile Context _context;
 
     public static Context getContext() {
         return _context;
