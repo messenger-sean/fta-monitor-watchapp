@@ -142,8 +142,8 @@ public class FieldConnectionService extends Service {
     private String m_url;
     private int m_signalrPort;
     private int m_monitorPort;
-    private HubConnection m_fieldConnection;
-    private HubProxy m_fieldProxy;
+    private volatile HubConnection m_fieldConnection;
+    private volatile HubProxy m_fieldProxy;
     private Thread m_connectionThread = new Thread();
 
     public ConnectionState getState() {
@@ -367,7 +367,7 @@ public class FieldConnectionService extends Service {
     public static class ConnectionStateObservable extends BaseObservable implements StateChangedCallback {
 
         @Bindable
-        private ConnectionState m_connectionState = Disconnected;
+        private volatile ConnectionState m_connectionState = Disconnected;
 
         public void setConnectionState(ConnectionState newState) {
             if (!m_connectionState.equals(newState)) {

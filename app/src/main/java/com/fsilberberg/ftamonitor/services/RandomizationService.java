@@ -43,9 +43,9 @@ public class RandomizationService extends Service {
     };
     private FieldConnectionService.ConnectionStateObservable m_stateObservable;
     private Thread m_randomThread;
-    private boolean m_isBound = false;
-    private boolean m_isStarted = false;
-    private boolean m_shouldUpdate = false;
+    private volatile boolean m_isBound = false;
+    private volatile boolean m_isStarted = false;
+    private volatile boolean m_shouldUpdate = false;
 
     public RandomizationService() {
     }

@@ -185,11 +185,11 @@ public class FieldProblemNotificationService {
         private final Collection<Integer> updateValues = Arrays.asList(BR.robotStatus,
                 BR.estop, BR.bypassed, BR.battery, BR.dataRate, BR.matchStatus);
 
-        private int m_stationNumber;
-        private Alliance m_alliance;
-        private TeamStatus m_team;
-        private boolean m_display = false;
-        private String m_errorString = "";
+        private volatile int m_stationNumber;
+        private volatile Alliance m_alliance;
+        private volatile TeamStatus m_team;
+        private volatile boolean m_display = false;
+        private volatile String m_errorString = "";
 
         private ProblemObserver(int stationNumber, Alliance alliance, TeamStatus team) {
             m_stationNumber = stationNumber;
