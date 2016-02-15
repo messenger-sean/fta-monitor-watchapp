@@ -16,6 +16,8 @@ plugins {
 
 sonarqube {
     properties {
+        property 'sonar.projectName', 'fta-monitor'
+        property 'sonar.projectKey', 'com.fsilberberg:fta-monitor'
         property 'sonar.host.url', 'https://sonar.fsilberberg.com'
         property 'sonar.binaries', 'build/intermediates/classes/debug'
         property 'sonar.profile', 'Android Lint'
