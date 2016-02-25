@@ -17,7 +17,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldMonitorFactory;
 import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,38 +28,38 @@ public class TestingFieldStatus extends Fragment {
         // Required empty public constructor
     }
 
-    @InjectView(R.id.field_status_radio_group)
+    @Bind(R.id.field_status_radio_group)
     protected RadioGroup m_group;
-    @InjectView(R.id.field_match_number)
+    @Bind(R.id.field_match_number)
     protected EditText m_matchTextBox;
-    @InjectView(R.id.field_match_play)
+    @Bind(R.id.field_match_play)
     protected EditText m_replayTextBox;
-    @InjectView(R.id.field_testing_not_started)
+    @Bind(R.id.field_testing_not_started)
     protected RadioButton m_notReady;
-    @InjectView(R.id.field_testing_timeout)
+    @Bind(R.id.field_testing_timeout)
     protected RadioButton m_timeout;
-    @InjectView(R.id.field_testing_ready_prestart)
+    @Bind(R.id.field_testing_ready_prestart)
     protected RadioButton m_readyPrestart;
-    @InjectView(R.id.field_testing_prestart_init)
+    @Bind(R.id.field_testing_prestart_init)
     protected RadioButton m_prestartInit;
-    @InjectView(R.id.field_testing_prestart_comp)
+    @Bind(R.id.field_testing_prestart_comp)
     protected RadioButton m_prestartComp;
-    @InjectView(R.id.field_testing_match_ready)
+    @Bind(R.id.field_testing_match_ready)
     protected RadioButton m_ready;
-    @InjectView(R.id.field_testing_auto)
+    @Bind(R.id.field_testing_auto)
     protected RadioButton m_auto;
-    @InjectView(R.id.field_testing_teleop)
+    @Bind(R.id.field_testing_teleop)
     protected RadioButton m_teleop;
-    @InjectView(R.id.field_testing_over)
+    @Bind(R.id.field_testing_over)
     protected RadioButton m_over;
-    @InjectView(R.id.field_testing_aborted)
+    @Bind(R.id.field_testing_aborted)
     protected RadioButton m_aborted;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_testing_field_status, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         FieldStatus field = FieldMonitorFactory.getInstance().getFieldStatus();
         m_matchTextBox.setText(field.getMatchNumber());

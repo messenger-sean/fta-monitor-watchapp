@@ -49,7 +49,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_toEndOf="@id/field_monitor_match_number_label"
                     android:paddingStart="@dimen/standard_padding"
-                    android:text="@{field.matchNumber}"
+                    android:text="@{field.tournamentLevel.toString(field.matchNumber)}"
                     android:textColor="@color/white_text"
                     tools:text="1" />
 

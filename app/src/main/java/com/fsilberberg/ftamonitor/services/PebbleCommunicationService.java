@@ -491,14 +491,6 @@ public class PebbleCommunicationService extends Service {
                     // useful, so we reset after the opponents have left the field.
                     m_battery = DEFAULT_BATTERY;
                     break;
-                case PRESTART_INITIATED:
-                case PRESTART_COMPLETED:
-                case NOT_READY:
-                case MATCH_READY:
-                case TELEOP:
-                case ABORTED:
-                case OVER:
-                case TIMEOUT:
                 default:
                     break;
             }

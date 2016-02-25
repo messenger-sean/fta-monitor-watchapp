@@ -11,6 +11,7 @@ public enum MatchStatus {
     PRESTART_COMPLETED("Prestart Completed"),
     MATCH_READY("Match Ready"),
     AUTO("Autonomous Running"),
+    TRANSITION("Match Transitioning"),
     TELEOP("Teleop Running"),
     OVER("Match Over"),
     ABORTED("Aborted");

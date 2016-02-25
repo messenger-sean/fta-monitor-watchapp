@@ -25,8 +25,8 @@ import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
@@ -59,15 +59,15 @@ public class FieldMonitorRootFragment extends Fragment {
     private FieldConnectionService.ConnectionStateObservable m_conState;
     private FieldMonitorSignalrObserver m_observer;
 
-    @InjectView(R.id.field_monitor_signalr_status)
+    @Bind(R.id.field_monitor_signalr_status)
     protected TextView m_fieldMonitorStatus;
-    @InjectView(R.id.field_monitor_retry_signalr)
+    @Bind(R.id.field_monitor_retry_signalr)
     protected Button m_retryButton;
-    @InjectView(R.id.field_monitor_signalr_layout)
+    @Bind(R.id.field_monitor_signalr_layout)
     protected LinearLayout m_signalrLayout;
-    @InjectView(R.id.field_monitor_fragment)
+    @Bind(R.id.field_monitor_fragment)
     protected View m_fieldMonitorFragment;
-    @InjectView(R.id.field_monitor_root_view)
+    @Bind(R.id.field_monitor_root_view)
     protected ViewGroup m_root;
 
     public FieldMonitorRootFragment() {
@@ -80,7 +80,7 @@ public class FieldMonitorRootFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_field_monitor_root, container, false);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         m_conPrefix = getActivity().getString(R.string.field_monitor_connection_prefix);
         m_retryButton.setOnClickListener(new View.OnClickListener() {
             @Override

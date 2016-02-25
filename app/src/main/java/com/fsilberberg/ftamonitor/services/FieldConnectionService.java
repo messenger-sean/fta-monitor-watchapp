@@ -24,6 +24,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.proxyhandlers.TeamProxyHandler;
 import com.fsilberberg.ftamonitor.view.MainActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,9 +74,9 @@ public class FieldConnectionService extends Service {
     private static final int CLOSE_SERVICE_INTENT_ID = 2;
 
     // Signalr Constants
-    private static final String HUB_NAME = "messageservicehub";
+    private static final String HUB_NAME = "fieldmonitorhub";
     private static final String FIELD_MONITOR = "fieldMonitorDataChanged";
-    private static final String MATCH_STATE_CHANGED = "matchStateChanged";
+    private static final String MATCH_STATE_CHANGED = "matchStatusInfoChanged";
     private static final String INITIAL_STATE_PATH = "/FieldMonitor/MatchNumberAndPlay";
 
     // This is a general ip pattern matching the general form of an ipv4 address, used for basic input validation
@@ -238,7 +239,7 @@ public class FieldConnectionService extends Service {
             m_fieldConnection = new HubConnection(m_url);
             m_fieldProxy = m_fieldConnection.createHubProxy(HUB_NAME);
             m_fieldProxy.on(FIELD_MONITOR, new TeamProxyHandler(), JsonArray.class);
-            m_fieldProxy.on(MATCH_STATE_CHANGED, new MatchStateProxyHandler(this), Integer.class);
+            m_fieldProxy.on(MATCH_STATE_CHANGED, new MatchStateProxyHandler(this), JsonObject.class);
 
             // Set up the error handler, disconnect on error
             m_fieldConnection.error(new ErrorCallback() {

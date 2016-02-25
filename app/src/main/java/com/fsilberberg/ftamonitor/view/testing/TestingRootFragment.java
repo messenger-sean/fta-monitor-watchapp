@@ -16,16 +16,16 @@ import android.view.ViewGroup;
 import com.fsilberberg.ftamonitor.R;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * The root of all testing fragments, manages the current active fragment
  */
 public class TestingRootFragment extends Fragment {
 
-    @InjectView(R.id.testing_pager)
+    @Bind(R.id.testing_pager)
     protected ViewPager m_pager;
-    @InjectView(R.id.testing_tab_layout)
+    @Bind(R.id.testing_tab_layout)
     protected TabLayout m_layout;
 
     @Override
@@ -33,7 +33,7 @@ public class TestingRootFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_testing_root, container, false);
-        ButterKnife.inject(this, v);
+        ButterKnife.bind(this, v);
 
         m_pager.setAdapter(new PagerAdapter(getFragmentManager()));
         m_layout.setupWithViewPager(m_pager);

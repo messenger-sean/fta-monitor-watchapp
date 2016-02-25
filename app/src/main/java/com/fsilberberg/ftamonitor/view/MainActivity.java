@@ -17,8 +17,8 @@ import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.view.fieldmonitor.FieldMonitorRootFragment;
 import com.fsilberberg.ftamonitor.view.testing.TestingRootFragment;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    @InjectView(R.id.drawer_layout)
+    @Bind(R.id.drawer_layout)
     protected NavigationView m_navigationView;
-    @InjectView(R.id.toolbar_actionbar)
+    @Bind(R.id.toolbar_actionbar)
     protected Toolbar m_toolbar;
-    @InjectView(R.id.drawer)
+    @Bind(R.id.drawer)
     protected DrawerLayout m_drawer;
     private ActionBarDrawerToggle m_toggle;
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         m_toggle = new ActionBarDrawerToggle(
                 this,

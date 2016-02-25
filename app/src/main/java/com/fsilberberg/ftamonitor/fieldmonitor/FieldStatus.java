@@ -5,11 +5,13 @@ import android.databinding.Bindable;
 
 import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
+import com.fsilberberg.ftamonitor.common.TournamentLevel;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.fsilberberg.ftamonitor.common.MatchStatus.NOT_READY;
+import static com.fsilberberg.ftamonitor.common.TournamentLevel.PRACTICE;
 
 /**
  * The field status maintains the current status of the field via updates from signalr, so that there
@@ -32,6 +34,7 @@ public class FieldStatus extends BaseObservable {
     private AtomicReference<String> m_matchNumber = new AtomicReference<>("999");
     private AtomicReference<MatchStatus> m_matchStatus = new AtomicReference<>(NOT_READY);
     private AtomicInteger m_playNumber = new AtomicInteger(0);
+    private AtomicReference<TournamentLevel> m_tournamentLevel = new AtomicReference<>(PRACTICE);
 
     public TeamStatus getRed1() {
         return m_red1;
@@ -87,5 +90,15 @@ public class FieldStatus extends BaseObservable {
     public void setPlayNumber(int playNumber) {
         m_playNumber.set(playNumber);
         notifyPropertyChanged(BR.playNumber);
+    }
+
+    @Bindable
+    public TournamentLevel getTournamentLevel() {
+        return m_tournamentLevel.get();
+    }
+
+    public void setTournamentLevel(TournamentLevel level) {
+        m_tournamentLevel.set(level);
+        notifyPropertyChanged(BR.tournamentLevel);
     }
 }

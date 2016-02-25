@@ -14,12 +14,11 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.FieldConnectionService;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import microsoft.aspnet.signalr.client.ConnectionState;
 
 /**
@@ -81,15 +80,15 @@ public class TestingConnectionStatus extends Fragment {
         }
     };
 
-    @InjectView(R.id.connection_radio_group)
+    @Bind(R.id.connection_radio_group)
     protected RadioGroup m_radioGroup;
-    @InjectView(R.id.disconnected_button)
+    @Bind(R.id.disconnected_button)
     protected RadioButton m_disconnected;
-    @InjectView(R.id.connecting_button)
+    @Bind(R.id.connecting_button)
     protected RadioButton m_connecting;
-    @InjectView(R.id.reconnecting_button)
+    @Bind(R.id.reconnecting_button)
     protected RadioButton m_reconnecting;
-    @InjectView(R.id.connected_button)
+    @Bind(R.id.connected_button)
     protected RadioButton m_connected;
 
     public TestingConnectionStatus() {
@@ -100,7 +99,7 @@ public class TestingConnectionStatus extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.fragment_testing_connection_status, container, false);
-        ButterKnife.inject(this, mainView);
+        ButterKnife.bind(this, mainView);
 
 
         return mainView;

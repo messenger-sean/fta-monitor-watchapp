@@ -20,7 +20,7 @@ import com.fsilberberg.ftamonitor.fieldmonitor.FieldStatus;
 import com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,39 +39,39 @@ public class TestingTeamStatus extends Fragment {
     }
 
     private TeamStatus m_status;
-    @InjectView(R.id.team_testing_status)
+    @Bind(R.id.team_testing_status)
     protected RadioGroup m_robotStatus;
-    @InjectView(R.id.team_testing_number)
+    @Bind(R.id.team_testing_number)
     protected EditText m_teamNum;
-    @InjectView(R.id.team_testing_enabled)
+    @Bind(R.id.team_testing_enabled)
     protected CheckBox m_enabled;
-    @InjectView(R.id.team_testing_battery)
+    @Bind(R.id.team_testing_battery)
     protected EditText m_battery;
-    @InjectView(R.id.team_testing_bandwidth)
+    @Bind(R.id.team_testing_bandwidth)
     protected EditText m_bandwidth;
-    @InjectView(R.id.team_testing_missed_packets)
+    @Bind(R.id.team_testing_missed_packets)
     protected EditText m_mp;
-    @InjectView(R.id.team_testing_round_trip)
+    @Bind(R.id.team_testing_round_trip)
     protected EditText m_rt;
-    @InjectView(R.id.team_testing_sq)
+    @Bind(R.id.team_testing_sq)
     protected EditText m_sq;
-    @InjectView(R.id.team_testing_ss)
+    @Bind(R.id.team_testing_ss)
     protected EditText m_ss;
-    @InjectView(R.id.team_testing_dseth)
+    @Bind(R.id.team_testing_dseth)
     protected RadioButton m_dsEth;
-    @InjectView(R.id.team_testing_ds)
+    @Bind(R.id.team_testing_ds)
     protected RadioButton m_ds;
-    @InjectView(R.id.team_testing_radio)
+    @Bind(R.id.team_testing_radio)
     protected RadioButton m_radio;
-    @InjectView(R.id.team_testing_rio)
+    @Bind(R.id.team_testing_rio)
     protected RadioButton m_rio;
-    @InjectView(R.id.team_testing_code)
+    @Bind(R.id.team_testing_code)
     protected RadioButton m_code;
-    @InjectView(R.id.team_testing_byp)
+    @Bind(R.id.team_testing_byp)
     protected RadioButton m_byp;
-    @InjectView(R.id.team_testing_estop)
+    @Bind(R.id.team_testing_estop)
     protected RadioButton m_estop;
-    @InjectView(R.id.team_testing_good)
+    @Bind(R.id.team_testing_good)
     protected RadioButton m_good;
 
     @Override
@@ -108,7 +108,7 @@ public class TestingTeamStatus extends Fragment {
         }
 
         View rootView = inflater.inflate(R.layout.fragment_testing_team_status, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         if (!m_status.isDsEth()) {
             m_dsEth.setChecked(true);

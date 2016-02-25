@@ -21,22 +21,22 @@ import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.RandomizationService;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Contains the settings for the randomization service
  */
 public class TestingRandomization extends Fragment {
 
-    @InjectView(R.id.randomize_enable)
+    @Bind(R.id.randomize_enable)
     protected Switch m_enableRandom;
-    @InjectView(R.id.randomize_field_con)
+    @Bind(R.id.randomize_field_con)
     protected Switch m_fieldCon;
-    @InjectView(R.id.randomize_match_status)
+    @Bind(R.id.randomize_match_status)
     protected Switch m_matchStatus;
-    @InjectView(R.id.randomize_robot_con)
+    @Bind(R.id.randomize_robot_con)
     protected Switch m_robotCon;
-    @InjectView(R.id.randomize_robot_vals)
+    @Bind(R.id.randomize_robot_vals)
     protected Switch m_robotVals;
 
     private SharedPreferences m_prefs;
@@ -81,7 +81,7 @@ public class TestingRandomization extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_testing_randomization, container, false);
-        ButterKnife.inject(this, v);
+        ButterKnife.bind(this, v);
 
         m_prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         m_fieldKey = getString(R.string.randomize_field_con_key);
