@@ -34,10 +34,11 @@ public class MatchStateProxyHandler extends ProxyHandlerBase implements Subscrip
     @Override
     public void run(JsonObject message) {
         int matchState = message.getAsJsonPrimitive("P1").getAsInt();
-        MatchStatus status = NOT_READY;
+        MatchStatus status;
         switch (matchState) {
             case 0: // No currently active event or tournament level
             case 1:
+                status = OVER;
                 break;
             case 2: // WaitingForPrestart or WaitingForPrestartTO
             case 3:
@@ -71,10 +72,8 @@ public class MatchStateProxyHandler extends ProxyHandlerBase implements Subscrip
             case 15: // Tournament Level Complete
                 status = OVER;
                 break;
-            case 17:
-                // There is a 17 that is not in the FieldMonitor js anywhere. Not sure where it's
-                // coming from, but I'm guessing that's supposed to be prestart completed.
-                // TODO: Remove when Alex fixes the bug (I assume it's a bug).
+            case 17: // Waiting for Match Preview
+            case 18:
                 status = PRESTART_COMPLETED;
                 break;
             case 16: // Match cancelled
