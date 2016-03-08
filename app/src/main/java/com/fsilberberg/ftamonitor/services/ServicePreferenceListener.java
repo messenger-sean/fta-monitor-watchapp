@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.fsilberberg.ftamonitor.R;
+import com.fsilberberg.ftamonitor.services.pebble.PebbleCommunicationService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -19,8 +19,10 @@ public class ServicePreferenceListener implements SharedPreferences.OnSharedPref
     private final String m_fmsIpKey;
     private final Collection<String> m_pebbleUpdateKeys;
     private final Collection<String> m_notificationUpdateKeys;
+    private final Context m_context;
 
     public ServicePreferenceListener(Context context) {
+        m_context = context;
         m_fmsEnabledKey = context.getString(R.string.field_monitor_enabled_key);
         m_fmsIpKey = context.getString(R.string.fms_ip_addr_key);
         String bwuKey = context.getString(R.string.bandwidth_key);
@@ -59,7 +61,7 @@ public class ServicePreferenceListener implements SharedPreferences.OnSharedPref
     }
 
     private void updatePebbleConnection() {
-        PebbleCommunicationService.start();
+        PebbleCommunicationService.start(m_context);
     }
 
     private void updateNotification() {
