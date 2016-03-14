@@ -71,28 +71,37 @@ public class FieldProblemNotificationService {
     public void startService(Context context) {
         m_context = context;
         SharedPreferences m_sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String notifyAlwaysKey = context.getString(R.string.notify_always_key);
-        String bandwidthNotifyKey = context.getString(R.string.bandwidth_notify_key);
-        String bandwidthKey = m_context.getString(R.string.bandwidth_key);
-        String lowBatteryNotifyKey = m_context.getString(R.string.low_battery_notify_key);
-        String lowBatteryKey = context.getString(R.string.low_battery_key);
-        m_alwaysNotify = m_sharedPreferences.getBoolean(notifyAlwaysKey, false);
-        m_bandwidthNotify = m_sharedPreferences.getBoolean(bandwidthNotifyKey, true);
-        m_maxBandwidth = Float.parseFloat(m_sharedPreferences.getString(bandwidthKey, "7"));
-        m_lowBatteryNotify = m_sharedPreferences.getBoolean(lowBatteryNotifyKey, true);
-        m_lowBattery = Float.parseFloat(m_sharedPreferences.getString(lowBatteryKey, "6.5"));
+        String enabledKey = context.getString(R.string.notification_key);
+        boolean enabled = m_sharedPreferences.getBoolean(enabledKey, false);
 
-        // Register an observer for each team
-        m_observers.add(new ProblemObserver(1, RED, m_red1).init());
-        m_observers.add(new ProblemObserver(2, RED, m_red2).init());
-        m_observers.add(new ProblemObserver(3, RED, m_red3).init());
-        m_observers.add(new ProblemObserver(1, BLUE, m_blue1).init());
-        m_observers.add(new ProblemObserver(2, BLUE, m_blue2).init());
-        m_observers.add(new ProblemObserver(3, BLUE, m_blue3).init());
+        if (enabled) {
+            String notifyAlwaysKey = context.getString(R.string.notify_always_key);
+            String bandwidthNotifyKey = context.getString(R.string.bandwidth_notify_key);
+            String bandwidthKey = m_context.getString(R.string.bandwidth_key);
+            String lowBatteryNotifyKey = m_context.getString(R.string.low_battery_notify_key);
+            String lowBatteryKey = context.getString(R.string.low_battery_key);
+            m_alwaysNotify = m_sharedPreferences.getBoolean(notifyAlwaysKey, false);
+            m_bandwidthNotify = m_sharedPreferences.getBoolean(bandwidthNotifyKey, true);
+            m_maxBandwidth = Float.parseFloat(m_sharedPreferences.getString(bandwidthKey, "7"));
+            m_lowBatteryNotify = m_sharedPreferences.getBoolean(lowBatteryNotifyKey, true);
+            m_lowBattery = Float.parseFloat(m_sharedPreferences.getString(lowBatteryKey, "6.5"));
 
-        // Update the notification for initial state
-        for (ProblemObserver observer : m_observers) {
-            observer.updateErrorText();
+            // Register an observer for each team
+            m_observers.add(new ProblemObserver(1, RED, m_red1).init());
+            m_observers.add(new ProblemObserver(2, RED, m_red2).init());
+            m_observers.add(new ProblemObserver(3, RED, m_red3).init());
+            m_observers.add(new ProblemObserver(1, BLUE, m_blue1).init());
+            m_observers.add(new ProblemObserver(2, BLUE, m_blue2).init());
+            m_observers.add(new ProblemObserver(3, BLUE, m_blue3).init());
+
+            // Update the notification for initial state
+            for (ProblemObserver observer : m_observers) {
+                observer.updateErrorText();
+            }
+        } else {
+            if (instance != null) {
+                instance.stopService();
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.fsilberberg.ftamonitor.services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.fsilberberg.ftamonitor.R;
 import com.fsilberberg.ftamonitor.services.pebble.PebbleCommunicationService;
@@ -14,6 +15,7 @@ import java.util.Collection;
  * are changed
  */
 public class ServicePreferenceListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String TAG = ServicePreferenceListener.class.getName();
 
     private final String m_fmsEnabledKey;
     private final String m_fmsIpKey;
@@ -42,13 +44,16 @@ public class ServicePreferenceListener implements SharedPreferences.OnSharedPref
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG, "onSharedPreferenceChanged: Updating key " + key);
         if (key.equals(m_fmsEnabledKey) || key.equals(m_fmsIpKey)) {
             updateFmsConnection();
         }
         if (m_pebbleUpdateKeys.contains(key)) {
+            Log.d(TAG, "onSharedPreferenceChanged: Updated pebble connection");
             updatePebbleConnection();
         }
         if (m_notificationUpdateKeys.contains(key)) {
+            Log.d(TAG, "onSharedPreferenceChanged: Updating notification");
             updateNotification();
         }
     }
