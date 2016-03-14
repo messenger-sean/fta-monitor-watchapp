@@ -34,6 +34,7 @@ public class PebbleCommunicationService extends Service {
     private static final String LOW_BATTERY_INTENT_EXTRA = "low_battery_intent_extra";
 
     private PebbleSender m_sender = null;
+    private UpdateReceiver m_receiver = null;
     private Thread m_senderThread = null;
     private Collection<DeletableObserver> m_observers = null;
     private boolean m_updateReceiverRegistered = false;
@@ -108,8 +109,8 @@ public class PebbleCommunicationService extends Service {
         startObservers(vibeInterval, outOfMatch, bandwidthNotify, bandwidth, lowBatteryNotify, lowBattery);
 
         if (!m_updateReceiverRegistered) {
-            UpdateReceiver updateReceiver = new UpdateReceiver();
-            PebbleKit.registerReceivedDataHandler(this, updateReceiver);
+            m_receiver = new UpdateReceiver();
+            PebbleKit.registerReceivedDataHandler(this, m_receiver);
             m_updateReceiverRegistered = true;
         }
 
@@ -123,6 +124,12 @@ public class PebbleCommunicationService extends Service {
             }
 
             m_observers = null;
+        }
+
+        if (m_updateReceiverRegistered) {
+            unregisterReceiver(m_receiver);
+            m_receiver = null;
+            m_updateReceiverRegistered = false;
         }
     }
 

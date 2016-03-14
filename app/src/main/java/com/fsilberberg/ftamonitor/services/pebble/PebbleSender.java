@@ -46,8 +46,10 @@ public class PebbleSender implements Runnable {
 
     public void run() {
         // Register callbacks
-        PebbleKit.registerReceivedAckHandler(m_service, new PebbleAckReceiver(PEBBLE_UUID));
-        PebbleKit.registerReceivedNackHandler(m_service, new PebbleNackReceiver(PEBBLE_UUID));
+        PebbleAckReceiver ackReceiver = new PebbleAckReceiver(PEBBLE_UUID);
+        PebbleNackReceiver nackReceiver = new PebbleNackReceiver(PEBBLE_UUID);
+        PebbleKit.registerReceivedAckHandler(m_service, ackReceiver);
+        PebbleKit.registerReceivedNackHandler(m_service, nackReceiver);
 
         while (!Thread.interrupted() && running) {
             // If there is a send in progress, wait for it to stop
@@ -86,6 +88,8 @@ public class PebbleSender implements Runnable {
             }
         }
         running = false;
+        m_service.unregisterReceiver(ackReceiver);
+        m_service.unregisterReceiver(nackReceiver);
     }
 
     /**

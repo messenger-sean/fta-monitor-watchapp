@@ -1,7 +1,6 @@
 package com.fsilberberg.ftamonitor.services.pebble;
 
 import android.databinding.Observable;
-import android.util.Log;
 
 import com.fsilberberg.ftamonitor.BR;
 import com.fsilberberg.ftamonitor.common.MatchStatus;
@@ -15,10 +14,8 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 public final class TeamProblemObserver extends Observable.OnPropertyChangedCallback implements DeletableObserver {
-    private final String TAG = TeamProblemObserver.class.getName();
     private final Collection<Integer> TEAM_PROPERTIES = Arrays.asList(BR.teamNumber,
             BR.robotStatus, BR.bypassed, BR.estop, BR.dataRate, BR.battery);
     // Constants for the different statuses
@@ -195,7 +192,6 @@ public final class TeamProblemObserver extends Observable.OnPropertyChangedCallb
         }
 
         m_teamNum = m_teamStatus.getTeamNumber();
-        Log.d(TAG, "updateTeamStatus: Current number is " + m_teamNum + ", last is " + m_lastTeamNum);
         if (m_teamNum != m_lastTeamNum) {
             m_lastTeamNum = m_teamNum;
             PebbleMessage message = new PebbleMessage(PebbleSender.NUMBER_START + m_keyOffset, m_teamNum, false);
@@ -215,7 +211,6 @@ public final class TeamProblemObserver extends Observable.OnPropertyChangedCallb
         }
 
         if (!messages.isEmpty()) {
-            Log.d(TAG, "updateTeamStatus: Sending messages: " + messages.toString());
             m_sender.addMessage(messages.toArray(new PebbleMessage[messages.size()]));
         }
     }
