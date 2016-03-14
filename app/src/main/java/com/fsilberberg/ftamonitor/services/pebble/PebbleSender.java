@@ -134,6 +134,13 @@ public class PebbleSender implements Runnable {
     }
 
     /**
+     * Starts the FTA Monitor application on the Pebble
+     */
+    public void startApp() {
+        PebbleKit.startAppOnPebble(m_service, PEBBLE_UUID);
+    }
+
+    /**
      * Simple data class for messages sent to the Pebble.
      */
     public static final class PebbleMessage {

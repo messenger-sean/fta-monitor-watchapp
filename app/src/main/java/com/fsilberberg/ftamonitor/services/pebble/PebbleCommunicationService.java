@@ -114,6 +114,8 @@ public class PebbleCommunicationService extends Service {
             m_updateReceiverRegistered = true;
         }
 
+        m_sender.startApp();
+
         return START_STICKY;
     }
 
