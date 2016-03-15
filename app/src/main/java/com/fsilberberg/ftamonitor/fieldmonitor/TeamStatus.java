@@ -209,6 +209,11 @@ public class TeamStatus extends BaseObservable {
         notifyPropertyChanged(BR.robotStatus);
     }
 
+    @Override
+    public void notifyPropertyChanged(int fieldId) {
+        super.notifyPropertyChanged(fieldId);
+    }
+
     private class RobotConnectionStatusObserver extends OnPropertyChangedCallback {
         Collection<Integer> statusProperties = Arrays.asList(BR.dsEth, BR.ds, BR.radio, BR.rio, BR.code);
 

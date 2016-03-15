@@ -11,9 +11,10 @@ import com.fsilberberg.ftamonitor.services.pebble.PebbleSender.PebbleMessage;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class TeamProblemObserver extends Observable.OnPropertyChangedCallback implements DeletableObserver {
     private final Collection<Integer> TEAM_PROPERTIES = Arrays.asList(BR.teamNumber,
@@ -138,7 +139,7 @@ public final class TeamProblemObserver extends Observable.OnPropertyChangedCallb
      * regardless of whether or not the new status is the same as the last status
      */
     private void updateTeamStatus() {
-        Collection<PebbleMessage> messages = new ArrayList<>(3);
+        Map<Integer, PebbleMessage> messages = new HashMap<>();
 
         byte status;
         if (m_teamStatus.isEstop()) {
@@ -188,14 +189,14 @@ public final class TeamProblemObserver extends Observable.OnPropertyChangedCallb
             }
             PebbleMessage message =
                     new PebbleMessage(PebbleSender.STATUS_START + m_keyOffset, status, vibrate);
-            messages.add(message);
+            messages.put(PebbleSender.STATUS_START + m_keyOffset, message);
         }
 
         m_teamNum = m_teamStatus.getTeamNumber();
         if (m_teamNum != m_lastTeamNum) {
             m_lastTeamNum = m_teamNum;
             PebbleMessage message = new PebbleMessage(PebbleSender.NUMBER_START + m_keyOffset, m_teamNum, false);
-            messages.add(message);
+            messages.put(PebbleSender.NUMBER_START + m_keyOffset, message);
         }
 
         // Only update the battery status if it's now less than the previous battery value.
@@ -207,12 +208,10 @@ public final class TeamProblemObserver extends Observable.OnPropertyChangedCallb
         if (m_battery != m_lastBattery) {
             m_lastBattery = m_battery;
             PebbleMessage message = new PebbleMessage(PebbleSender.BATTERY_START + m_keyOffset, (int) m_battery * 100, false);
-            messages.add(message);
+            messages.put(PebbleSender.BATTERY_START + m_keyOffset, message);
         }
 
-        if (!messages.isEmpty()) {
-            m_sender.addMessage(messages.toArray(new PebbleMessage[messages.size()]));
-        }
+        m_sender.addMessages(messages);
     }
 
     @Override

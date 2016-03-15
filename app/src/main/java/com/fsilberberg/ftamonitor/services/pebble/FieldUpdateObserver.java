@@ -41,6 +41,6 @@ public final class FieldUpdateObserver extends Observable.OnPropertyChangedCallb
         PebbleSender.PebbleMessage message =
                 new PebbleSender.PebbleMessage(PebbleSender.MATCH_STATE,
                         m_fieldStatus.getMatchStatus().ordinal(), false);
-        m_sender.addMessage(message);
+        m_sender.addMessage(PebbleSender.MATCH_STATE, message);
     }
 }

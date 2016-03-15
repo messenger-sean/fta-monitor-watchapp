@@ -7,8 +7,8 @@ import android.util.Log;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,8 +34,8 @@ public class PebbleSender implements Runnable {
     private final Object m_sendSignal = new Object();
     private boolean m_sendInProgress = false;
     private final PebbleCommunicationService m_service;
-    private volatile Deque<PebbleMessage> m_sendQueue = new ArrayDeque<>();
-    private volatile Deque<PebbleMessage> m_messageQueue = new ArrayDeque<>();
+    private volatile Map<Integer, PebbleMessage> m_messageMap = new HashMap<>();
+    private volatile Map<Integer, PebbleMessage> m_sendMap = new HashMap<>();
     private PebbleDictionary m_lastSent = null;
     private AtomicInteger retries = new AtomicInteger(0);
     private boolean running = true;
@@ -74,14 +74,14 @@ public class PebbleSender implements Runnable {
 
             // Atomically swap the queues, then close the signal.
             synchronized (m_lock) {
-                Deque<PebbleMessage> local = m_messageQueue;
-                m_messageQueue = m_sendQueue;
-                m_sendQueue = local;
+                Map<Integer, PebbleMessage> local = m_messageMap;
+                m_messageMap = m_sendMap;
+                m_sendMap = local;
             }
 
             // Send all messages in the send queue if they exist. This takes care of spurious
             // wakeups that could potentially occur.
-            if (!m_sendQueue.isEmpty()) {
+            if (!m_sendMap.isEmpty()) {
                 sendMessages();
             } else {
                 endSend();
@@ -95,13 +95,19 @@ public class PebbleSender implements Runnable {
     /**
      * Queues a message to be send to the Pebble.
      *
-     * @param messages The messages to send.
+     * @param messages The messages to send to the pebble. If the message key has not yet been sent,
+     *                 and already exists in the dictionary, it is replaced.
      */
-    public void addMessage(PebbleMessage... messages) {
+    public void addMessages(Map<Integer, PebbleMessage> messages) {
         synchronized (m_lock) {
-            for (PebbleMessage message : messages) {
-                m_messageQueue.addLast(message);
-            }
+            m_messageMap.putAll(messages);
+            m_messageSignal.open();
+        }
+    }
+
+    public void addMessage(int key, PebbleMessage message) {
+        synchronized ((m_lock)) {
+            m_messageMap.put(key, message);
             m_messageSignal.open();
         }
     }
@@ -109,7 +115,7 @@ public class PebbleSender implements Runnable {
     private void sendMessages() {
         PebbleDictionary sendDict = new PebbleDictionary();
         boolean vibrate = false;
-        for (PebbleMessage message : m_sendQueue) {
+        for (PebbleMessage message : m_sendMap.values()) {
             sendDict.addUint32(message.getKey(), message.getValue());
             vibrate = vibrate || message.isShouldVibrate();
         }
@@ -122,7 +128,7 @@ public class PebbleSender implements Runnable {
         m_lastSent = sendDict;
         retries.set(0);
         PebbleKit.sendDataToPebble(m_service, PEBBLE_UUID, sendDict);
-        m_sendQueue.clear();
+        m_sendMap.clear();
     }
 
     private void endSend() {
@@ -212,7 +218,7 @@ public class PebbleSender implements Runnable {
             if (!running) return;
             if (retries.getAndAdd(1) < 3) {
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(10 * retries.get());
                 } catch (InterruptedException e) {
                     Log.e(PebbleNackReceiver.class.getName(), "Interrupted while attempting to retransmit!", e);
                     // If we're interrupted, we want to exit. Disable running and open the signal
