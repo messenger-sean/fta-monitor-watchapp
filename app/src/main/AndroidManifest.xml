@@ -24,7 +24,7 @@
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".services.PebbleCommunicationService"
+            android:name=".services.pebble.PebbleCommunicationService"
             android:enabled="true"
             android:exported="false" />
 
