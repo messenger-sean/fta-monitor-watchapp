@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/fms_settings_title">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="@string/on_field_key"
+            android:summary="@string/on_field_sum"
+            android:title="@string/on_field" />
+        <EditTextPreference
+            android:defaultValue="@string/fms_ip_addr_default"
+            android:dependency="on_field"
+            android:key="@string/fms_ip_addr_key"
+            android:title="@string/fms_ip_addr" />
+        <EditTextPreference
+            android:defaultValue="@string/fms_signalr_port_default"
+            android:dependency="on_field"
+            android:inputType="number"
+            android:key="@string/fms_signalr_port_key"
+            android:title="@string/fms_signalr_port" />
+        <EditTextPreference
+            android:defaultValue="@string/fms_monitor_port_addr_default"
+            android:dependency="on_field"
+            android:inputType="number"
+            android:key="@string/fms_monitor_port_key"
+            android:title="@string/fms_monitor_port_addr" />
+        <EditTextPreference
+            android:defaultValue="7"
+            android:inputType="numberDecimal"
+            android:key="@string/bandwidth_key"
+            android:title="@string/bandwidth" />
+        <EditTextPreference
+            android:defaultValue="6.5"
+            android:inputType="numberDecimal"
+            android:key="@string/low_battery_key"
+            android:title="@string/low_battery" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/field_settings_title">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:disableDependentsState="false"
+            android:key="@string/field_monitor_enabled_key"
+            android:summary="@string/field_monitor_enabled_desc"
+            android:title="@string/field_monitor_enabled" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/field_monitor_enabled_key"
+            android:key="@string/lock_screen_display_key"
+            android:summary="@string/lock_screen_display_desc"
+            android:title="@string/lock_screen_display" />
+        <PreferenceScreen android:title="@string/notification_screen_title">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/field_monitor_enabled_key"
+                android:disableDependentsState="false"
+                android:key="@string/notification_key"
+                android:summary="@string/notification_desc"
+                android:title="@string/notification" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="@string/notification_key"
+                android:key="@string/notify_always_key"
+                android:summary="@string/notify_always_desc"
+                android:title="@string/notify_always" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/notification_key"
+                android:key="@string/low_battery_notify_key"
+                android:summary="@string/low_battery_notify_desc"
+                android:title="@string/low_battery_notify" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/notification_key"
+                android:key="@string/bandwidth_notify_key"
+                android:summary="@string/bandwidth_notify_desc"
+                android:title="@string/bandwidth_notify" />
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/pebble_screen_title">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/field_monitor_enabled_key"
+                android:disableDependentsState="false"
+                android:key="@string/pebble_key"
+                android:summary="@string/pebble_desc"
+                android:title="@string/pebble" />
+            <EditTextPreference
+                android:defaultValue="10"
+                android:dependency="@string/pebble_key"
+                android:inputType="number"
+                android:key="@string/pebble_vibe_interval_key"
+                android:summary="@string/pebble_vibe_interval_desc"
+                android:title="@string/pebble_vibe_interval" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/pebble_key"
+                android:key="@string/pebble_notify_times_key"
+                android:summary="@string/pebble_notify_times_desc"
+                android:title="@string/pebble_notify_times" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/pebble_key"
+                android:key="@string/pebble_low_battery_notify_key"
+                android:summary="@string/pebble_low_battery_notify_desc"
+                android:title="@string/pebble_low_battery_notify" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="@string/pebble_key"
+                android:key="@string/pebble_bandwidth_notify_key"
+                android:summary="@string/pebble_bandwidth_notify_desc"
+                android:title="@string/pebble_bandwidth_notify" />
+            <Preference
+                android:summary="Click to download and install the Pebble Watchapp companion for the FTA Monitor"
+                android:title="Install Pebble Watchapp">
+                <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://github.com/333fred/fta-monitor-watchapp/releases/" />
+            </Preference>
+        </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/field_monitor_enabled_key"
+            android:key="@string/testing_enabled_key"
+            android:summary="@string/testing_enabled_desc"
+            android:title="@string/testing_enabled" />
+    </PreferenceCategory>
+</PreferenceScreen>

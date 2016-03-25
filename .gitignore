@@ -30,3 +30,11 @@
 *.i*86
 *.x86_64
 *.hex
+
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+build/
+*.apk

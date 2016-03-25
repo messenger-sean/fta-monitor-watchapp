@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- General Strings -->
+    <string name="app_name">FTA Monitor</string>
+
+    <!-- Preferences strings -->
+    <string name="on_field_key">on_field</string>
+    <string name="on_field">On FRC Field</string>
+    <string name="on_field_sum">Use Field FMS Connection Settings</string>
+    <string name="fms_ip_addr_key">fms_ip_addr</string>
+    <string name="fms_ip_addr">FMS IP Address</string>
+    <string name="fms_ip_addr_default">http://10.0.100.5</string>
+    <string name="fms_signalr_port_key">fms_signalr_port</string>
+    <string name="fms_signalr_port">FMS Signalr Port</string>
+    <string name="fms_signalr_port_default">8189</string>
+    <string name="fms_monitor_port_key">fms_monitor_port</string>
+    <string name="fms_monitor_port_addr">FMS Field Monitor Port</string>
+    <string name="fms_monitor_port_addr_default">80</string>
+    <string name="bandwidth_key">max_bandwidth</string>
+    <string name="bandwidth">Maximum Bandwidth Usage (Mb/s)</string>
+    <string name="low_battery_key">low_battery</string>
+    <string name="low_battery">Low Battery (Volts)</string>
+    <string name="field_monitor_enabled_key">field_monitor_enabled</string>
+    <string name="field_monitor_enabled">Enable Field Monitor</string>
+    <string name="field_monitor_enabled_desc">Enable the Field Monitor, which allows for the status of the current match to be displayed on the screen and the various notification services to work.</string>
+    <string name="testing_enabled_key">testing_enabled_key</string>
+    <string name="testing_enabled">Enable Testing Mode</string>
+    <string name="testing_enabled_desc">Allows for manually setting the various field monitor settings. This is used for manual testing of tha app, and has no effect on the field.</string>
+    <string name="lock_screen_display_key">lock_screen_display</string>
+    <string name="lock_screen_display">Display Field Monitor on Lock Screen</string>
+    <string name="lock_screen_display_desc">Display the Field Monitor on the lock screen when connected.</string>
+
+    <!-- Notification Settings -->
+    <string name="notification_key">notification</string>
+    <string name="notification">Enable Notifications</string>
+    <string name="notification_desc">Notify when a team issue is detected during the match</string>
+    <string name="notify_always_key">notify_always</string>
+    <string name="notify_always">Enable Out-of-Match Notify</string>
+    <string name="notify_always_desc">Always notify when a team has an issue, even when a match is not playing</string>
+    <string name="low_battery_notify_key">low_battery_notify</string>
+    <string name="low_battery_notify">Notify on Low Battery</string>
+    <string name="low_battery_notify_desc">Notify when a team battery drops below the low battery minimum.</string>
+    <string name="bandwidth_notify_key">low_battery_notify</string>
+    <string name="bandwidth_notify">Notify on Max Bandwidth Exceeded</string>
+    <string name="bandwidth_notify_desc">Notify when a team uses more than the max allowed bandwidth.</string>
+
+    <!-- Pebble Settings -->
+    <string name="pebble_key">pebble</string>
+    <string name="pebble">Enable Pebble Watchapp</string>
+    <string name="pebble_desc">Enable sending updates to the Pebble Watchapp</string>
+    <string name="pebble_vibe_interval_key">pebble_vibe_interval</string>
+    <string name="pebble_vibe_interval">Pebble Vibration Interval</string>
+    <string name="pebble_vibe_interval_desc">The minimum interval between vibrations on the Pebble, in milliseconds</string>
+    <string name="pebble_notify_times_key">pebble_notify_times</string>
+    <string name="pebble_notify_times">Enable Out-of-Match Pebble Vibration</string>
+    <string name="pebble_notify_times_desc">Always vibrate Pebble when a team status changes, even when a match is not playing</string>
+    <string name="pebble_low_battery_notify_key">pebble_low_battery_notify</string>
+    <string name="pebble_low_battery_notify">Notify on Low Battery</string>
+    <string name="pebble_low_battery_notify_desc">Notify on the Pebble when a team battery drops below the low battery minimum.</string>
+    <string name="pebble_bandwidth_notify_key">pebble_low_battery_notify</string>
+    <string name="pebble_bandwidth_notify">Notify on Max Bandwidth Exceeded</string>
+    <string name="pebble_bandwidth_notify_desc">Notify on the Pebble when a team uses more than the max allowed bandwidth.</string>
+
+    <!-- Settings sections and subscreen names -->
+    <string name="field_settings_title">Field Monitor Settings</string>
+    <string name="fms_settings_title">FMS Settings</string>
+    <string name="notification_screen_title">Notification Settings</string>
+    <string name="pebble_screen_title">Pebble Settings</string>
+
+    <!-- Field Monitor Strings -->
+    <string name="ds_ethernet">DS-ETH</string>
+    <string name="ds">DS</string>
+    <string name="radio">Radio</string>
+    <string name="rio">RIO</string>
+    <string name="code">Code</string>
+
+    <!-- Notification Strings -->
+    <string name="main_error_string" formatted="false">%s %d - %d has %s</string>
+    <string name="ds_ethernet_error">no driver station ethernet</string>
+    <string name="ds_error">no driver station</string>
+    <string name="radio_error">no radio</string>
+    <string name="robot_error">no roboRio</string>
+    <string name="code_error">no code</string>
+    <string name="estop_error">estopped</string>
+    <string name="bandwidth_error">exceeded max bandwidth</string>
+    <string name="low_battery_error">dropped below min battery</string>
+
+    <!-- Drawer Entry Names -->
+    <string name="field_monitor_drawer">Field Monitor</string>
+    <string name="testing_drawer">Testing</string>
+    <string name="settings_drawer">Settings</string>
+    <string name="title_activity_main">FTA Monitor</string>
+
+    <!-- Testing Fragment Resources -->
+    <string name="randomize_enable">Enable Randomization</string>
+    <string name="randomize_field_con">Randomize Field Connection Status</string>
+    <string name="randomize_robot_con">Randomize Robot Connection Status</string>
+    <string name="randomize_robot_vals">Randomize Robot Values</string>
+    <string name="randomize_enable_key">random_enable</string>
+    <string name="randomize_field_con_key">random_field_con</string>
+    <string name="randomize_robot_con_key">random_robot_con</string>
+    <string name="randomize_robot_vals_key">random_robot_vals</string>
+    <string name="randomize_match_status">Randomize Match Status</string>
+    <string name="randomize_match_status_key">randomize_match_status</string>
+
+    <string name="drawer_open">Menu opened</string>
+    <string name="drawer_close">Menu closed</string>
+    <string name="drawer_header_content_assist">Navigation Drawer Header</string>
+
+    <!-- Field Monitor Fragment Strings -->
+    <string name="field_monitor_retry_button">Retry</string>
+    <string name="field_monitor_connection_prefix">FMS Connection Status: </string>
+    <string name="field_monitor_station_number">#</string>
+    <string name="field_monitor_team_number">Team</string>
+    <string name="field_monitor_battery_voltage">Volt</string>
+    <string name="field_monitor_bandwidth">Band</string>
+    <string name="field_monitor_missed_packets">MP</string>
+    <string name="field_monitor_trip_time">TT</string>
+    <string name="field_monitor_match_status">Match Status:</string>
+</resources>

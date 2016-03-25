@@ -1,0 +1,211 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
+
+    <data>
+
+        <variable
+            name="rowText"
+            type="String" />
+
+        <variable
+            name="alliance"
+            type="com.fsilberberg.ftamonitor.common.Alliance" />
+
+        <variable
+            name="team"
+            type="com.fsilberberg.ftamonitor.fieldmonitor.TeamStatus" />
+
+        <import type="com.fsilberberg.ftamonitor.common.Alliance" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:elevation="@dimen/standard_elevation"
+        card_view:cardUseCompatPadding="true">
+
+        <GridLayout
+            android:id="@+id/root_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@{alliance.equals(Alliance.RED) ? @color/FRC_RED : @color/FRC_BLUE}"
+            android:columnCount="8"
+            android:padding="10dp"
+            android:rowCount="2"
+            android:useDefaultMargins="true"
+            tools:background="@color/FRC_RED">
+
+            <TextView
+                android:id="@+id/row_number"
+                android:layout_column="0"
+                android:layout_columnSpan="2"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="@{rowText}"
+                android:textAlignment="center"
+                android:textColor="@color/white_text"
+                tools:text="Red 1" />
+
+            <TextView
+                android:id="@+id/team_number_label"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="#:"
+                android:textColor="@color/white_text" />
+
+            <TextView
+                android:id="@+id/team_number"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:gravity="start"
+                android:text="@{Integer.toString(team.teamNumber)}"
+                android:textColor="@color/white_text"
+                tools:text="3218" />
+
+            <TextView
+                android:id="@+id/robot_status_label"
+                android:layout_column="2"
+                android:layout_columnSpan="1"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="Status:"
+                android:textColor="@color/white_text" />
+
+            <TextView
+                android:id="@+id/robot_status"
+                android:layout_column="3"
+                android:layout_columnSpan="5"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:gravity="start"
+                android:textColor="@color/white_text"
+                tools:text="No RoboRIO" />
+
+            <TextView
+                android:id="@+id/bandwidth_label"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="BW:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/bandwidth"
+                android:layout_column="3"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:gravity="start"
+                android:text="@{Float.toString(team.dataRate)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="7.589" />
+
+            <TextView
+                android:id="@+id/battery_label"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="Volt:"
+                android:textColor="@color/white_text" />
+
+            <TextView
+                android:id="@+id/battery"
+                android:layout_column="3"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:gravity="start"
+                android:text="@{Float.toString(team.battery)}"
+                android:textColor="@color/white_text"
+                tools:text="12.32" />
+
+            <TextView
+                android:id="@+id/round_trip_label"
+                android:layout_column="4"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="RT:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/round_trip"
+                android:layout_column="5"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:gravity="start"
+                android:text="@{Integer.toString(team.roundTrip)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+            <TextView
+                android:id="@+id/missed_packets_label"
+                android:layout_column="4"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="MP:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/missed_packets"
+                android:layout_column="5"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:gravity="start"
+                android:text="@{Integer.toString(team.droppedPackets)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+            <TextView
+                android:id="@+id/signal_strength_label"
+                android:layout_column="6"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:text="SS:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/signal_strength"
+                android:layout_column="7"
+                android:layout_columnWeight="1"
+                android:layout_row="0"
+                android:gravity="start"
+                android:text="@{Float.toString(team.signalStrength)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+            <TextView
+                android:id="@+id/signal_quality_label"
+                android:layout_column="6"
+                android:layout_columnWeight="1"
+                android:layout_row="1"
+                android:text="SQ:"
+                android:textColor="@color/white_text"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/signal_quality"
+                android:layout_column="7"
+                android:layout_columnWeight="1"
+                android:layout_gravity="left"
+                android:layout_row="1"
+                android:gravity="start"
+                android:text="@{Float.toString(team.signalQuality)}"
+                android:textColor="@color/white_text"
+                android:visibility="invisible"
+                tools:text="120" />
+
+        </GridLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>
